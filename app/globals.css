@@ -38,3 +38,14 @@
   background-color: #ff3333;
   box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
 }
+
+
+/* globals.css */
+body {
+  background: url('/images/grunge-bg.png') center center/cover no-repeat;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
