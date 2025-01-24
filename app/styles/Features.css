@@ -1,0 +1,36 @@
+.features-container {
+    margin: 40px auto;
+    max-width: 1200px;
+  }
+  
+  .features-static-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .static-item {
+    text-align: center;
+  }
+  
+  .static-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .features-carousel-row .carousel-item {
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .carousel-image {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  
