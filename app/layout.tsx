@@ -1,6 +1,11 @@
 import './globals.css';
-import NavBar from './Components/NavBar';
-import Carousel from './Components/Carousel';
+import Header from './Components/Header';
+import Hero from './Components/Hero';
+import Features from './Components/Features';
+import Recommendations from './Components/Recommendations';
+import GenresAndVinyls from './Components/GenresAndVinyls';
+import Contact from './Components/Contact';
+import Footer from './Components/Footer';
 
 export const metadata = {
   title: 'ART Music',
@@ -12,20 +17,16 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const featuredImages = [
-    '/images/rock-album-1.jpg', // Ensure these paths are correct
-    '/images/rock-album-2.jpg',
-    '/images/rock-album-3.jpg',
-  ];
-
   return (
     <html lang="en">
       <body>
-        {/* NavBar */}
-        <NavBar />
-        {/* Carousel */}
-        <Carousel images={featuredImages} />
-        {/* Main Content */}
+        <Header />
+        <Hero />
+        <Features />
+        <Recommendations />
+        <GenresAndVinyls />
+        <Contact />
+        <Footer />
         <main>{children}</main>
       </body>
     </html>
