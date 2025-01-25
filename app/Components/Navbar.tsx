@@ -23,7 +23,7 @@ const NavBar = () => {
         {/* Logo Image */}
         <Link href="/">
           <Image 
-            src="/images/logo.png" // Adjust the file name and path if necessary
+            src="" // Adjust the file name and path if necessary
             alt="Art Music Logo" 
             width={120} // Specify width
             height={60} // Specify height
