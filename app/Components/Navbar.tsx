@@ -1,12 +1,13 @@
-"use client"; //  Add this to make it a Client Component
+"use client"; // Add this to make it a Client Component
 
 import Link from 'next/link';
+import Image from 'next/image'; // Import Next.js Image component
 
 const NavBar = () => {
   return (
     <nav className="navbar">
       <div className="nav-left">
-        {/* Updated Links */}
+        {/* Navigation Links */}
         <Link href="/" className="nav-link">
           Home
         </Link>
@@ -17,35 +18,18 @@ const NavBar = () => {
           Contact
         </Link>
       </div>
+
       <div className="nav-right">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 500 200"
-          role="img"
-          aria-labelledby="title"
-          className="logo-svg"
-        >
-          <title id="title">Art Music Logo</title>
-          <rect width="500" height="200" fill="white" />
-          <text
-            x="50%"
-            y="50%"
-            textAnchor="middle"
-            fontFamily="Arial, sans-serif"
-            fontSize="48"
-            fill="#FFD700"
-            fontWeight="bold"
-          >
-            Art <tspan fill="#87CEEB">Music</tspan>
-          </text>
-          <circle cx="430" cy="100" r="30" fill="none" stroke="#87CEEB" strokeWidth="5" />
-          <path
-            d="M430 70 Q440 80, 430 90 Q420 100, 430 110 Q440 120, 430 130"
-            fill="none"
-            stroke="#FFD700"
-            strokeWidth="3"
+        {/* Logo Image */}
+        <Link href="/">
+          <Image 
+            src="/images/logo.png" // Adjust the file name and path if necessary
+            alt="Art Music Logo" 
+            width={120} // Specify width
+            height={60} // Specify height
+            priority // Optional: Optimize for loading
           />
-        </svg>
+        </Link>
       </div>
 
       <style jsx>{`
@@ -73,9 +57,8 @@ const NavBar = () => {
           align-items: center;
         }
 
-        .logo-svg {
-          width: 120px;
-          height: auto;
+        .nav-right img {
+          display: block;
         }
       `}</style>
     </nav>
@@ -83,4 +66,3 @@ const NavBar = () => {
 };
 
 export default NavBar;
-

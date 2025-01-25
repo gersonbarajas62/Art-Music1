@@ -1,8 +1,11 @@
-"use client"; // Add this directive at the top
+"use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { Menu, X, ShoppingCart } from "lucide-react"; // Icons
 
 const Header = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <header className="header">
       {/* Logo Section */}
@@ -10,19 +13,30 @@ const Header = () => {
         <h1>Logo</h1>
       </div>
 
-      {/* Navigation Links */}
-      <nav className="nav">
-        <a href="#" className="nav-link">Home</a>
-        <a href="#" className="nav-link">On Sale</a>
-        <a href="#" className="nav-link">Contact Us</a>
-      </nav>
+      {/* Mobile Menu Icon */}
+      <button
+        className="menu-toggle"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Toggle Menu"
+      >
+        {menuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
 
-      {/* Right Section: Buttons */}
-      <div className="actions">
-        <button className="action-button">Log In</button>
-        <button className="action-button contact">Contact</button>
-        <button className="action-button signup">Sign Up</button>
-      </div>
+      {/* Navigation Links */}
+      <nav className={`nav ${menuOpen ? "open" : ""}`}>
+        <a href="#" className="nav-link">
+          Home
+        </a>
+        <a href="#" className="nav-link">
+          On Sale
+        </a>
+        <a href="#" className="nav-link">
+          Genres
+        </a>
+        <a href="#" className="nav-link cart">
+          <ShoppingCart size={20} />
+        </a>
+      </nav>
 
       {/* Styling */}
       <style jsx>{`
@@ -34,11 +48,22 @@ const Header = () => {
           background-color: #000;
           color: #fff;
           font-family: Arial, sans-serif;
+          position: sticky;
+          top: 0;
+          z-index: 1000;
         }
 
         .logo h1 {
           font-size: 24px;
           font-weight: bold;
+        }
+
+        .menu-toggle {
+          display: none;
+          background: none;
+          border: none;
+          color: #fff;
+          cursor: pointer;
         }
 
         .nav {
@@ -51,51 +76,59 @@ const Header = () => {
           text-decoration: none;
           font-size: 16px;
           transition: color 0.3s;
+          display: flex;
+          align-items: center;
+        }
+
+        .nav-link.cart {
+          padding: 5px;
+          background-color: #333;
+          border-radius: 50%;
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          transition: background-color 0.3s, color 0.3s;
+        }
+
+        .nav-link.cart:hover {
+          background-color: #FFD700;
+          color: #000;
         }
 
         .nav-link:hover {
           color: #FFD700;
         }
 
-        .actions {
-          display: flex;
-          gap: 10px;
-        }
+        /* Mobile Menu Styles */
+        @media (max-width: 768px) {
+          .menu-toggle {
+            display: block;
+          }
 
-        .action-button {
-          background: transparent;
-          color: #fff;
-          border: 1px solid #fff;
-          padding: 8px 12px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 14px;
-          transition: background-color 0.3s, color 0.3s;
-        }
+          .nav {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background-color: #000;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 20px;
+            width: 200px;
+            border: 1px solid #222;
+            transform: translateX(100%);
+            transition: transform 0.3s;
+            opacity: 0;
+          }
 
-        .action-button:hover {
-          background-color: #fff;
-          color: #000;
-        }
+          .nav.open {
+            transform: translateX(0);
+            opacity: 1;
+          }
 
-        .action-button.contact {
-          background-color: #333;
-          border-color: #333;
-        }
-
-        .action-button.contact:hover {
-          background-color: #FFD700;
-          color: #000;
-        }
-
-        .action-button.signup {
-          background-color: #FFD700;
-          color: #000;
-          border: none;
-        }
-
-        .action-button.signup:hover {
-          background-color: #f7c600;
+          .nav-link {
+            font-size: 18px;
+          }
         }
       `}</style>
     </header>
