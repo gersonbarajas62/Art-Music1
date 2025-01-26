@@ -2,7 +2,7 @@ import './globals.css';
 import Header from './Components/Header';
 import Hero from './Components/Hero';
 import Features from './Components/Features';
-import Recommendations from './Components/Recommendas';
+
 import GenresAndVinyls from './Components/GenresAndVinyls';
 import Contact from './Components/Contact';
 import Footer from './Components/Footer';
@@ -23,7 +23,6 @@ export default function RootLayout({
         <Header />
         <Hero />
         <Features />
-        <Recommendations />
         <GenresAndVinyls />
         <Contact />
         <Footer />

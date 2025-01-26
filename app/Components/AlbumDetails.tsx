@@ -1,67 +1,53 @@
-"use client"; // Ensures it's a client component
-import Image from "next/image";
-import Recommendations from "./Recommendas";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { db } from "../../utils/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 const AlbumDetails = () => {
-  const album = {
-    imageUrl: "/images/beatles-vinyl.jpg", // Use a placeholder image
-    name: "Abbey Road",
-    description: "The Beatles' iconic album, released in 1969.",
-    quantity: 10,
-    condition: "New",
-    price: "$25.00",
-    genre: "Rock",
-  };
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  interface Album {
+    title: string;
+    description: string;
+    // Add other album properties here
+  }
+  
+  const [album, setAlbum] = useState<Album | null>(null);
+
+  useEffect(() => {
+    if (id) {
+      const fetchAlbum = async () => {
+        const docRef = doc(db, "albums", id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setAlbum(docSnap.data() as Album);
+        } else {
+          console.log("No such document!");
+        }
+      };
+
+      fetchAlbum();
+    }
+  }, [id]);
+
+  if (!id) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="album-details">
-      <div className="album-info">
-        <Image
-          src={album.imageUrl}
-          alt={album.name}
-          width={300}
-          height={300}
-          className="album-image"
-        />
-        <div className="album-meta">
-          <h1>{album.name}</h1>
+    <div>
+      {album ? (
+        <>
+          <h1>{album.title}</h1>
           <p>{album.description}</p>
-          <p><strong>Quantity Available:</strong> {album.quantity}</p>
-          <p><strong>Condition:</strong> {album.condition}</p>
-          <p><strong>Price:</strong> {album.price}</p>
-          <p><strong>Genre:</strong> {album.genre}</p>
-        </div>
-      </div>
-
-      {/* Reusable Recommendations Component */}
-      <Recommendations genre={album.genre} />
-
-      <style jsx>{`
-        .album-details {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          padding: 20px;
-          background-color: #1a1a1a;
-          color: white;
-          border-radius: 10px;
-        }
-
-        .album-info {
-          display: flex;
-          gap: 20px;
-        }
-
-        .album-meta {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-        }
-
-        .album-image {
-          border-radius: 10px;
-        }
-      `}</style>
+          {/* Add more album details here */}
+        </>
+      ) : (
+        <div>Loading album details...</div>
+      )}
     </div>
   );
 };
