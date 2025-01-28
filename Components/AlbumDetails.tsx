@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { db } from "../../utils/firebase";
+import { db } from "../utils/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
 const AlbumDetails = () => {
