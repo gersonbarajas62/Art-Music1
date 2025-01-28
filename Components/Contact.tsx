@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
+    name: "",
+    email: "",
+    message: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -17,101 +17,183 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Placeholder for backend connection
-    console.log('Form submitted:', formData);
+    console.log("Form submitted:", formData);
   };
 
   return (
     <section
       style={{
-        padding: '40px',
-        backgroundColor: '#121212',
-        color: '#fff',
-        borderRadius: '8px',
-        maxWidth: '800px',
-        margin: '0 auto',
+        backgroundColor: "#121212",
+        color: "#fff",
+        padding: "60px 20px",
+        borderRadius: "12px",
+        margin: "40px auto",
+        maxWidth: "900px",
+        boxShadow: "0 8px 20px rgba(0, 0, 0, 0.8)",
       }}
     >
-      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>
-        Didn’t find what you were looking for?
+      <h2
+        style={{
+          textAlign: "center",
+          marginBottom: "20px",
+          fontSize: "2rem",
+          fontWeight: "bold",
+        }}
+      >
+        ¿No encontraste lo que buscabas?
       </h2>
-      <p style={{ textAlign: 'center', marginBottom: '30px' }}>
-        Contact us, and we’ll help you get it! We’re here to make your experience at <b>Artmusic</b> seamless.
+      <p
+        style={{
+          textAlign: "center",
+          marginBottom: "40px",
+          fontSize: "1rem",
+          lineHeight: "1.8",
+          maxWidth: "700px",
+          margin: "0 auto",
+        }}
+      >
+        Contáctanos y te ayudaremos a encontrarlo. En <b>Artmusic</b>, estamos comprometidos a hacer que tu experiencia sea inigualable.
       </p>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <label style={{ display: 'flex', flexDirection: 'column', fontSize: '16px' }}>
-          Full Name
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: "grid",
+          gap: "20px",
+          gridTemplateColumns: "1fr",
+        }}
+      >
+        {/* Full Name */}
+        <label
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            fontSize: "1rem",
+            gap: "8px",
+          }}
+        >
+          Nombre completo
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            placeholder="Enter your full name"
+            placeholder="Ingresa tu nombre completo"
             required
             style={{
-              padding: '10px',
-              borderRadius: '5px',
-              border: '1px solid #333',
-              backgroundColor: '#1e1e1e',
-              color: '#fff',
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              backgroundColor: "#1e1e1e",
+              color: "#fff",
+              fontSize: "1rem",
             }}
           />
         </label>
-        <label style={{ display: 'flex', flexDirection: 'column', fontSize: '16px' }}>
-          Email Address
+
+        {/* Email Address */}
+        <label
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            fontSize: "1rem",
+            gap: "8px",
+          }}
+        >
+          Correo electrónico
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            placeholder="Enter your email address"
+            placeholder="Ingresa tu correo electrónico"
             required
             style={{
-              padding: '10px',
-              borderRadius: '5px',
-              border: '1px solid #333',
-              backgroundColor: '#1e1e1e',
-              color: '#fff',
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              backgroundColor: "#1e1e1e",
+              color: "#fff",
+              fontSize: "1rem",
             }}
           />
         </label>
-        <label style={{ display: 'flex', flexDirection: 'column', fontSize: '16px' }}>
-          Message
+
+        {/* Message */}
+        <label
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            fontSize: "1rem",
+            gap: "8px",
+          }}
+        >
+          Mensaje
           <textarea
             name="message"
             value={formData.message}
             onChange={handleChange}
-            placeholder="Enter your message here..."
+            placeholder="Escribe tu mensaje aquí..."
             required
             rows={5}
             style={{
-              padding: '10px',
-              borderRadius: '5px',
-              border: '1px solid #333',
-              backgroundColor: '#1e1e1e',
-              color: '#fff',
-              resize: 'none',
+              padding: "12px",
+              borderRadius: "8px",
+              border: "1px solid #333",
+              backgroundColor: "#1e1e1e",
+              color: "#fff",
+              fontSize: "1rem",
+              resize: "none",
             }}
           />
         </label>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <input type="checkbox" required style={{ transform: 'scale(1.2)' }} />
-          <label style={{ fontSize: '14px' }}>
-            I hereby agree to the <a href="#" style={{ color: '#6c63ff', textDecoration: 'none' }}>Privacy Policy</a>.
+
+        {/* Checkbox */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            fontSize: "0.9rem",
+          }}
+        >
+          <input
+            type="checkbox"
+            required
+            style={{ transform: "scale(1.2)", cursor: "pointer" }}
+          />
+          <label>
+            Acepto la{" "}
+            <a
+              href="#"
+              style={{
+                color: "#FFD700",
+                textDecoration: "none",
+                fontWeight: "bold",
+              }}
+            >
+              Política de privacidad
+            </a>
+            .
           </label>
         </div>
+
+        {/* Submit Button */}
         <button
           type="submit"
           style={{
-            padding: '12px',
-            borderRadius: '5px',
-            border: 'none',
-            backgroundColor: '#6c63ff',
-            color: '#fff',
-            fontSize: '16px',
-            cursor: 'pointer',
+            padding: "14px",
+            borderRadius: "8px",
+            border: "none",
+            backgroundColor: "#FFD700",
+            color: "#000",
+            fontSize: "1rem",
+            fontWeight: "bold",
+            cursor: "pointer",
+            textTransform: "uppercase",
+            transition: "background-color 0.3s ease",
           }}
         >
-          Submit Form
+          Enviar formulario
         </button>
       </form>
     </section>

@@ -1,11 +1,11 @@
-"use client"; // Marks the file as a Client Component
+"use client";
 
-import AlbumDetails from '../Components/AlbumDetails';
+import AlbumDetails from "./album/page";
 
 export default function Home() {
   return (
     <section className="container">
-      {/* AlbumDetails will render here */}
+      {/* Render the AlbumDetails component as the main content */}
       <AlbumDetails />
     </section>
   );

@@ -1,15 +1,9 @@
-import './globals.css';
-import Header from '../Components/Header';
-import Hero from '../Components/Hero';
-import Features from '../Components/Features';
-
-import GenresAndVinyls from '../Components/GenresAndVinyls';
-import Contact from '../Components/Contact';
-import Footer from '../Components/Footer';
+import "./globals.css";
+import SharedLayout from "../Components/sharedLayout";
 
 export const metadata = {
-  title: 'ART Music',
-  description: 'Your one-stop shop for Rock CDs and Vinyls!',
+  title: "ART Music",
+  description: "Your one-stop shop for Rock CDs and Vinyls!",
 };
 
 export default function RootLayout({
@@ -20,13 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header />
-        <Hero />
-        <Features />
-        <GenresAndVinyls />
-        <Contact />
-        <Footer />
-        <main>{children}</main>
+        <SharedLayout>{children}</SharedLayout>
       </body>
     </html>
   );
