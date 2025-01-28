@@ -1,18 +1,53 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { db } from "../../utils/firebase"; // Adjust the path if needed
+import { collection, getDocs } from "firebase/firestore";
 
 export default function Dashboard() {
-  const router = useRouter();
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [lowStockItems, setLowStockItems] = useState(0);
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [totalSales, setTotalSales] = useState(0);
 
-  // Redirect to login if user is not authenticated (restore this logic after testing)
- // useEffect(() => {
-   // const user = localStorage.getItem("user");
-    //if (!user) {
-     // router.push("/login");
-   // }
-  //}, [router]);
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // Fetch total products
+        const productsSnapshot = await getDocs(collection(db, "products"));
+        setTotalProducts(productsSnapshot.size);
+
+        // Fetch low stock items
+        const lowStockSnapshot = await getDocs(
+          collection(db, "products") // Add a query for low stock, if needed
+        );
+        const lowStockCount = lowStockSnapshot.docs.filter(
+          (doc) => doc.data().stock < 10
+        ).length;
+        setLowStockItems(lowStockCount);
+
+        // Fetch recent activities
+        const activitiesSnapshot = await getDocs(collection(db, "activities"));
+        const activities = activitiesSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setRecentActivities(activities);
+
+        // Example: Fetch total sales from another collection (if applicable)
+        const salesSnapshot = await getDocs(collection(db, "sales"));
+        const total = salesSnapshot.docs.reduce(
+          (sum, doc) => sum + doc.data().amount,
+          0
+        );
+        setTotalSales(total);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   return (
     <div className="h-screen flex bg-gray-900">
@@ -49,18 +84,17 @@ export default function Dashboard() {
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Example Cards */}
           <div className="bg-gray-800 p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-4">Total Products</h2>
-            <p className="text-4xl font-bold">120</p>
+            <p className="text-4xl font-bold">{totalProducts}</p>
           </div>
           <div className="bg-gray-800 p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-4">Low Stock Items</h2>
-            <p className="text-4xl font-bold">5</p>
+            <p className="text-4xl font-bold">{lowStockItems}</p>
           </div>
           <div className="bg-gray-800 p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-4">Total Sales</h2>
-            <p className="text-4xl font-bold">$25,000</p>
+            <p className="text-4xl font-bold">${totalSales}</p>
           </div>
         </div>
 
@@ -68,18 +102,12 @@ export default function Dashboard() {
         <section className="mt-12">
           <h2 className="text-2xl font-semibold mb-4">Recent Activity</h2>
           <ul className="space-y-4">
-            <li className="bg-gray-800 p-4 rounded-lg">
-              <p>Added 10 units of "Guitar Amp" to stock.</p>
-              <p className="text-gray-500 text-sm">2 hours ago</p>
-            </li>
-            <li className="bg-gray-800 p-4 rounded-lg">
-              <p>Updated price of "Electric Guitar" to $1,200.</p>
-              <p className="text-gray-500 text-sm">5 hours ago</p>
-            </li>
-            <li className="bg-gray-800 p-4 rounded-lg">
-              <p>Uploaded new product photos for "Drum Set".</p>
-              <p className="text-gray-500 text-sm">1 day ago</p>
-            </li>
+            {recentActivities.map((activity) => (
+              <li key={activity.id} className="bg-gray-800 p-4 rounded-lg">
+                <p>{activity.description}</p>
+                <p className="text-gray-500 text-sm">{activity.timestamp}</p>
+              </li>
+            ))}
           </ul>
         </section>
       </main>
