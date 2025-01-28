@@ -1,115 +1,16 @@
-/* Import external styles */
-@import "../node_modules/slick-carousel/slick/slick.css";
-@import "../node_modules/slick-carousel/slick/slick-theme.css";
+/* Import Tailwind Preflight */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Universal Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Set default font and background */
+/* Global Reset (if necessary) */
 html, body {
-  font-family: 'Arial', sans-serif;
-  background-color: #000; /* Dark background */
-  color: #fff; /* Light text color */
   min-height: 100%;
 }
 
-/* Layout container for responsiveness */
+/* Optional Container Padding (for consistency) */
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 15px;
+  @apply mx-auto max-w-screen-lg px-4; /* Tailwind utility classes */
 }
 
-/* Global link styles */
-a {
-  color: #ffd700; /* Gold for links */
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* Responsive images */
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Navbar styles */
-nav {
-  background-color: #222; /* Slightly lighter black */
-  padding: 10px 20px;
-}
-
-nav a {
-  margin: 0 10px;
-  color: #fff;
-}
-
-/* Hero section */
-.hero {
-  text-align: center;
-  padding: 50px 20px;
-  background-color: #111; /* Slightly lighter background */
-}
-
-/* Footer styles */
-footer {
-  background-color: #111;
-  text-align: center;
-  padding: 20px;
-  font-size: 0.9rem;
-}
-
-/* Recommendations section */
-.recommendations {
-  background-color: #222;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Buttons */
-button {
-  background-color: #ffd700;
-  border: none;
-  color: #000;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #ffcc00;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .container {
-    padding: 0 10px;
-  }
-
-  nav {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  nav a {
-    margin: 5px 0;
-  }
-
-  .hero {
-    padding: 20px;
-  }
-
-  footer {
-    font-size: 0.8rem;
-  }
-}
+/* Tailwind handles most styles! */

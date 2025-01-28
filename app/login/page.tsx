@@ -6,7 +6,6 @@ import { auth, googleProvider } from "../../utils/firebase";
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
-  GoogleAuthProvider,
 } from "firebase/auth";
 
 export default function LoginPage() {
@@ -41,50 +40,62 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-900">
-      <div className="p-6 bg-white rounded-lg shadow-lg w-96">
-        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-        <form onSubmit={handleLogin}>
+    <div className="flex items-center justify-center min-h-screen bg-dark-bg">
+      <div className="bg-dark-gray text-light-text p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h1 className="text-4xl font-bold text-center mb-6">¡Bienvenido!</h1>
+        <p className="text-center mb-6">
+          Inicia sesión para explorar nuevas experiencias musicales
+        </p>
+
+        {error && (
+          <p className="text-red-500 text-center mb-4">{error}</p>
+        )}
+
+        {/* Login Form */}
+        <form onSubmit={handleLogin} className="flex flex-col gap-4">
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Correo Electrónico"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 mb-2 border border-gray-300 rounded"
+            className="w-full px-4 py-2 rounded-lg bg-gray-800 text-light-text placeholder-gray-400"
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 mb-4 border border-gray-300 rounded"
+            className="w-full px-4 py-2 rounded-lg bg-gray-800 text-light-text placeholder-gray-400"
           />
           <button
             type="submit"
-            className="w-full bg-yellow-500 text-white p-2 rounded mb-2"
+            className="w-full py-2 bg-custom-yellow text-black font-bold rounded-lg hover:bg-custom-hover-yellow transition"
           >
-            Login
+            Iniciar Sesión
           </button>
         </form>
+
+        {/* Google Sign-In Button */}
         <button
           onClick={handleGoogleSignIn}
-          className="w-full bg-blue-500 text-white p-2 rounded flex items-center justify-center gap-2"
+          className="flex items-center justify-center gap-2 w-full py-2 mt-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-500 transition"
         >
           <img
-            src="/google-icon.svg" // Replace with a path to your Google icon
+            src="/google-icon.svg"
             alt="Google Icon"
-            className="w-4 h-4"
+            className="w-5 h-5"
           />
-          Sign in with Google
+          Inicia Sesión con Google
         </button>
-        <p className="mt-4 text-sm text-center">
-          Don't have an account?{" "}
+
+        {/* Register Link */}
+        <p className="text-center mt-6 text-sm">
+          ¿No tienes una cuenta?{" "}
           <button
             onClick={handleRegisterRedirect}
-            className="text-blue-500 underline"
+            className="text-custom-yellow underline hover:text-custom-hover-yellow"
           >
-            Register
+            Regístrate
           </button>
         </p>
       </div>
