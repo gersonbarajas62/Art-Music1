@@ -1,115 +1,217 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { db } from "../../utils/firebase"; // Adjust the path if needed
-import { collection, getDocs } from "firebase/firestore";
+
+// Define the Product type based on your Firebase data structure
+interface Product {
+  id: string; // Firebase document ID
+  title: string;
+  description: string;
+  genre: string;
+  condition: string;
+  image: string;
+  price: number;
+  stock: number;
+}
 
 export default function Dashboard() {
-  const [totalProducts, setTotalProducts] = useState(0);
-  const [lowStockItems, setLowStockItems] = useState(0);
-  const [recentActivities, setRecentActivities] = useState([]);
-  const [totalSales, setTotalSales] = useState(0);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [newProduct, setNewProduct] = useState<Partial<Product>>({
+    title: "",
+    description: "",
+    genre: "",
+    condition: "",
+    image: "",
+    price: 0,
+    stock: 0,
+  });
 
+  // Fetch products from Firebase
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        // Fetch total products
-        const productsSnapshot = await getDocs(collection(db, "products"));
-        setTotalProducts(productsSnapshot.size);
+    async function fetchProducts() {
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      setProducts(data.products);
+    }
 
-        // Fetch low stock items
-        const lowStockSnapshot = await getDocs(
-          collection(db, "products") // Add a query for low stock, if needed
-        );
-        const lowStockCount = lowStockSnapshot.docs.filter(
-          (doc) => doc.data().stock < 10
-        ).length;
-        setLowStockItems(lowStockCount);
-
-        // Fetch recent activities
-        const activitiesSnapshot = await getDocs(collection(db, "activities"));
-        const activities = activitiesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setRecentActivities(activities);
-
-        // Example: Fetch total sales from another collection (if applicable)
-        const salesSnapshot = await getDocs(collection(db, "sales"));
-        const total = salesSnapshot.docs.reduce(
-          (sum, doc) => sum + doc.data().amount,
-          0
-        );
-        setTotalSales(total);
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      }
-    };
-
-    fetchDashboardData();
+    fetchProducts();
   }, []);
 
+  // Add a new product
+  const addProduct = async () => {
+    const res = await fetch("/api/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newProduct),
+    });
+
+    const data = await res.json();
+    setProducts((prev) => [...prev, data.product]);
+    setNewProduct({
+      title: "",
+      description: "",
+      genre: "",
+      condition: "",
+      image: "",
+      price: 0,
+      stock: 0,
+    });
+  };
+
+  // Update a product
+  const updateProduct = async (id: string, updatedFields: Partial<Product>) => {
+    const res = await fetch(`/api/products/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedFields),
+    });
+
+    const data = await res.json();
+    setProducts((prev) =>
+      prev.map((product) => (product.id === id ? data.updatedProduct : product))
+    );
+  };
+
+  // Delete a product
+  const deleteProduct = async (id: string) => {
+    await fetch(`/api/products/${id}`, {
+      method: "DELETE",
+    });
+
+    setProducts((prev) => prev.filter((product) => product.id !== id));
+  };
+
   return (
-    <div className="h-screen flex bg-gray-900">
-      {/* Sidebar */}
-      <aside className="w-64 bg-gray-800 text-white p-6 space-y-6">
-        <h2 className="text-2xl font-bold">Admin Dashboard</h2>
-        <nav className="space-y-4">
-          <button className="w-full text-left px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600">
-            Add Products
-          </button>
-          <button className="w-full text-left px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600">
-            Manage Stock
-          </button>
-          <button className="w-full text-left px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600">
-            Update Prices
-          </button>
-          <button className="w-full text-left px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600">
-            Upload Photos
-          </button>
-          <button className="w-full text-left px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500">
-            Logout
-          </button>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 p-8 bg-gray-900 text-white">
-        <header className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Welcome, Admin!</h1>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500">
-            Add New Product
-          </button>
-        </header>
-
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Total Products</h2>
-            <p className="text-4xl font-bold">{totalProducts}</p>
-          </div>
-          <div className="bg-gray-800 p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Low Stock Items</h2>
-            <p className="text-4xl font-bold">{lowStockItems}</p>
-          </div>
-          <div className="bg-gray-800 p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Total Sales</h2>
-            <p className="text-4xl font-bold">${totalSales}</p>
-          </div>
+    <div className="h-screen bg-gray-900 text-white">
+      <header className="bg-gray-800 p-4 flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+        <button
+          className="bg-red-500 text-white px-4 py-2 rounded"
+          onClick={() => {
+            localStorage.removeItem("user");
+            window.location.href = "/login";
+          }}
+        >
+          Logout
+        </button>
+      </header>
+      <main className="p-8">
+        <h2 className="text-xl font-bold mb-4">Product List</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {products.map((product) => (
+            <div
+              key={product.id}
+              className="p-4 bg-gray-800 rounded-lg shadow space-y-2"
+            >
+              <img
+                src={product.image}
+                alt={product.title}
+                className="w-full h-32 object-cover rounded"
+              />
+              <h3 className="text-lg font-bold">{product.title}</h3>
+              <p className="text-sm text-gray-400">{product.description}</p>
+              <p className="text-sm text-gray-400">Genre: {product.genre}</p>
+              <p className="text-sm text-gray-400">
+                Condition: {product.condition}
+              </p>
+              <p className="text-sm text-gray-400">Stock: {product.stock}</p>
+              <p className="text-lg font-bold">${product.price}</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() =>
+                    updateProduct(product.id, { title: "Updated Title" })
+                  }
+                  className="bg-blue-500 px-2 py-1 rounded hover:bg-blue-600"
+                >
+                  Update
+                </button>
+                <button
+                  onClick={() => deleteProduct(product.id)}
+                  className="bg-red-500 px-2 py-1 rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Recent Activities */}
-        <section className="mt-12">
-          <h2 className="text-2xl font-semibold mb-4">Recent Activity</h2>
-          <ul className="space-y-4">
-            {recentActivities.map((activity) => (
-              <li key={activity.id} className="bg-gray-800 p-4 rounded-lg">
-                <p>{activity.description}</p>
-                <p className="text-gray-500 text-sm">{activity.timestamp}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <h2 className="text-xl font-bold mt-8 mb-4">Add New Product</h2>
+        <div className="space-y-4 bg-gray-800 p-4 rounded-lg shadow">
+          <input
+            className="w-full bg-gray-700 p-2 rounded text-white"
+            placeholder="Title"
+            value={newProduct.title}
+            onChange={(e) =>
+              setNewProduct((prev) => ({ ...prev, title: e.target.value }))
+            }
+          />
+          <textarea
+            className="w-full bg-gray-700 p-2 rounded text-white"
+            placeholder="Description"
+            value={newProduct.description}
+            onChange={(e) =>
+              setNewProduct((prev) => ({
+                ...prev,
+                description: e.target.value,
+              }))
+            }
+          />
+          <input
+            className="w-full bg-gray-700 p-2 rounded text-white"
+            placeholder="Genre"
+            value={newProduct.genre}
+            onChange={(e) =>
+              setNewProduct((prev) => ({ ...prev, genre: e.target.value }))
+            }
+          />
+          <input
+            className="w-full bg-gray-700 p-2 rounded text-white"
+            placeholder="Condition"
+            value={newProduct.condition}
+            onChange={(e) =>
+              setNewProduct((prev) => ({ ...prev, condition: e.target.value }))
+            }
+          />
+          <input
+            className="w-full bg-gray-700 p-2 rounded text-white"
+            placeholder="Image URL"
+            value={newProduct.image}
+            onChange={(e) =>
+              setNewProduct((prev) => ({ ...prev, image: e.target.value }))
+            }
+          />
+          <input
+            type="number"
+            className="w-full bg-gray-700 p-2 rounded text-white"
+            placeholder="Price"
+            value={newProduct.price}
+            onChange={(e) =>
+              setNewProduct((prev) => ({
+                ...prev,
+                price: parseFloat(e.target.value) || 0,
+              }))
+            }
+          />
+          <input
+            type="number"
+            className="w-full bg-gray-700 p-2 rounded text-white"
+            placeholder="Stock"
+            value={newProduct.stock}
+            onChange={(e) =>
+              setNewProduct((prev) => ({
+                ...prev,
+                stock: parseInt(e.target.value) || 0,
+              }))
+            }
+          />
+          <button
+            onClick={addProduct}
+            className="bg-green-500 px-4 py-2 rounded hover:bg-green-600"
+          >
+            Add Product
+          </button>
+        </div>
       </main>
     </div>
   );
