@@ -1,6 +1,5 @@
-
 import "./globals.css";
-import SharedLayout from "../Components/sharedLayout";
+import SharedLayout from "../app/components/sharedLayout";
 
 export const metadata = {
   title: "ART Music",

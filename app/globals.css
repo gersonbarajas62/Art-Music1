@@ -1,7 +1,7 @@
 /* Import Tailwind Preflight */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 /* Global Reset (if necessary) */
 html, body {
@@ -10,7 +10,11 @@ html, body {
 
 /* Optional Container Padding (for consistency) */
 .container {
-  @apply mx-auto max-w-screen-lg px-4; /* Tailwind utility classes */
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1024px; /* Equivalent to max-w-screen-lg */
+  padding-left: 1rem; /* Equivalent to px-4 */
+  padding-right: 1rem; /* Equivalent to px-4 */
 }
 
 /* Tailwind handles most styles! */

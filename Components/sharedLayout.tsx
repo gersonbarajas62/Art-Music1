@@ -1,4 +1,4 @@
-"use client"; // Mark as client component
+/*"use client"; // Mark as client component
 
 import { usePathname } from "next/navigation";
 import Header from "./Header";
@@ -27,4 +27,4 @@ export default function SharedLayout({ children }: { children: React.ReactNode }
       <main>{children}</main>
     </>
   );
-}
+}*/

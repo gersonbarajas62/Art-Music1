@@ -1,25 +1,33 @@
+"use clinet";
+
 import { NextResponse } from "next/server";
+import { db } from "@/utils/firebase";
+import { collection, getDocs, addDoc } from "firebase/firestore";
 
-let products: any[] = []; // Temporary in-memory storage (replace with DB later)
-
+// Get all products
 export async function GET() {
-  return NextResponse.json(products);
+  try {
+    const querySnapshot = await getDocs(collection(db, "products"));
+    const products = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return NextResponse.json({ products }, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });
+  }
 }
 
+// Create a new product
 export async function POST(req: Request) {
-  const newProduct = await req.json();
-  products.push(newProduct);
-  return NextResponse.json({ message: "Product added!", product: newProduct });
-}
-
-export async function PUT(req: Request) {
-  const { id, updatedProduct } = await req.json();
-  products = products.map((p) => (p.id === id ? updatedProduct : p));
-  return NextResponse.json({ message: "Product updated!", updatedProduct });
-}
-
-export async function DELETE(req: Request) {
-  const { deleteId } = await req.json();
-  products = products.filter((p) => p.id !== deleteId);
-  return NextResponse.json({ message: "Product deleted!" });
+  try {
+    const body = await req.json();
+    const docRef = await addDoc(collection(db, "products"), body);
+    return NextResponse.json({ id: docRef.id, ...body }, { status: 201 });
+  } catch (error) {
+    console.error("Error adding product:", error);
+    return NextResponse.json({ error: "Failed to add product" }, { status: 500 });
+  }
 }

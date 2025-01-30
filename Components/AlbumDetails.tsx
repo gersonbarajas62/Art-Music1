@@ -7,7 +7,7 @@ import { doc, getDoc } from "firebase/firestore";
 
 const AlbumDetails = () => {
   const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+  const id = searchParams ? searchParams.get("id") : null;
   interface Album {
     title: string;
     description: string;

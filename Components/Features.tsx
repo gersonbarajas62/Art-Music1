@@ -41,7 +41,7 @@ const Features = () => {
       className="features-container"
       style={{
         padding: "20px",
-        backgroundImage: "url('/images/background-texture.jpg')",
+        backgroundImage: "url('')",
         backgroundSize: "cover",
         color: "#fff",
         borderRadius: "12px",
