@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs, addDoc, updateDoc, doc, deleteDoc } from "firebase/firestore";
 import { db } from "../../utils/firebase";
+import { Button } from "../../app/components/ui/button";
+import { Card, CardContent } from "../../app/components/ui/card";
+import { Input } from "../../app/components/ui/input";
 
 interface Product {
   id: string;
@@ -13,6 +16,7 @@ interface Product {
   image: string;
   price: number;
   stock: number;
+  type: string;
 }
 
 export default function Dashboard() {
@@ -25,6 +29,7 @@ export default function Dashboard() {
     image: "",
     price: 0,
     stock: 0,
+    type: "Vinyl",
   });
 
   useEffect(() => {
@@ -46,7 +51,7 @@ export default function Dashboard() {
 
   const addProduct = async () => {
     if (!newProduct.title || !newProduct.price || !newProduct.image) {
-      alert("Title, Price, and Image URL are required.");
+      alert("Título, Precio e Imagen son obligatorios.");
       return;
     }
     try {
@@ -61,133 +66,47 @@ export default function Dashboard() {
         image: "",
         price: 0,
         stock: 0,
+        type: "Vinyl",
       });
     } catch (error) {
       console.error("Error adding product:", error);
     }
   };
 
-  const updateProduct = async (id: string, updatedFields: Partial<Product>) => {
-    try {
-      const productDoc = doc(db, "products", id);
-      await updateDoc(productDoc, updatedFields);
-      setProducts((prev) =>
-        prev.map((product) => (product.id === id ? { ...product, ...updatedFields } : product))
-      );
-    } catch (error) {
-      console.error("Error updating product:", error);
-    }
-  };
-
-  const deleteProduct = async (id: string) => {
-    try {
-      const productDoc = doc(db, "products", id);
-      await deleteDoc(productDoc);
-      setProducts((prev) => prev.filter((product) => product.id !== id));
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <main className="container mx-auto py-8">
-        <h2 className="text-2xl font-bold mb-6">Product List</h2>
-        {products.length === 0 ? (
-          <p className="text-gray-400">No products found. Add a new product below.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <div key={product.id} className="bg-gray-800 p-6 rounded-lg shadow-md space-y-4">
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  className="w-full h-40 object-cover rounded-md"
+    <div className="min-h-screen bg-gray-900 text-white p-4">
+      <main className="container mx-auto py-6">
+        <h1 className="text-3xl font-bold mb-4">Panel de Administración</h1>
+        <Button
+          className="mb-6 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+          onClick={() => (window.location.href = "/discos")}
+        >
+          Mis Productos
+        </Button>
+
+        <h2 className="text-2xl font-bold mt-6">Agregar Nuevo Producto</h2>
+        <div className="bg-gray-800 p-6 rounded-lg mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {Object.entries(newProduct).map(([key, value]) => (
+              <div key={key}>
+                <label className="block text-sm text-gray-400 mb-1">{key.toUpperCase()}</label>
+                <Input
+                  type={typeof value === "number" ? "number" : "text"}
+                  placeholder={key}
+                  value={value as string | number}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, [key]: e.target.value })
+                  }
                 />
-                <h3 className="text-lg font-bold">{product.title}</h3>
-                <p className="text-sm text-gray-400">{product.description}</p>
-                <p className="text-sm text-gray-400">Genre: {product.genre}</p>
-                <p className="text-sm text-gray-400">Condition: {product.condition}</p>
-                <p className="text-sm text-gray-400">Stock: {product.stock}</p>
-                <p className="text-lg font-bold">${product.price}</p>
-                <div className="flex space-x-4">
-                  <button
-                    onClick={() => updateProduct(product.id, { title: "Updated Title" })}
-                    className="bg-blue-500 px-3 py-1 rounded-lg hover:bg-blue-600"
-                  >
-                    Update
-                  </button>
-                  <button
-                    onClick={() => deleteProduct(product.id)}
-                    className="bg-red-500 px-3 py-1 rounded-lg hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                </div>
               </div>
             ))}
           </div>
-        )}
-
-        <h2 className="text-2xl font-bold mt-8">Add New Product</h2>
-        <div className="bg-gray-800 p-6 rounded-lg mt-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <input
-              type="text"
-              placeholder="Title"
-              value={newProduct.title}
-              onChange={(e) => setNewProduct({ ...newProduct, title: e.target.value })}
-              className="w-full px-4 py-2 rounded-md bg-gray-700 text-white"
-            />
-            <input
-              type="text"
-              placeholder="Description"
-              value={newProduct.description}
-              onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-              className="w-full px-4 py-2 rounded-md bg-gray-700 text-white"
-            />
-            <input
-              type="text"
-              placeholder="Genre"
-              value={newProduct.genre}
-              onChange={(e) => setNewProduct({ ...newProduct, genre: e.target.value })}
-              className="w-full px-4 py-2 rounded-md bg-gray-700 text-white"
-            />
-            <input
-              type="text"
-              placeholder="Condition"
-              value={newProduct.condition}
-              onChange={(e) => setNewProduct({ ...newProduct, condition: e.target.value })}
-              className="w-full px-4 py-2 rounded-md bg-gray-700 text-white"
-            />
-            <input
-              type="text"
-              placeholder="Image URL"
-              value={newProduct.image}
-              onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
-              className="w-full px-4 py-2 rounded-md bg-gray-700 text-white"
-            />
-            <input
-              type="number"
-              placeholder="Price"
-              value={newProduct.price}
-              onChange={(e) => setNewProduct({ ...newProduct, price: Number(e.target.value) })}
-              className="w-full px-4 py-2 rounded-md bg-gray-700 text-white"
-            />
-            <input
-              type="number"
-              placeholder="Stock"
-              value={newProduct.stock}
-              onChange={(e) => setNewProduct({ ...newProduct, stock: Number(e.target.value) })}
-              className="w-full px-4 py-2 rounded-md bg-gray-700 text-white"
-            />
-          </div>
-          <button
+          <Button
             onClick={addProduct}
-            className="w-full mt-4 py-2 bg-green-500 text-white font-bold rounded-md hover:bg-green-600 transition"
+            className="w-full mt-4 py-2 bg-green-500 text-white font-bold rounded-md hover:bg-green-600"
           >
-            Add Product
-          </button>
+            Agregar Producto
+          </Button>
         </div>
       </main>
     </div>
