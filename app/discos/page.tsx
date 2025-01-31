@@ -38,29 +38,27 @@ export default function MisProductos() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
-      <main className="container mx-auto py-6">
-        <h1 className="text-3xl font-bold mb-4">Mis Productos</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <Card key={product.id}>
-              <img
-                src={product.image}
-                alt={product.title}
-                className="w-full h-40 object-cover rounded-t-md"
-              />
-              <CardContent>
-                <h3 className="text-lg font-bold">{product.title}</h3>
-                <p className="text-sm text-gray-400">{product.description}</p>
-                <p className="text-sm text-gray-400">Género: {product.genre}</p>
-                <p className="text-sm text-gray-400">Estado: {product.condition}</p>
-                <p className="text-sm text-gray-400">Stock: {product.stock}</p>
-                <p className="text-lg font-bold">${product.price}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </main>
+    <div className="bg-gray-900 text-white p-6 rounded-lg">
+      <h1 className="text-2xl font-bold mb-6 text-center">Mis Discos</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {products.map((product) => (
+          <Card key={product.id}>
+            <img
+              src={product.image}
+              alt={product.title}
+              className="w-full h-40 object-cover rounded-t-lg"
+            />
+            <CardContent>
+              <h3 className="text-lg font-bold">{product.title}</h3>
+              <p className="text-sm text-gray-400 mb-2">{product.description}</p>
+              <p className="text-sm text-gray-400">Género: {product.genre}</p>
+              <p className="text-sm text-gray-400">Estado: {product.condition}</p>
+              <p className="text-sm text-gray-400">Stock: {product.stock}</p>
+              <p className="text-lg font-bold mt-2">${product.price}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
