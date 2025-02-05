@@ -1,5 +1,4 @@
-"use client";
-
+"use clinet";
 import Dashboard from "./dashboard";
 
 export default function DashboardPage() {
