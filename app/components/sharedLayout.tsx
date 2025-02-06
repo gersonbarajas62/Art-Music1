@@ -28,7 +28,7 @@ const menuItems = [
     name: "Mis Productos",
     icon: Disc,
     subMenu: [
-      { name: "Agregar Nuevo Disco", href: "/dashboard" },
+      { name: "Agregar Nuevo Disco", href: "/dashboard/add-products" },
       { name: "Ver Mis Discos", href: "/discos" },
     ],
   },

@@ -1,0 +1,31 @@
+[debug] [2025-02-05T21:56:47.020Z] ----------------------------------------------------------------------
+[debug] [2025-02-05T21:56:47.023Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\gerso\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2025-02-05T21:56:47.024Z] CLI Version:   13.30.0
+[debug] [2025-02-05T21:56:47.024Z] Platform:      win32
+[debug] [2025-02-05T21:56:47.024Z] Node Version:  v22.12.0
+[debug] [2025-02-05T21:56:47.025Z] Time:          Wed Feb 05 2025 15:56:47 GMT-0600 (Central Standard Time)
+[debug] [2025-02-05T21:56:47.025Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-02-05T21:56:47.038Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-02-05T21:56:47.039Z] > authorizing via signed-in user (gersonbarajas62@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\gerso\Documents\Proyects\Art_musicApp\art-music
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2025-02-05T21:58:03.502Z] Checked if tokens are valid: true, expires at: 1738796129186
+[debug] [2025-02-05T21:58:03.502Z] Checked if tokens are valid: true, expires at: 1738796129186
+[debug] [2025-02-05T21:58:03.504Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=100
