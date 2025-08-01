@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* VS Code Light Theme */
+  --vsc-bg: #ffffff;
+  --vsc-paneBg: #f3f3f3;
+  --vsc-sideBarBg: #f3f3f3;
+  --vsc-foreground: #333333;
+  --vsc-border: #cccccc;
+  --vsc-buttonBg: #0e639c;
+  --vsc-buttonFg: #ffffff;
+  --vsc-buttonHoverBg: #1177bb;
+}
+
+.dark {
+  /* VS Code Dark Theme */
+  --vsc-bg: #1e1e1e;
+  --vsc-paneBg: #252526;
+  --vsc-sideBarBg: #252526;
+  --vsc-foreground: #cccccc;
+  --vsc-border: #3f3f46;
+  --vsc-buttonBg: #0e639c;
+  --vsc-buttonFg: #ffffff;
+  --vsc-buttonHoverBg: #1177bb;
+}
+
+/* Apply to body/html */
+html, body {
+  background-color: var(--vsc-bg);
+  color: var(--vsc-foreground);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* A utility for all pane backgrounds */
+.bg-pane { background-color: var(--vsc-paneBg); }
+.bg-sidebar { background-color: var(--vsc-sideBarBg); }
+.text-default { color: var(--vsc-foreground); }
+.border-default { border-color: var(--vsc-border); }
