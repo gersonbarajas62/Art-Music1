@@ -20,24 +20,42 @@ const Contact = () => {
     console.log("Form submitted:", formData);
   };
 
+  // Detect theme
+  const isDark =
+    typeof window !== "undefined" &&
+    document.documentElement.classList.contains("dark");
+
   return (
     <section
       style={{
-        backgroundColor: "#121212",
-        color: "#fff",
+        backgroundColor: "var(--vsc-bg)",
+        color: "var(--vsc-foreground)",
         padding: "60px 20px",
-        borderRadius: "12px",
+        borderRadius: "16px",
         margin: "40px auto",
         maxWidth: "900px",
-        boxShadow: "0 8px 20px rgba(0, 0, 0, 0.8)",
+        boxShadow: isDark
+          ? "0 8px 20px rgba(0,0,0,0.8)"
+          : "0 8px 20px rgba(0,0,0,0.15)",
+        animation: "fadeIn 1.2s cubic-bezier(.77,0,.175,1)",
+        animationFillMode: "forwards",
+        opacity: 1, // <-- set to 1 by default
+        position: "relative",
       }}
     >
       <h2
         style={{
           textAlign: "center",
           marginBottom: "20px",
-          fontSize: "2rem",
+          fontSize: "2.2rem",
           fontWeight: "bold",
+          background: "linear-gradient(90deg, #FFD700 40%, #fff 100%)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          textShadow: !isDark
+            ? "2px 2px 0 #000, 0 0 8px #FFD700"
+            : "0 0 8px #FFD700",
+          letterSpacing: "1px",
         }}
       >
         ¿No encontraste lo que buscabas?
@@ -46,10 +64,14 @@ const Contact = () => {
         style={{
           textAlign: "center",
           marginBottom: "40px",
-          fontSize: "1rem",
+          fontSize: "1.1rem",
           lineHeight: "1.8",
           maxWidth: "700px",
           margin: "0 auto",
+          color: "#FFD700",
+          textShadow: !isDark
+            ? "1px 1px 0 #000, 0 0 6px #FFD700"
+            : "0 0 6px #FFD700",
         }}
       >
         Contáctanos y te ayudaremos a encontrarlo. En <b>Artmusic</b>, estamos comprometidos a hacer que tu experiencia sea inigualable.
@@ -58,8 +80,11 @@ const Contact = () => {
         onSubmit={handleSubmit}
         style={{
           display: "grid",
-          gap: "20px",
+          gap: "24px",
           gridTemplateColumns: "1fr",
+          animation: "slideUp 1.2s 0.5s cubic-bezier(.77,0,.175,1)",
+          animationFillMode: "forwards",
+          opacity: 1, // <-- set to 1 by default
         }}
       >
         {/* Full Name */}
@@ -69,6 +94,7 @@ const Contact = () => {
             flexDirection: "column",
             fontSize: "1rem",
             gap: "8px",
+            color: "var(--vsc-foreground)",
           }}
         >
           Nombre completo
@@ -82,10 +108,15 @@ const Contact = () => {
             style={{
               padding: "12px",
               borderRadius: "8px",
-              border: "1px solid #333",
-              backgroundColor: "#1e1e1e",
-              color: "#fff",
+              border: "1px solid #FFD700",
+              backgroundColor: isDark ? "#1e1e1e" : "#fffbe6",
+              color: isDark ? "#fff" : "#222",
               fontSize: "1rem",
+              outline: "none",
+              boxShadow: isDark
+                ? "0 2px 8px rgba(0,0,0,0.4)"
+                : "0 2px 8px rgba(0,0,0,0.08)",
+              transition: "border-color 0.3s",
             }}
           />
         </label>
@@ -97,6 +128,7 @@ const Contact = () => {
             flexDirection: "column",
             fontSize: "1rem",
             gap: "8px",
+            color: "var(--vsc-foreground)",
           }}
         >
           Correo electrónico
@@ -110,10 +142,15 @@ const Contact = () => {
             style={{
               padding: "12px",
               borderRadius: "8px",
-              border: "1px solid #333",
-              backgroundColor: "#1e1e1e",
-              color: "#fff",
+              border: "1px solid #FFD700",
+              backgroundColor: isDark ? "#1e1e1e" : "#fffbe6",
+              color: isDark ? "#fff" : "#222",
               fontSize: "1rem",
+              outline: "none",
+              boxShadow: isDark
+                ? "0 2px 8px rgba(0,0,0,0.4)"
+                : "0 2px 8px rgba(0,0,0,0.08)",
+              transition: "border-color 0.3s",
             }}
           />
         </label>
@@ -125,6 +162,7 @@ const Contact = () => {
             flexDirection: "column",
             fontSize: "1rem",
             gap: "8px",
+            color: "var(--vsc-foreground)",
           }}
         >
           Mensaje
@@ -138,11 +176,16 @@ const Contact = () => {
             style={{
               padding: "12px",
               borderRadius: "8px",
-              border: "1px solid #333",
-              backgroundColor: "#1e1e1e",
-              color: "#fff",
+              border: "1px solid #FFD700",
+              backgroundColor: isDark ? "#1e1e1e" : "#fffbe6",
+              color: isDark ? "#fff" : "#222",
               fontSize: "1rem",
               resize: "none",
+              outline: "none",
+              boxShadow: isDark
+                ? "0 2px 8px rgba(0,0,0,0.4)"
+                : "0 2px 8px rgba(0,0,0,0.08)",
+              transition: "border-color 0.3s",
             }}
           />
         </label>
@@ -153,13 +196,18 @@ const Contact = () => {
             display: "flex",
             alignItems: "center",
             gap: "10px",
-            fontSize: "0.9rem",
+            fontSize: "0.95rem",
+            color: "var(--vsc-foreground)",
           }}
         >
           <input
             type="checkbox"
             required
-            style={{ transform: "scale(1.2)", cursor: "pointer" }}
+            style={{
+              transform: "scale(1.2)",
+              cursor: "pointer",
+              accentColor: "#FFD700",
+            }}
           />
           <label>
             Acepto la{" "}
@@ -167,8 +215,11 @@ const Contact = () => {
               href="#"
               style={{
                 color: "#FFD700",
-                textDecoration: "none",
+                textDecoration: "underline",
                 fontWeight: "bold",
+                textShadow: !isDark
+                  ? "1px 1px 0 #000, 0 0 6px #FFD700"
+                  : "0 0 6px #FFD700",
               }}
             >
               Política de privacidad
@@ -181,21 +232,48 @@ const Contact = () => {
         <button
           type="submit"
           style={{
-            padding: "14px",
+            padding: "16px",
             borderRadius: "8px",
             border: "none",
             backgroundColor: "#FFD700",
             color: "#000",
-            fontSize: "1rem",
+            fontSize: "1.1rem",
             fontWeight: "bold",
             cursor: "pointer",
             textTransform: "uppercase",
-            transition: "background-color 0.3s ease",
+            boxShadow: isDark
+              ? "0 4px 12px rgba(0,0,0,0.6)"
+              : "0 4px 12px rgba(0,0,0,0.1)",
+            transition: "background-color 0.3s, transform 0.3s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow = isDark
+              ? "0 6px 16px rgba(0,0,0,0.8)"
+              : "0 6px 16px rgba(0,0,0,0.15)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = isDark
+              ? "0 4px 12px rgba(0,0,0,0.6)"
+              : "0 4px 12px rgba(0,0,0,0.1)";
           }}
         >
           Enviar formulario
         </button>
       </form>
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98);}
+            to { opacity: 1; transform: scale(1);}
+          }
+          @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: translateY(0);}
+          }
+        `}
+      </style>
     </section>
   );
 };
