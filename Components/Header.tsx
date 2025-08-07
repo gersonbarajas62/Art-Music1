@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Menu, X, ShoppingCart, Sun, Moon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "../app/context/ThemeProvider";
+import CartDrawer from "./CartDrawer";
 
 interface HeaderProps {
   className?: string;
@@ -11,6 +12,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ className = "" }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
 
@@ -41,9 +43,14 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
               {label}
             </a>
           ))}
-          <a href="#" className="flex items-center hover:underline" aria-label="Cart">
+          <button
+            onClick={() => setCartOpen(true)}
+            className="flex items-center hover:underline"
+            aria-label="Cart"
+            type="button"
+          >
             <ShoppingCart size={20} />
-          </a>
+          </button>
           <button
             onClick={() => router.push("/login")}
             className="bg-button text-button-fg hover:bg-button-hover px-4 py-2 rounded font-medium"
@@ -83,9 +90,14 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
               {label}
             </a>
           ))}
-          <a href="#" className="flex items-center hover:underline">
+          <button
+            onClick={() => setCartOpen(true)}
+            className="flex items-center hover:underline"
+            aria-label="Cart"
+            type="button"
+          >
             <ShoppingCart size={20} />
-          </a>
+          </button>
           <button
             onClick={() => router.push("/login")}
             className="w-full text-left bg-button text-button-fg hover:bg-button-hover px-4 py-2 rounded font-medium"
@@ -94,6 +106,8 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
           </button>
         </nav>
       )}
+
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </header>
   );
 };
