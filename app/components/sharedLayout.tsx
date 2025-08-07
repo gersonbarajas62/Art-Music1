@@ -20,6 +20,7 @@ export default function SharedLayout({ children }: { children: React.ReactNode }
 
   const isLogin = pathname === "/login";
   const isDashboard = ["/dashboard", "/discos", "/admin"].some(p => pathname.startsWith(p));
+  const isHome = pathname === "/";
 
   if (!user && isDashboard) {
     return (
@@ -33,32 +34,27 @@ export default function SharedLayout({ children }: { children: React.ReactNode }
     <div className="flex flex-col min-h-screen">
       {!isLogin && <Header className="sticky top-0 z-50" />}
 
-      {/* Scrollable content area */}
       <div className="flex-1 overflow-y-auto">
-        {/* Landing page sections */}
-        {!isLogin && !isDashboard && (
+        {/* Only render landing sections on home page */}
+        {isHome ? (
           <>
             <Hero />
             <Features />
             <GenresAndVinyls />
             <Contact />
           </>
-        )}
-
-        {/* Dashboard layout */}
-        {user && isDashboard && (
+        ) : isDashboard && user ? (
           <div className="flex h-full">
             {/* … your aside/nav … */}
             <main className="flex-1 p-6">{children}</main>
           </div>
+        ) : (
+          <main>{children}</main>
         )}
-
-        {/* Other pages (children) */}
-        {!isDashboard && <main>{children}</main>}
       </div>
 
-      {/* Footer appears only on landing pages */}
-      {!isLogin && !isDashboard && <Footer />}
+      {/* Footer only on home page */}
+      {isHome && <Footer />}
     </div>
   );
 }

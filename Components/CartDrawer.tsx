@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const mockCart = [
   {
@@ -18,14 +19,20 @@ const mockCart = [
   },
 ];
 
-const CartDrawer = ({ open, onClose }) => {
+interface CartDrawerProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
   const [cart, setCart] = useState(mockCart);
+  const router = useRouter();
 
   const isDark =
     typeof window !== "undefined" &&
     document.documentElement.classList.contains("dark");
 
-  const handleQuantity = (id, delta) => {
+  const handleQuantity = (id: number, delta: number) => {
     setCart(cart =>
       cart
         .map(item =>
@@ -37,7 +44,7 @@ const CartDrawer = ({ open, onClose }) => {
     );
   };
 
-  const handleRemove = id => {
+  const handleRemove = (id: number) => {
     setCart(cart => cart.filter(item => item.id !== id));
   };
 
@@ -242,6 +249,10 @@ const CartDrawer = ({ open, onClose }) => {
               ? "0 2px 8px rgba(0,0,0,0.5)"
               : "0 2px 8px rgba(0,0,0,0.09)",
             transition: "background 0.2s, transform 0.2s",
+          }}
+          onClick={() => {
+            onClose(); // Optionally close the drawer
+            router.push("/checkout");
           }}
           onMouseOver={e => (e.currentTarget.style.background = "#e6c200")}
           onMouseOut={e => (e.currentTarget.style.background = "#FFD700")}
