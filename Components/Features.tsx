@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "@/styles/Features.css";
-
 import Link from "next/link";
 
 const Slider = dynamic(() => import("react-slick"), { ssr: false });
@@ -19,13 +18,6 @@ const Features = () => {
     { id: 5, title: "Álbum Raro de Nirvana", price: "$250", image: "/images/nirvana.jpg" },
   ];
 
-  const staticItems = [
-    { id: 1, title: "Vinilos Exclusivos", image: "/images/exclusive-vinyls.jpg" },
-    { id: 2, title: "Éxitos de Rock", image: "/images/top-rock-hits.jpg" },
-    { id: 3, title: "Ediciones de Colección", image: "/images/collectors.jpg" },
-  ];
-
-  // Detect theme
   const isDark =
     typeof window !== "undefined" &&
     document.documentElement.classList.contains("dark");
@@ -48,6 +40,24 @@ const Features = () => {
     ],
   };
 
+  const categorySections = [
+    {
+      title: "Vinilos Exclusivos",
+      image: "/images/beatles-vinyl.jpg",
+      href: "/categories/vinilos-exclusivos",
+    },
+    {
+      title: "Éxitos de Rock",
+      image: "/images/pink-floyd.jpg",
+      href: "/categories/exitos-rock",
+    },
+    {
+      title: "Ediciones de Colección",
+      image: "/images/metallica.jpg",
+      href: "/categories/ediciones-coleccion",
+    },
+  ];
+
   return (
     <div
       className="features-container"
@@ -67,33 +77,73 @@ const Features = () => {
         position: "relative",
       }}
     >
-      {/* Static Top Row */}
-      <div className="features-static-row" style={{ display: "flex", justifyContent: "center", gap: "2rem", marginBottom: "2rem" }}>
-        {staticItems.map((item) => (
-          <div key={item.id} className="static-item" style={{
-            textAlign: "center",
-            background: isDark ? "rgba(30,30,30,0.8)" : "rgba(255,255,255,0.8)",
-            borderRadius: "12px",
-            boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.5)" : "0 2px 8px rgba(0,0,0,0.08)",
-            padding: "18px 10px",
-            minWidth: "160px",
-            transition: "transform 0.3s",
-          }}>
-            <img src={item.image} alt={item.title} className="static-image" style={{
-              width: "100px",
-              height: "100px",
-              objectFit: "cover",
-              borderRadius: "8px",
-              marginBottom: "10px",
-              boxShadow: isDark ? "0 2px 8px #FFD700" : "0 2px 8px #000",
-            }} />
-            <h3 style={{
-              color: "#FFD700",
-              fontWeight: "bold",
-              fontSize: "1.1rem",
-              textShadow,
-            }}>{item.title}</h3>
-          </div>
+      {/* Category Links Row */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "2.5rem",
+          marginBottom: "2.5rem",
+          flexWrap: "wrap",
+        }}
+      >
+        {categorySections.map((cat) => (
+          <Link
+            key={cat.title}
+            href={cat.href}
+            style={{
+              textDecoration: "none",
+              color: "inherit",
+              width: 220,
+              display: "block",
+              borderRadius: "14px",
+              boxShadow: isDark
+                ? "0 2px 8px rgba(0,0,0,0.45)"
+                : "0 2px 8px rgba(0,0,0,0.08)",
+              background: isDark ? "#232323" : "#fff",
+              padding: "24px 10px",
+              textAlign: "center",
+              transition: "transform 0.2s, box-shadow 0.2s",
+              cursor: "pointer",
+            }}
+          >
+            <img
+              src={cat.image}
+              alt={cat.title}
+              style={{
+                width: "100px",
+                height: "100px",
+                objectFit: "cover",
+                borderRadius: "8px",
+                marginBottom: "10px",
+                boxShadow: isDark
+                  ? "0 2px 8px #FFD700"
+                  : "0 2px 8px #000",
+              }}
+            />
+            <div
+              style={{
+                color: "#FFD700",
+                fontWeight: "bold",
+                fontSize: "1.15rem",
+                textShadow,
+                marginBottom: "0.3rem",
+              }}
+            >
+              {cat.title}
+            </div>
+            <span
+              style={{
+                display: "inline-block",
+                marginTop: 8,
+                color: isDark ? "#FFD700" : "#FFD700",
+                fontWeight: 600,
+                fontSize: "0.98rem",
+              }}
+            >
+              Ver más &rarr;
+            </span>
+          </Link>
         ))}
       </div>
 
@@ -184,9 +234,6 @@ const Features = () => {
           }
           .carousel-item:hover img {
             transform: scale(1.05);
-          }
-          .static-item:hover {
-            transform: scale(1.04);
           }
         `}
       </style>
