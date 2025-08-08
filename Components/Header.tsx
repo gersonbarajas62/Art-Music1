@@ -5,6 +5,7 @@ import { Menu, X, ShoppingCart, Sun, Moon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "../app/context/ThemeProvider";
 import CartDrawer from "./CartDrawer";
+import Link from "next/link";
 
 interface HeaderProps {
   className?: string;
@@ -34,15 +35,14 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
       <div className="flex items-center space-x-4">
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-4">
-          {['Home', 'On Sale', 'Genres'].map((label) => (
-            <a
-              key={label}
-              href={label === 'Home' ? '/' : '#'}
-              className="hover:underline"
-            >
-              {label}
-            </a>
-          ))}
+          <Link href="/" className="hover:underline">Home</Link>
+          <button
+            onClick={() => router.push("/onsale")}
+            className="hover:underline"
+          >
+            On Sale
+          </button>
+          <Link href="#" className="hover:underline">Genres</Link>
           <button
             onClick={() => setCartOpen(true)}
             className="flex items-center hover:underline"
