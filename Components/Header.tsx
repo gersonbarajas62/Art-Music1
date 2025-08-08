@@ -42,7 +42,9 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
           >
             On Sale
           </button>
-          <Link href="#" className="hover:underline">Genres</Link>
+          <Link href="/genres" className="hover:underline">
+            Genres
+          </Link>
           <button
             onClick={() => setCartOpen(true)}
             className="flex items-center hover:underline"
