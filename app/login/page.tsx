@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth, googleProvider } from "../../utils/firebase";
 import {
@@ -14,16 +14,30 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState<boolean | undefined>(undefined);
+
+  // On mount, set darkMode based on system or localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("darkMode");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setDarkMode(stored === "true" ? true : stored === "false" ? false : prefersDark);
+    }
+  }, []);
+
+  // Sync dark mode with <html> class for CSS variables
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+    localStorage.setItem("darkMode", String(darkMode));
+  }, [darkMode]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      localStorage.setItem("user", "authenticated"); // Store authentication state
-      router.push("/dashboard"); // Redirect to dashboard after login
+      localStorage.setItem("user", "authenticated");
+      router.push("/dashboard");
     } catch (err: any) {
       setError(err.message);
     }
@@ -43,55 +57,152 @@ export default function LoginPage() {
     router.push("/register");
   };
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
-
   return (
     <div
-      className={`flex flex-col md:flex-row ${
-        darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-      } min-h-screen`}
+      style={{
+        minHeight: "100vh",
+        background: "var(--bg)",
+        color: "var(--text)",
+        display: "flex",
+        flexDirection: "row",
+        transition: "background 0.3s, color 0.3s",
+      }}
     >
       {/* Left Section (Banner) */}
-      <div className="hidden md:flex flex-1 items-center justify-center bg-gradient-to-br from-blue-500 to-purple-700 p-10">
-        <div className="text-center text-white space-y-6">
-          <h1 className="text-4xl font-bold">¡Bienvenido!</h1>
-          <p className="text-lg">Inicia sesión para explorar nuevas experiencias musicales.</p>
+      <div
+        style={{
+          flex: 1,
+          display: "none",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(135deg, var(--section) 0%, var(--card) 100%)",
+          padding: "0 2rem",
+        }}
+        className="md:flex"
+      >
+        <div style={{ textAlign: "center", color: "var(--text)", opacity: 0.95 }}>
+          <h1 style={{ fontSize: "2.5rem", fontWeight: "bold", marginBottom: 16 }}>
+            ¡Bienvenido!
+          </h1>
+          <p style={{ fontSize: "1.15rem" }}>
+            Inicia sesión para explorar nuevas experiencias musicales y gestionar tu catálogo.
+          </p>
         </div>
       </div>
 
       {/* Right Section (Form) */}
-      <div className="flex flex-col flex-1 items-center justify-center px-6 py-10 relative">
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "2rem 1rem",
+          position: "relative",
+          background: "var(--section)",
+        }}
+      >
         {/* Dark Mode Toggle */}
         <button
-          onClick={toggleDarkMode}
-          className="absolute top-4 right-4 text-lg p-2 rounded-full bg-gray-700 hover:bg-gray-500 text-white"
+          onClick={() => setDarkMode((d) => !d)}
+          style={{
+            position: "absolute",
+            top: 24,
+            right: 24,
+            background: "var(--card)",
+            color: "var(--text)",
+            border: "1px solid var(--border)",
+            borderRadius: "50%",
+            padding: 10,
+            fontSize: 20,
+            cursor: "pointer",
+            boxShadow: "var(--shadow)",
+            transition: "background 0.2s, color 0.2s",
+          }}
+          aria-label="Toggle dark mode"
         >
           {darkMode ? <Moon /> : <Sun />}
         </button>
 
-        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-4 text-center">Iniciar Sesión</h2>
-          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-          <form onSubmit={handleLogin} className="space-y-4">
+        <div
+          style={{
+            width: "100%",
+            maxWidth: 400,
+            background: "var(--card)",
+            borderRadius: 16,
+            boxShadow: "var(--shadow)",
+            padding: "2.5rem 2rem",
+            margin: "0 auto",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <h2
+            style={{
+              fontSize: "2rem",
+              fontWeight: "bold",
+              marginBottom: 24,
+              textAlign: "center",
+              color: "var(--text)",
+            }}
+          >
+            Iniciar Sesión
+          </h2>
+          {error && (
+            <p style={{ color: "#ef4444", fontSize: "0.95rem", marginBottom: 12, textAlign: "center" }}>
+              {error}
+            </p>
+          )}
+          <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <input
               type="email"
               placeholder="Correo Electrónico"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              style={{
+                width: "100%",
+                padding: "12px",
+                border: "1px solid var(--border)",
+                borderRadius: 8,
+                background: "var(--section)",
+                color: "var(--text)",
+                fontSize: "1rem",
+                outline: "none",
+              }}
+              required
             />
             <input
               type="password"
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              style={{
+                width: "100%",
+                padding: "12px",
+                border: "1px solid var(--border)",
+                borderRadius: 8,
+                background: "var(--section)",
+                color: "var(--text)",
+                fontSize: "1rem",
+                outline: "none",
+              }}
+              required
             />
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
+              style={{
+                width: "100%",
+                background: "var(--accent)",
+                color: "var(--bg)",
+                padding: "12px",
+                borderRadius: 8,
+                fontWeight: "bold",
+                fontSize: "1.08rem",
+                border: "none",
+                marginTop: 8,
+                cursor: "pointer",
+                boxShadow: "var(--shadow)",
+                transition: "background 0.2s",
+              }}
             >
               Iniciar Sesión
             </button>
@@ -99,16 +210,42 @@ export default function LoginPage() {
 
           <button
             onClick={handleGoogleSignIn}
-            className="w-full bg-red-500 text-white p-3 rounded-lg flex items-center justify-center gap-2 mt-4 hover:bg-red-600 transition"
+            style={{
+              width: "100%",
+              background: "#ea4335",
+              color: "#fff",
+              padding: "12px",
+              borderRadius: 8,
+              fontWeight: "bold",
+              fontSize: "1.08rem",
+              border: "none",
+              marginTop: 16,
+              cursor: "pointer",
+              boxShadow: "var(--shadow)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 10,
+              transition: "background 0.2s",
+            }}
           >
-            <img src="/google-icon.svg" alt="Google Icon" className="w-5 h-5" />
+            <img src="/google-icon.svg" alt="Google Icon" style={{ width: 20, height: 20 }} />
             Inicia Sesión con Google
           </button>
-          <p className="mt-4 text-sm text-center">
+          <p style={{ marginTop: 18, fontSize: "0.98rem", textAlign: "center", color: "var(--muted)" }}>
             ¿No tienes una cuenta?{" "}
             <button
               onClick={handleRegisterRedirect}
-              className="text-blue-500 underline"
+              style={{
+                color: "var(--accent)",
+                background: "none",
+                border: "none",
+                textDecoration: "underline",
+                cursor: "pointer",
+                fontWeight: "bold",
+                fontSize: "1rem",
+                padding: 0,
+              }}
             >
               Regístrate
             </button>

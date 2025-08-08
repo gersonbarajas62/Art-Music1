@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const headlineText = "El hogar del rock raro";
 
@@ -209,5 +210,85 @@ const HeroSection = () => {
     </section>
   );
 };
+
+const Hero = () => (
+  <section
+    style={{
+      background: "var(--section)",
+      color: "var(--text)",
+      borderRadius: "20px",
+      margin: "48px auto 40px",
+      maxWidth: "1200px",
+      padding: "64px 0 56px",
+      boxShadow: "var(--shadow)",
+      textAlign: "center",
+      position: "relative",
+      overflow: "hidden",
+    }}
+  >
+    <h1
+      style={{
+        fontSize: "2.8rem",
+        fontWeight: "bold",
+        marginBottom: "1.2rem",
+        color: "var(--text)",
+        textShadow: "0 2px 8px var(--bg)",
+        letterSpacing: "1.5px",
+      }}
+    >
+      Bienvenido a Artmusic
+    </h1>
+    <p
+      style={{
+        color: "var(--muted)",
+        fontSize: "1.3rem",
+        marginBottom: "2.2rem",
+        fontWeight: 500,
+        maxWidth: 600,
+        marginLeft: "auto",
+        marginRight: "auto",
+      }}
+    >
+      Tu destino para vinilos y coleccionables legendarios.
+    </p>
+    <div style={{ display: "flex", justifyContent: "center", gap: 24 }}>
+      <Link
+        href="/genres"
+        style={{
+          background: "var(--accent)",
+          color: "var(--bg)",
+          borderRadius: "10px",
+          padding: "16px 40px",
+          fontWeight: "bold",
+          fontSize: "1.15rem",
+          textDecoration: "none",
+          boxShadow: "var(--shadow)",
+          transition: "background 0.2s, color 0.2s, transform 0.2s",
+          display: "inline-block",
+        }}
+      >
+        Explorar catálogo
+      </Link>
+      <a
+        href="#about"
+        style={{
+          background: "transparent",
+          color: "var(--accent)",
+          border: "2px solid var(--accent)",
+          borderRadius: "10px",
+          padding: "16px 40px",
+          fontWeight: "bold",
+          fontSize: "1.15rem",
+          textDecoration: "none",
+          boxShadow: "var(--shadow)",
+          transition: "background 0.2s, color 0.2s, transform 0.2s",
+          display: "inline-block",
+        }}
+      >
+        Más información
+      </a>
+    </div>
+  </section>
+);
 
 export default HeroSection;

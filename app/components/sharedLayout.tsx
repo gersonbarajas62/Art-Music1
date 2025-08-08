@@ -10,6 +10,8 @@ import GenresAndVinyls from "../../Components/GenresAndVinyls";
 import Contact from "../../Components/Contact";
 import Footer from "../../Components/Footer";
 import Link from "next/link";
+import BeatlesShowcase from "../../Components/BeatlesShowcase";
+import AboutUs from "../../Components/AboutUs"; // <-- Add this line
 // … your menuItems, cn util, etc …
 
 export default function SharedLayout({ children }: { children: React.ReactNode }) {
@@ -39,9 +41,11 @@ export default function SharedLayout({ children }: { children: React.ReactNode }
         {isHome ? (
           <>
             <Hero />
+            <BeatlesShowcase />
             <Features />
             <GenresAndVinyls />
             <Contact />
+            <AboutUs />      {/* <-- Add this line here */}
           </>
         ) : isDashboard && user ? (
           <div className="flex h-full">

@@ -1,6 +1,6 @@
 // app/components/Header.tsx
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Menu, X, ShoppingCart, Sun, Moon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "../app/context/ThemeProvider";
@@ -16,6 +16,11 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
   const [cartOpen, setCartOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+  }, [dark]);
 
   const baseClasses = [
     "flex items-center justify-between",

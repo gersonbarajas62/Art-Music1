@@ -8,6 +8,8 @@ const Contact = () => {
     email: "",
     message: "",
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -16,11 +18,16 @@ const Contact = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Placeholder for backend connection
-    console.log("Form submitted:", formData);
+    setSubmitting(true);
+    setTimeout(() => {
+      setSubmitting(false);
+      setSuccess(true);
+      setFormData({ name: "", email: "", message: "" });
+      setTimeout(() => setSuccess(false), 4000);
+    }, 1200);
+    // Replace with real backend logic
   };
 
-  // Detect theme
   const isDark =
     typeof window !== "undefined" &&
     document.documentElement.classList.contains("dark");
@@ -39,7 +46,7 @@ const Contact = () => {
           : "0 8px 20px rgba(0,0,0,0.15)",
         animation: "fadeIn 1.2s cubic-bezier(.77,0,.175,1)",
         animationFillMode: "forwards",
-        opacity: 1, // <-- set to 1 by default
+        opacity: 1,
         position: "relative",
       }}
     >
@@ -76,6 +83,28 @@ const Contact = () => {
       >
         Contáctanos y te ayudaremos a encontrarlo. En <b>Artmusic</b>, estamos comprometidos a hacer que tu experiencia sea inigualable.
       </p>
+
+      {/* Success Message */}
+      {success && (
+        <div
+          style={{
+            background: "#FFD700",
+            color: "#222",
+            borderRadius: "8px",
+            padding: "18px",
+            textAlign: "center",
+            fontWeight: "bold",
+            fontSize: "1.1rem",
+            marginBottom: "24px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
+            animation: "fadeIn 0.7s",
+          }}
+          aria-live="polite"
+        >
+          ¡Gracias por contactarnos! Te responderemos pronto.
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         style={{
@@ -84,27 +113,22 @@ const Contact = () => {
           gridTemplateColumns: "1fr",
           animation: "slideUp 1.2s 0.5s cubic-bezier(.77,0,.175,1)",
           animationFillMode: "forwards",
-          opacity: 1, // <-- set to 1 by default
+          opacity: 1,
         }}
+        aria-label="Formulario de contacto"
       >
         {/* Full Name */}
-        <label
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            fontSize: "1rem",
-            gap: "8px",
-            color: "var(--vsc-foreground)",
-          }}
-        >
+        <label htmlFor="contact-name" style={{ display: "flex", flexDirection: "column", fontSize: "1rem", gap: "8px", color: "var(--vsc-foreground)" }}>
           Nombre completo
           <input
+            id="contact-name"
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
             placeholder="Ingresa tu nombre completo"
             required
+            autoComplete="name"
             style={{
               padding: "12px",
               borderRadius: "8px",
@@ -118,27 +142,22 @@ const Contact = () => {
                 : "0 2px 8px rgba(0,0,0,0.08)",
               transition: "border-color 0.3s",
             }}
+            aria-required="true"
           />
         </label>
 
         {/* Email Address */}
-        <label
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            fontSize: "1rem",
-            gap: "8px",
-            color: "var(--vsc-foreground)",
-          }}
-        >
+        <label htmlFor="contact-email" style={{ display: "flex", flexDirection: "column", fontSize: "1rem", gap: "8px", color: "var(--vsc-foreground)" }}>
           Correo electrónico
           <input
+            id="contact-email"
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             placeholder="Ingresa tu correo electrónico"
             required
+            autoComplete="email"
             style={{
               padding: "12px",
               borderRadius: "8px",
@@ -152,21 +171,15 @@ const Contact = () => {
                 : "0 2px 8px rgba(0,0,0,0.08)",
               transition: "border-color 0.3s",
             }}
+            aria-required="true"
           />
         </label>
 
         {/* Message */}
-        <label
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            fontSize: "1rem",
-            gap: "8px",
-            color: "var(--vsc-foreground)",
-          }}
-        >
+        <label htmlFor="contact-message" style={{ display: "flex", flexDirection: "column", fontSize: "1rem", gap: "8px", color: "var(--vsc-foreground)" }}>
           Mensaje
           <textarea
+            id="contact-message"
             name="message"
             value={formData.message}
             onChange={handleChange}
@@ -187,20 +200,14 @@ const Contact = () => {
                 : "0 2px 8px rgba(0,0,0,0.08)",
               transition: "border-color 0.3s",
             }}
+            aria-required="true"
           />
         </label>
 
         {/* Checkbox */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            fontSize: "0.95rem",
-            color: "var(--vsc-foreground)",
-          }}
-        >
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "0.95rem", color: "var(--vsc-foreground)" }}>
           <input
+            id="privacy"
             type="checkbox"
             required
             style={{
@@ -208,8 +215,9 @@ const Contact = () => {
               cursor: "pointer",
               accentColor: "#FFD700",
             }}
+            aria-required="true"
           />
-          <label>
+          <label htmlFor="privacy">
             Acepto la{" "}
             <a
               href="#"
@@ -231,15 +239,16 @@ const Contact = () => {
         {/* Submit Button */}
         <button
           type="submit"
+          disabled={submitting}
           style={{
             padding: "16px",
             borderRadius: "8px",
             border: "none",
-            backgroundColor: "#FFD700",
+            backgroundColor: submitting ? "#bbb" : "#FFD700",
             color: "#000",
             fontSize: "1.1rem",
             fontWeight: "bold",
-            cursor: "pointer",
+            cursor: submitting ? "not-allowed" : "pointer",
             textTransform: "uppercase",
             boxShadow: isDark
               ? "0 4px 12px rgba(0,0,0,0.6)"
@@ -247,21 +256,42 @@ const Contact = () => {
             transition: "background-color 0.3s, transform 0.3s",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "translateY(-2px)";
-            e.currentTarget.style.boxShadow = isDark
-              ? "0 6px 16px rgba(0,0,0,0.8)"
-              : "0 6px 16px rgba(0,0,0,0.15)";
+            if (!submitting) {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = isDark
+                ? "0 6px 16px rgba(0,0,0,0.8)"
+                : "0 6px 16px rgba(0,0,0,0.15)";
+            }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = isDark
-              ? "0 4px 12px rgba(0,0,0,0.6)"
-              : "0 4px 12px rgba(0,0,0,0.1)";
+            if (!submitting) {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = isDark
+                ? "0 4px 12px rgba(0,0,0,0.6)"
+                : "0 4px 12px rgba(0,0,0,0.1)";
+            }
           }}
         >
-          Enviar formulario
+          {submitting ? "Enviando..." : "Enviar formulario"}
         </button>
       </form>
+
+      {/* Alternative Contact Info */}
+      <div style={{
+        marginTop: "40px",
+        textAlign: "center",
+        color: isDark ? "#FFD700" : "#222",
+        fontSize: "1.05rem",
+        opacity: 0.85,
+      }}>
+        <div style={{ marginBottom: 8 }}>
+          <b>Email:</b> <a href="mailto:info@artmusic.com" style={{ color: "#FFD700" }}>info@artmusic.com</a>
+        </div>
+        <div>
+          <b>WhatsApp:</b> <a href="https://wa.me/5215555555555" target="_blank" rel="noopener noreferrer" style={{ color: "#FFD700" }}>+52 1 555 555 5555</a>
+        </div>
+      </div>
+
       <style>
         {`
           @keyframes fadeIn {
