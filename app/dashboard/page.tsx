@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import ProductsPage from "./products"; // Import the ProductsPage component
 
 const menuOptions = [
   { key: "overview", label: "Resumen", icon: "📊" },
@@ -93,15 +94,7 @@ export default function Dashboard() {
           </div>
         )}
         {selected === "products" && (
-          <div>
-            <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--accent)" }}>
-              Gestión de Productos
-            </h1>
-            <p style={{ color: "var(--muted)", marginTop: 12 }}>
-              Agrega, edita o elimina vinilos y productos del catálogo.
-            </p>
-            {/* Aquí irá el CRUD de productos */}
-          </div>
+          <ProductsPage />
         )}
         {selected === "orders" && (
           <div>
