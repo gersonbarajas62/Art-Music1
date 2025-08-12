@@ -7,7 +7,7 @@ import Header from "../../Components/Header";
 import Hero from "../../Components/Hero";
 import Features from "../../Components/Features";
 import GenresAndVinyls from "../../Components/GenresAndVinyls";
-import Contact from "../../Components/Contact";
+import Contact from "../../Components/ContactUs";
 import Footer from "../../Components/Footer";
 import Link from "next/link";
 import BeatlesShowcase from "../../Components/BeatlesShowcase";
