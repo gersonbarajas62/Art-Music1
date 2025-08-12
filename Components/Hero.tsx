@@ -2,40 +2,95 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-const headlineText = "El hogar del rock raro";
+const HEADLINE_TEXT = "El hogar del rock raro";
+const PARAGRAPH_TEXT =
+  "CDs y vinilos que no encontrarás en otro lugar. Somos tu lugar indicado para tus compras de discos y vinilos raros, importados de Japón y Europa. Discos nuevos y usados para coleccionistas con una pasión única por la música.";
 
-const HeroSection = () => {
-  const [displayedText, setDisplayedText] = useState("");
-  const [typingDone, setTypingDone] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
+const BUTTONS = [
+  {
+    label: "Explorar Catálogo",
+    style: {
+      backgroundColor: "var(--accent)",
+      color: "var(--bg)",
+      border: "none",
+    },
+    hover: {
+      backgroundColor: "var(--text)",
+      color: "var(--bg)",
+    },
+    link: "/genres",
+    isLink: true,
+  },
+  {
+    label: "Más Información",
+    style: {
+      backgroundColor: "transparent",
+      color: "var(--accent)",
+      border: "2px solid var(--accent)",
+    },
+    hover: {
+      backgroundColor: "var(--accent)",
+      color: "var(--bg)",
+    },
+    link: "#about",
+    isLink: false,
+  },
+];
+
+const useTypingEffect = (text: string, speed = 60) => {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
     let i = 0;
     const interval = setInterval(() => {
-      setDisplayedText(headlineText.slice(0, i + 1));
+      setDisplayed(text.slice(0, i + 1));
       i++;
-      if (i === headlineText.length) {
+      if (i === text.length) {
         clearInterval(interval);
-        setTypingDone(true);
+        setDone(true);
       }
-    }, 60);
+    }, speed);
     return () => clearInterval(interval);
-  }, []);
+  }, [text, speed]);
 
-  // Parallax effect for background
+  return { displayed, done };
+};
+
+const useScrollY = () => {
+  const [scrollY, setScrollY] = useState(0);
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+  return scrollY;
+};
 
-  // Overlay color based on theme
-  const isDark =
-    typeof window !== "undefined" &&
-    document.documentElement.classList.contains("dark");
-  const overlayColor = isDark
+const getOverlayColor = () => {
+  if (typeof window === "undefined") return "rgba(255,255,255,0.45)";
+  return document.documentElement.classList.contains("dark")
     ? "rgba(0,0,0,0.65)"
     : "rgba(255,255,255,0.45)";
+};
+
+const HeroSection = () => {
+  const { displayed, done } = useTypingEffect(HEADLINE_TEXT);
+  const [showParagraph, setShowParagraph] = useState(false);
+  const [showButtons, setShowButtons] = useState(false);
+  const scrollY = useScrollY();
+  const overlayColor = getOverlayColor();
+
+  useEffect(() => {
+    if (done) {
+      const paraTimer = setTimeout(() => setShowParagraph(true), 400); // after headline
+      const btnTimer = setTimeout(() => setShowButtons(true), 1200); // after paragraph
+      return () => {
+        clearTimeout(paraTimer);
+        clearTimeout(btnTimer);
+      };
+    }
+  }, [done]);
 
   return (
     <section
@@ -46,7 +101,7 @@ const HeroSection = () => {
         padding: "50px 20px",
         backgroundImage: "url('/images/hero-background.jpg')",
         backgroundSize: "cover",
-        backgroundPosition: `center ${scrollY * 0.2}px`, // Parallax effect
+        backgroundPosition: `center ${scrollY * 0.2}px`,
         textAlign: "center",
         height: "100vh",
         display: "flex",
@@ -57,7 +112,6 @@ const HeroSection = () => {
         transition: "background-position 0.2s",
       }}
     >
-      {/* Overlay for readability */}
       <div
         style={{
           position: "absolute",
@@ -75,122 +129,103 @@ const HeroSection = () => {
           zIndex: 2,
         }}
       >
-        {/* Typing headline */}
         <h1
           style={{
             fontSize: "3rem",
             fontWeight: "bold",
             marginBottom: "20px",
             lineHeight: "1.2",
-            background: "linear-gradient(90deg, #FFD700 30%, #fff 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
+            color: "var(--text)",
             textShadow: "2px 2px 8px rgba(0,0,0,0.7)",
             whiteSpace: "pre",
-            opacity: displayedText ? 1 : 0,
+            opacity: displayed ? 1 : 0,
             transition: "opacity 0.3s",
           }}
         >
-          {displayedText}
+          {displayed}
           <span
             className="blinking-cursor"
             style={{
-              color: "#FFD700",
+              color: "var(--accent)",
               fontWeight: "bold",
               fontSize: "3rem",
               marginLeft: "2px",
               animation: "blink 1s step-end infinite",
-              visibility: typingDone ? "hidden" : "visible",
+              visibility: done ? "hidden" : "visible",
             }}
           >
             |
           </span>
         </h1>
-        {/* Side fade-in paragraph */}
-        <p
-          style={{
-            fontSize: "1.2rem",
-            marginBottom: "30px",
-            lineHeight: "1.5",
-            color: "#FFD700",
-            textShadow: "1px 1px 6px rgba(0,0,0,0.6)",
-            opacity: typingDone ? 1 : 0,
-            animation:
-              typingDone
+        {showParagraph && (
+          <p
+            style={{
+              fontSize: "1.2rem",
+              marginBottom: "30px",
+              lineHeight: "1.5",
+              color: "var(--muted)",
+              textShadow: "1px 1px 6px rgba(0,0,0,0.6)",
+              opacity: done ? 1 : 0,
+              animation: done
                 ? "fadeInLeft 1.2s cubic-bezier(.77,0,.175,1) forwards"
                 : "none",
-            transition: "opacity 0.5s",
-          }}
-        >
-          CDs y vinilos que no encontrarás en otro lugar. Somos tu lugar
-          indicado para tus compras de discos y vinilos raros, importados de
-          Japón y Europa. Discos nuevos y usados para coleccionistas con una
-          pasión única por la música.
-        </p>
-        {/* Side fade-in buttons */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "20px",
-            opacity: typingDone ? 1 : 0,
-            animation:
-              typingDone
-                ? "fadeInRight 1.2s 0.5s cubic-bezier(.77,0,.175,1) forwards"
-                : "none",
-            transition: "opacity 0.5s",
-          }}
-        >
-          <button
-            style={{
-              backgroundColor: "#FFD700",
-              color: "var(--vsc-bg)",
-              padding: "12px 24px",
-              fontSize: "1rem",
-              fontWeight: "bold",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-              marginRight: "10px",
-              boxShadow: "2px 4px 6px rgba(0,0,0,0.4)",
-              transition: "transform 0.3s, background-color 0.3s",
-            }}
-            onMouseOver={(e) =>
-              (e.currentTarget.style.backgroundColor = "#f7c600")
-            }
-            onMouseOut={(e) =>
-              (e.currentTarget.style.backgroundColor = "#FFD700")
-            }
-          >
-            Explorar Catálogo
-          </button>
-          <button
-            style={{
-              backgroundColor: "transparent",
-              color: "#FFD700",
-              padding: "12px 24px",
-              fontSize: "1rem",
-              fontWeight: "bold",
-              border: "2px solid #FFD700",
-              borderRadius: "5px",
-              cursor: "pointer",
-              boxShadow: "2px 4px 6px rgba(0,0,0,0.4)",
-              transition: "transform 0.3s, color 0.3s, background-color 0.3s",
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = "#FFD700";
-              e.currentTarget.style.color = "var(--vsc-bg)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "#FFD700";
+              transition: "opacity 0.5s",
             }}
           >
-            Más Información
-          </button>
-        </div>
+            {PARAGRAPH_TEXT}
+          </p>
+        )}
+        {showButtons && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "20px",
+              opacity: showButtons ? 1 : 0,
+              animation: "fadeInRight 1.2s cubic-bezier(.77,0,.175,1) forwards",
+              transition: "opacity 0.5s",
+            }}
+          >
+            {BUTTONS.map((btn, idx) =>
+              btn.isLink ? (
+                <Link
+                  key={btn.label}
+                  href={btn.link}
+                  style={{
+                    ...commonButtonStyle,
+                    ...btn.style,
+                  }}
+                  onMouseOver={e => {
+                    Object.assign(e.currentTarget.style, btn.hover);
+                  }}
+                  onMouseOut={e => {
+                    Object.assign(e.currentTarget.style, btn.style);
+                  }}
+                >
+                  {btn.label}
+                </Link>
+              ) : (
+                <a
+                  key={btn.label}
+                  href={btn.link}
+                  style={{
+                    ...commonButtonStyle,
+                    ...btn.style,
+                  }}
+                  onMouseOver={e => {
+                    Object.assign(e.currentTarget.style, btn.hover);
+                  }}
+                  onMouseOut={e => {
+                    Object.assign(e.currentTarget.style, btn.style);
+                  }}
+                >
+                  {btn.label}
+                </a>
+              )
+            )}
+          </div>
+        )}
       </div>
-      {/* Animations */}
       <style>
         {`
           @keyframes fadeInLeft {
@@ -211,84 +246,17 @@ const HeroSection = () => {
   );
 };
 
-const Hero = () => (
-  <section
-    style={{
-      background: "var(--section)",
-      color: "var(--text)",
-      borderRadius: "20px",
-      margin: "48px auto 40px",
-      maxWidth: "1200px",
-      padding: "64px 0 56px",
-      boxShadow: "var(--shadow)",
-      textAlign: "center",
-      position: "relative",
-      overflow: "hidden",
-    }}
-  >
-    <h1
-      style={{
-        fontSize: "2.8rem",
-        fontWeight: "bold",
-        marginBottom: "1.2rem",
-        color: "var(--text)",
-        textShadow: "0 2px 8px var(--bg)",
-        letterSpacing: "1.5px",
-      }}
-    >
-      Bienvenido a Artmusic
-    </h1>
-    <p
-      style={{
-        color: "var(--muted)",
-        fontSize: "1.3rem",
-        marginBottom: "2.2rem",
-        fontWeight: 500,
-        maxWidth: 600,
-        marginLeft: "auto",
-        marginRight: "auto",
-      }}
-    >
-      Tu destino para vinilos y coleccionables legendarios.
-    </p>
-    <div style={{ display: "flex", justifyContent: "center", gap: 24 }}>
-      <Link
-        href="/genres"
-        style={{
-          background: "var(--accent)",
-          color: "var(--bg)",
-          borderRadius: "10px",
-          padding: "16px 40px",
-          fontWeight: "bold",
-          fontSize: "1.15rem",
-          textDecoration: "none",
-          boxShadow: "var(--shadow)",
-          transition: "background 0.2s, color 0.2s, transform 0.2s",
-          display: "inline-block",
-        }}
-      >
-        Explorar catálogo
-      </Link>
-      <a
-        href="#about"
-        style={{
-          background: "transparent",
-          color: "var(--accent)",
-          border: "2px solid var(--accent)",
-          borderRadius: "10px",
-          padding: "16px 40px",
-          fontWeight: "bold",
-          fontSize: "1.15rem",
-          textDecoration: "none",
-          boxShadow: "var(--shadow)",
-          transition: "background 0.2s, color 0.2s, transform 0.2s",
-          display: "inline-block",
-        }}
-      >
-        Más información
-      </a>
-    </div>
-  </section>
-);
+const commonButtonStyle: React.CSSProperties = {
+  padding: "12px 24px",
+  fontSize: "1rem",
+  fontWeight: "bold",
+  borderRadius: "5px",
+  cursor: "pointer",
+  marginRight: "10px",
+  boxShadow: "2px 4px 6px rgba(0,0,0,0.4)",
+  transition: "transform 0.3s, background-color 0.3s, color 0.3s",
+  textDecoration: "none",
+  display: "inline-block",
+};
 
 export default HeroSection;
