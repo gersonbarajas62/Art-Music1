@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -10,6 +10,9 @@ import Link from "next/link";
 const Slider = dynamic(() => import("react-slick"), { ssr: false });
 
 const Features = () => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const newReleases = [
     { id: 1, title: "Vinilo Raro de The Beatles", price: "$150", image: "/images/beatles-vinyl.jpg" },
     { id: 2, title: "Edición Limitada de Pink Floyd", price: "$200", image: "/images/pink-floyd.jpg" },
@@ -18,12 +21,14 @@ const Features = () => {
     { id: 5, title: "Álbum Raro de Nirvana", price: "$250", image: "/images/nirvana.jpg" },
   ];
 
-  const isDark =
-    typeof window !== "undefined" &&
-    document.documentElement.classList.contains("dark");
-
-  const overlayColor = isDark ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)";
-  const textShadow = !isDark ? "2px 2px 0 #000, 0 0 8px #FFD700" : "0 0 8px #FFD700";
+  // Use CSS variables for palette
+  const overlayColor = "var(--section)";
+  const accent = "var(--accent)";
+  const text = "var(--text)";
+  const muted = "var(--muted)";
+  const card = "var(--card)";
+  const shadow = "var(--shadow)";
+  const bg = "var(--bg)";
 
   const settings = {
     dots: true,
@@ -63,12 +68,10 @@ const Features = () => {
       className="features-container"
       style={{
         padding: "32px 16px",
-        backgroundColor: "var(--vsc-bg)",
-        color: "var(--vsc-foreground)",
+        backgroundColor: "var(--section)",
+        color: "var(--text)",
         borderRadius: "16px",
-        boxShadow: isDark
-          ? "0 8px 24px rgba(0,0,0,0.8)"
-          : "0 8px 24px rgba(0,0,0,0.12)",
+        boxShadow: "var(--shadow)",
         animation: "fadeIn 1.2s cubic-bezier(.77,0,.175,1)",
         animationFillMode: "forwards",
         opacity: 1,
@@ -93,14 +96,12 @@ const Features = () => {
             href={cat.href}
             style={{
               textDecoration: "none",
-              color: "inherit",
+              color: "var(--text)",
               width: 220,
               display: "block",
               borderRadius: "14px",
-              boxShadow: isDark
-                ? "0 2px 8px rgba(0,0,0,0.45)"
-                : "0 2px 8px rgba(0,0,0,0.08)",
-              background: isDark ? "#232323" : "#fff",
+              boxShadow: "var(--shadow)",
+              background: card,
               padding: "24px 10px",
               textAlign: "center",
               transition: "transform 0.2s, box-shadow 0.2s",
@@ -116,17 +117,14 @@ const Features = () => {
                 objectFit: "cover",
                 borderRadius: "8px",
                 marginBottom: "10px",
-                boxShadow: isDark
-                  ? "0 2px 8px #FFD700"
-                  : "0 2px 8px #000",
+                boxShadow: "var(--shadow)",
               }}
             />
             <div
               style={{
-                color: "#FFD700",
+                color: "var(--accent)",
                 fontWeight: "bold",
                 fontSize: "1.15rem",
-                textShadow,
                 marginBottom: "0.3rem",
               }}
             >
@@ -136,7 +134,7 @@ const Features = () => {
               style={{
                 display: "inline-block",
                 marginTop: 8,
-                color: isDark ? "#FFD700" : "#FFD700",
+                color: "var(--muted)",
                 fontWeight: 600,
                 fontSize: "0.98rem",
               }}
@@ -153,74 +151,77 @@ const Features = () => {
           style={{
             textAlign: "center",
             marginBottom: "24px",
-            color: "#FFD700",
+            color: "var(--accent)",
             fontWeight: "bold",
             fontSize: "2rem",
-            textShadow,
             letterSpacing: "1px",
           }}
         >
           🔥Nuevas Llegadas
         </h2>
-        <Slider {...settings}>
-          {newReleases.map((release) => (
-            <div key={release.id} className="carousel-item" style={{ position: "relative", padding: "10px" }}>
-              <Link href={`/albumdetails?id=${release.id}`}>
-                <div style={{
-                  borderRadius: "12px",
-                  overflow: "hidden",
-                  boxShadow: isDark ? "0 4px 16px #FFD700" : "0 4px 16px #000",
-                  transition: "transform 0.3s",
-                  background: isDark ? "#222" : "#fff",
-                  cursor: "pointer",
-                  animation: "slideUp 1s cubic-bezier(.77,0,.175,1)",
-                }}>
-                  <img
-                    src={release.image}
-                    alt={release.title}
-                    className="carousel-image"
-                    style={{
-                      width: "100%",
-                      height: "220px",
-                      objectFit: "cover",
-                      display: "block",
-                      transition: "transform 0.3s",
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "15px",
-                      left: "50%",
-                      transform: "translateX(-50%)",
+        {mounted && (
+          <Slider {...settings}>
+            {newReleases.map((release) => (
+              <div key={release.id} className="carousel-item" style={{ position: "relative", padding: "10px" }}>
+                <Link href={`/albumdetails?id=${release.id}`}>
+                  <div style={{
+                    borderRadius: "12px",
+                    overflow: "hidden",
+                    boxShadow: "var(--shadow)",
+                    transition: "transform 0.3s",
+                    background: card,
+                    cursor: "pointer",
+                    animation: "slideUp 1s cubic-bezier(.77,0,.175,1)",
+                  }}>
+                    <img
+                      src={release.image}
+                      alt={release.title}
+                      className="carousel-image"
+                      style={{
+                        width: "100%",
+                        height: "220px",
+                        objectFit: "cover",
+                        display: "block",
+                        transition: "transform 0.3s",
+                      }}
+                    />
+                    <div style={{
                       textAlign: "center",
-                      background: overlayColor,
-                      padding: "12px 18px",
-                      borderRadius: "10px",
-                      boxShadow: isDark ? "0 2px 8px #FFD700" : "0 2px 8px #000",
-                      width: "80%",
-                    }}
-                  >
-                    <h4 style={{
-                      margin: 0,
-                      color: "#FFD700",
-                      fontWeight: "bold",
-                      fontSize: "1.1rem",
-                      textShadow,
-                    }}>{release.title}</h4>
-                    <p style={{
-                      margin: 0,
-                      color: isDark ? "#fff" : "#222",
-                      fontWeight: "bold",
-                      fontSize: "1rem",
-                      textShadow: !isDark ? "1px 1px 0 #000" : "none",
-                    }}>{release.price}</p>
+                      padding: "10px 0 0 0",
+                    }}>
+                      <h4 style={{
+                        margin: 0,
+                        color: "var(--accent)",
+                        fontWeight: "bold",
+                        fontSize: "1.05rem",
+                      }}>{release.title}</h4>
+                      <p style={{
+                        margin: 0,
+                        color: text,
+                        fontWeight: "bold",
+                        fontSize: "0.98rem",
+                      }}>{release.price}</p>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          marginTop: 8,
+                          color: "var(--accent)",
+                          fontWeight: 600,
+                          fontSize: "0.98rem",
+                          textDecoration: "underline",
+                          cursor: "pointer",
+                          transition: "color 0.2s",
+                        }}
+                      >
+                        Ver más &rarr;
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            </div>
-          ))}
-        </Slider>
+                </Link>
+              </div>
+            ))}
+          </Slider>
+        )}
       </div>
       <style>
         {`
@@ -234,6 +235,25 @@ const Features = () => {
           }
           .carousel-item:hover img {
             transform: scale(1.05);
+          }
+          @media (max-width: 900px) {
+            .features-container {
+              padding: 18px 2vw;
+            }
+            .carousel-item {
+              min-width: 70vw;
+              max-width: 80vw;
+            }
+          }
+          @media (max-width: 600px) {
+            .features-container {
+              padding: 10px 1vw;
+            }
+            .carousel-item {
+              min-width: 90vw;
+              max-width: 95vw;
+              padding: 8px 2px;
+            }
           }
         `}
       </style>

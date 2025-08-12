@@ -66,3 +66,18 @@ body {
 h1, h2, .some-class {
   color: var(--text);
 }
+
+/* Responsive Beatles cards */
+@media (max-width: 900px) {
+  .beatles-card {
+    min-width: 45vw;
+    max-width: 48vw;
+  }
+}
+@media (max-width: 600px) {
+  .beatles-card {
+    min-width: 90vw;
+    max-width: 95vw;
+    padding: 14px 6px 18px;
+  }
+}
