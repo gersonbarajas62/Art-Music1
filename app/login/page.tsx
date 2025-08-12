@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [darkMode, setDarkMode] = useState<boolean | undefined>(undefined);
+  const [loading, setLoading] = useState(false);
 
   // On mount, set darkMode based on system or localStorage
   useEffect(() => {
@@ -34,23 +35,28 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       localStorage.setItem("user", "authenticated");
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message);
+      setError("Correo o contraseña incorrectos.");
     }
+    setLoading(false);
   };
 
   const handleGoogleSignIn = async () => {
+    setError("");
+    setLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
       localStorage.setItem("user", "authenticated");
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message);
+      setError("No se pudo iniciar sesión con Google.");
     }
+    setLoading(false);
   };
 
   const handleRegisterRedirect = () => {
@@ -119,7 +125,7 @@ export default function LoginPage() {
             boxShadow: "var(--shadow)",
             transition: "background 0.2s, color 0.2s",
           }}
-          aria-label="Toggle dark mode"
+          aria-label="Cambiar modo oscuro"
         >
           {darkMode ? <Moon /> : <Sun />}
         </button>
@@ -142,13 +148,13 @@ export default function LoginPage() {
               fontWeight: "bold",
               marginBottom: 24,
               textAlign: "center",
-              color: "var(--text)",
+              color: "var(--accent)",
             }}
           >
             Iniciar Sesión
           </h2>
           {error && (
-            <p style={{ color: "#ef4444", fontSize: "0.95rem", marginBottom: 12, textAlign: "center" }}>
+            <p style={{ color: "#ef4444", fontSize: "0.98rem", marginBottom: 12, textAlign: "center", fontWeight: 500 }}>
               {error}
             </p>
           )}
@@ -167,8 +173,10 @@ export default function LoginPage() {
                 color: "var(--text)",
                 fontSize: "1rem",
                 outline: "none",
+                marginBottom: 4,
               }}
               required
+              autoComplete="email"
             />
             <input
               type="password"
@@ -184,14 +192,17 @@ export default function LoginPage() {
                 color: "var(--text)",
                 fontSize: "1rem",
                 outline: "none",
+                marginBottom: 4,
               }}
               required
+              autoComplete="current-password"
             />
             <button
               type="submit"
+              disabled={loading}
               style={{
                 width: "100%",
-                background: "var(--accent)",
+                background: loading ? "var(--muted)" : "var(--accent)",
                 color: "var(--bg)",
                 padding: "12px",
                 borderRadius: 8,
@@ -199,17 +210,18 @@ export default function LoginPage() {
                 fontSize: "1.08rem",
                 border: "none",
                 marginTop: 8,
-                cursor: "pointer",
+                cursor: loading ? "not-allowed" : "pointer",
                 boxShadow: "var(--shadow)",
                 transition: "background 0.2s",
               }}
             >
-              Iniciar Sesión
+              {loading ? "Entrando..." : "Iniciar Sesión"}
             </button>
           </form>
 
           <button
             onClick={handleGoogleSignIn}
+            disabled={loading}
             style={{
               width: "100%",
               background: "#ea4335",
@@ -220,13 +232,14 @@ export default function LoginPage() {
               fontSize: "1.08rem",
               border: "none",
               marginTop: 16,
-              cursor: "pointer",
+              cursor: loading ? "not-allowed" : "pointer",
               boxShadow: "var(--shadow)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: 10,
               transition: "background 0.2s",
+              opacity: loading ? 0.7 : 1,
             }}
           >
             <img src="/google-icon.svg" alt="Google Icon" style={{ width: 20, height: 20 }} />
@@ -246,6 +259,7 @@ export default function LoginPage() {
                 fontSize: "1rem",
                 padding: 0,
               }}
+              disabled={loading}
             >
               Regístrate
             </button>
