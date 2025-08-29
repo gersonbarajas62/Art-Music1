@@ -1,17 +1,27 @@
 import React from "react";
+import { db } from "../../../utils/firebase"; // Use your existing config file
 
 type Product = {
   id: string;
   title: string;
   artist: string;
-  genre: string;
-  year: string;
-  price: string;
-  stock: number;
-  description: string;
+  price: number;
+  oldPrice?: number;
   image: string;
+  tipo: string;
+  genero: string;
+  estado: string;
+  condicion: string;
+  featured: boolean;
+  newArrival: boolean;
+  beatlesShowcase: boolean;
+  badge?: string;
+  quantity: number;
+  description: string;
+  createdAt?: any;
   tags?: string[];
   status: "active" | "inactive";
+  year?: string;
 };
 
 type ProductTableProps = {
@@ -27,8 +37,8 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onEdit, onDelete 
       borderRadius: 12,
       boxShadow: "var(--shadow)",
       padding: 24,
-      margin: "0 auto",
-      maxWidth: 1000,
+      margin: "32px auto 48px auto",
+      maxWidth: 1100,
       overflowX: "auto",
     }}
   >
@@ -38,10 +48,15 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onEdit, onDelete 
           <th style={thStyle}>Portada</th>
           <th style={thStyle}>Título</th>
           <th style={thStyle}>Artista</th>
+          <th style={thStyle}>Tipo</th>
           <th style={thStyle}>Género</th>
-          <th style={thStyle}>Año</th>
           <th style={thStyle}>Precio</th>
+          <th style={thStyle}>OldPrice</th>
+          <th style={thStyle}>Badge</th>
           <th style={thStyle}>Stock</th>
+          <th style={thStyle}>Destacado</th>
+          <th style={thStyle}>Nuevo</th>
+          <th style={thStyle}>Beatles</th>
           <th style={thStyle}>Estado</th>
           <th style={thStyle}>Acciones</th>
         </tr>
@@ -49,13 +64,20 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onEdit, onDelete 
       <tbody>
         {products.length === 0 ? (
           <tr>
-            <td colSpan={9} style={{ textAlign: "center", color: "var(--muted)", padding: 24 }}>
+            <td colSpan={14} style={{ textAlign: "center", color: "var(--muted)", padding: 24 }}>
               No hay productos registrados.
             </td>
           </tr>
         ) : (
           products.map((product) => (
-            <tr key={product.id} style={{ borderBottom: "1px solid var(--border)" }}>
+            <tr
+              key={product.id}
+              style={{
+                borderBottom: "1px solid var(--border)",
+                transition: "background 0.2s",
+              }}
+              className="product-row"
+            >
               <td style={tdStyle}>
                 {product.image ? (
                   <img
@@ -69,10 +91,33 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onEdit, onDelete 
               </td>
               <td style={tdStyle}>{product.title}</td>
               <td style={tdStyle}>{product.artist}</td>
-              <td style={tdStyle}>{product.genre}</td>
-              <td style={tdStyle}>{product.year}</td>
-              <td style={tdStyle}>{product.price}</td>
-              <td style={tdStyle}>{product.stock}</td>
+              <td style={tdStyle}>{product.tipo}</td>
+              <td style={tdStyle}>{product.genero}</td>
+              <td style={tdStyle}>${product.price}</td>
+              <td style={tdStyle}>{product.oldPrice ? `$${product.oldPrice}` : "-"}</td>
+              <td style={tdStyle}>{product.badge || "-"}</td>
+              <td style={tdStyle}>{product.quantity}</td>
+              <td style={tdStyle}>
+                {product.featured ? (
+                  <span style={flagStyle}>✔️</span>
+                ) : (
+                  <span style={{ color: "var(--muted)" }}>—</span>
+                )}
+              </td>
+              <td style={tdStyle}>
+                {product.newArrival ? (
+                  <span style={flagStyle}>🆕</span>
+                ) : (
+                  <span style={{ color: "var(--muted)" }}>—</span>
+                )}
+              </td>
+              <td style={tdStyle}>
+                {product.beatlesShowcase ? (
+                  <span style={flagStyle}>🎸</span>
+                ) : (
+                  <span style={{ color: "var(--muted)" }}>—</span>
+                )}
+              </td>
               <td style={tdStyle}>
                 <span
                   style={{
@@ -127,6 +172,13 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onEdit, onDelete 
         )}
       </tbody>
     </table>
+    <style>
+      {`
+        .product-row:hover {
+          background: var(--section);
+        }
+      `}
+    </style>
   </div>
 );
 
@@ -144,6 +196,12 @@ const tdStyle: React.CSSProperties = {
   color: "var(--text)",
   fontSize: "0.98rem",
   verticalAlign: "middle",
+};
+
+const flagStyle: React.CSSProperties = {
+  fontSize: "1.1rem",
+  color: "var(--accent)",
+  fontWeight: "bold",
 };
 
 export default ProductTable;

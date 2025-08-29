@@ -1,46 +1,46 @@
 import React, { useState } from "react";
-import { uploadImage } from "../../../utils/uploadImage"; // adjust path as needed
-
-type Product = {
-  id?: string;
-  title: string;
-  artist: string;
-  genre: string;
-  year: string;
-  price: string;
-  stock: number;
-  description: string;
-  image: string; // URL or base64 for now
-  tags?: string[];
-  status: "active" | "inactive";
-  imageFile?: File; // Add this line
-};
+import { uploadImage } from "../../../utils/uploadImage";
+import type { Product } from "../page";
 
 type ProductFormProps = {
   initialData?: Product;
-  onSubmit: (product: Product) => void;
+  onSubmit: (product: Product) => Promise<void>;
   onCancel?: () => void;
 };
 
 const defaultProduct: Product = {
+  id: "",
   title: "",
   artist: "",
-  genre: "",
-  year: "",
-  price: "",
-  stock: 1,
-  description: "",
+  price: 0,
+  oldPrice: 0,
   image: "",
+  tipo: "",
+  genero: "",
+  estado: "",
+  condicion: "",
+  featured: false,
+  newArrival: false,
+  beatlesShowcase: false,
+  badge: "",
+  quantity: 1,
+  description: "",
   tags: [],
   status: "active",
+  year: "",
 };
+
+type ProductFormState = Product & { imageFile?: File };
 
 const ProductForm: React.FC<ProductFormProps> = ({
   initialData,
   onSubmit,
   onCancel,
 }) => {
-  const [product, setProduct] = useState<Product>(initialData || defaultProduct);
+  const [product, setProduct] = useState<ProductFormState>({
+    ...defaultProduct,
+    ...initialData,
+  });
 
   // For image preview (simulate upload)
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,8 +56,17 @@ const ProductForm: React.FC<ProductFormProps> = ({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setProduct((p) => ({ ...p, [name]: name === "stock" ? Number(value) : value }));
+    const { name, value, type } = e.target;
+    if (type === "checkbox") {
+      const checked = (e.target as HTMLInputElement).checked;
+      setProduct((p) => ({ ...p, [name]: checked }));
+    } else if (name === "price" || name === "oldPrice" || name === "quantity") {
+      setProduct((p) => ({ ...p, [name]: value === "" ? "" : Number(value) }));
+    } else if (name === "stock") {
+      setProduct((p) => ({ ...p, quantity: value === "" ? 0 : Number(value) }));
+    } else {
+      setProduct((p) => ({ ...p, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,7 +75,15 @@ const ProductForm: React.FC<ProductFormProps> = ({
     if (product.imageFile) {
       imageUrl = await uploadImage(product.imageFile);
     }
-    onSubmit({ ...product, image: imageUrl });
+    // Convert blank string to 0 for Firestore
+    const safeProduct: Product = {
+      ...product,
+      price: typeof product.price === "string" && product.price === "" ? 0 : Number(product.price),
+      oldPrice: typeof product.oldPrice === "string" && product.oldPrice === "" ? 0 : Number(product.oldPrice ?? 0),
+      quantity: typeof product.quantity === "string" && product.quantity === "" ? 0 : Number(product.quantity),
+      image: imageUrl,
+    };
+    await onSubmit(safeProduct);
   };
 
   return (
@@ -81,12 +98,14 @@ const ProductForm: React.FC<ProductFormProps> = ({
         margin: "0 auto",
         display: "flex",
         flexDirection: "column",
-        gap: 16,
+        gap: 18,
       }}
     >
-      <h2 style={{ color: "var(--accent)", fontWeight: "bold", fontSize: "1.3rem" }}>
+      <h2 style={{ color: "var(--accent)", fontWeight: "bold", fontSize: "1.3rem", marginBottom: 8 }}>
         {initialData ? "Editar producto" : "Agregar producto"}
       </h2>
+      {/* Title */}
+      <label style={badgeLabel}>Título</label>
       <input
         type="text"
         name="title"
@@ -96,6 +115,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
         required
         style={inputStyle}
       />
+      {/* Artist */}
+      <label style={badgeLabel}>Artista</label>
       <input
         type="text"
         name="artist"
@@ -105,43 +126,107 @@ const ProductForm: React.FC<ProductFormProps> = ({
         required
         style={inputStyle}
       />
+      {/* Price */}
+      <label style={badgeLabel}>Precio (MXN)</label>
+      <input
+        type="number"
+        name="price"
+        placeholder="Precio"
+        value={product.price === 0 ? "" : product.price}
+        onChange={handleChange}
+        required
+        style={inputStyle}
+        min={0}
+      />
+      {/* Old Price */}
+      <label style={badgeLabel}>Precio anterior (opcional)</label>
+      <input
+        type="number"
+        name="oldPrice"
+        placeholder="Precio anterior"
+        value={product.oldPrice === 0 ? "" : product.oldPrice}
+        onChange={handleChange}
+        style={inputStyle}
+        min={0}
+      />
+      {/* Tipo */}
+      <label style={badgeLabel}>Tipo (Vinilo, CD, etc.)</label>
       <input
         type="text"
-        name="genre"
-        placeholder="Género"
-        value={product.genre}
+        name="tipo"
+        placeholder="Tipo"
+        value={product.tipo}
         onChange={handleChange}
         required
         style={inputStyle}
       />
+      {/* Genero */}
+      <label style={badgeLabel}>Género</label>
+      <input
+        type="text"
+        name="genero"
+        placeholder="Género"
+        value={product.genero}
+        onChange={handleChange}
+        required
+        style={inputStyle}
+      />
+      {/* Estado */}
+      <label style={badgeLabel}>Estado (Nuevo, Usado)</label>
+      <input
+        type="text"
+        name="estado"
+        placeholder="Estado"
+        value={product.estado}
+        onChange={handleChange}
+        required
+        style={inputStyle}
+      />
+      {/* Condicion */}
+      <label style={badgeLabel}>Condición (Sellado, Excelente, etc.)</label>
+      <input
+        type="text"
+        name="condicion"
+        placeholder="Condición"
+        value={product.condicion}
+        onChange={handleChange}
+        required
+        style={inputStyle}
+      />
+      {/* Badge */}
+      <label style={badgeLabel}>Badge (opcional)</label>
+      <input
+        type="text"
+        name="badge"
+        placeholder="Badge"
+        value={product.badge}
+        onChange={handleChange}
+        style={inputStyle}
+      />
+      {/* Quantity */}
+      <label style={badgeLabel}>Cantidad en stock</label>
+      <input
+        type="number"
+        name="quantity"
+        placeholder="Cantidad en stock"
+        value={product.quantity === 0 ? "" : product.quantity}
+        onChange={handleChange}
+        required
+        style={inputStyle}
+        min={0}
+      />
+      {/* Year */}
+      <label style={badgeLabel}>Año (opcional)</label>
       <input
         type="text"
         name="year"
         placeholder="Año"
         value={product.year}
         onChange={handleChange}
-        required
         style={inputStyle}
       />
-      <input
-        type="text"
-        name="price"
-        placeholder="Precio"
-        value={product.price}
-        onChange={handleChange}
-        required
-        style={inputStyle}
-      />
-      <input
-        type="number"
-        name="stock"
-        placeholder="Stock"
-        value={product.stock}
-        min={0}
-        onChange={handleChange}
-        required
-        style={inputStyle}
-      />
+      {/* Description */}
+      <label style={badgeLabel}>Descripción</label>
       <textarea
         name="description"
         placeholder="Descripción"
@@ -151,10 +236,12 @@ const ProductForm: React.FC<ProductFormProps> = ({
         rows={3}
         style={{ ...inputStyle, resize: "vertical" }}
       />
+      {/* Tags */}
+      <label style={badgeLabel}>Etiquetas (separadas por coma)</label>
       <input
         type="text"
         name="tags"
-        placeholder="Etiquetas (separadas por coma)"
+        placeholder="Etiquetas"
         value={product.tags?.join(", ") || ""}
         onChange={e =>
           setProduct((p) => ({
@@ -164,31 +251,63 @@ const ProductForm: React.FC<ProductFormProps> = ({
         }
         style={inputStyle}
       />
-      <div>
-        <label style={{ color: "var(--accent)", fontWeight: 500 }}>
-          Imagen de portada:
-        </label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          style={{ marginTop: 8 }}
+      {/* Image */}
+      <label style={badgeLabel}>Imagen de portada</label>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+        style={{ marginTop: 8 }}
+      />
+      {product.image && (
+        <img
+          src={product.image}
+          alt="Portada"
+          style={{
+            width: 80,
+            height: 80,
+            objectFit: "cover",
+            borderRadius: 8,
+            marginTop: 8,
+            boxShadow: "var(--shadow)",
+          }}
         />
-        {product.image && (
-          <img
-            src={product.image}
-            alt="Portada"
-            style={{
-              width: 80,
-              height: 80,
-              objectFit: "cover",
-              borderRadius: 8,
-              marginTop: 8,
-              boxShadow: "var(--shadow)",
-            }}
+      )}
+      {/* Switches */}
+      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 8 }}>
+        <label style={switchLabel}>
+          <input
+            type="checkbox"
+            name="featured"
+            checked={product.featured}
+            onChange={handleChange}
+            style={switchInput}
           />
-        )}
+          Destacado
+        </label>
+        <label style={switchLabel}>
+          <input
+            type="checkbox"
+            name="newArrival"
+            checked={product.newArrival}
+            onChange={handleChange}
+            style={switchInput}
+          />
+          Nuevo lanzamiento
+        </label>
+        <label style={switchLabel}>
+          <input
+            type="checkbox"
+            name="beatlesShowcase"
+            checked={product.beatlesShowcase}
+            onChange={handleChange}
+            style={switchInput}
+          />
+          Beatles Showcase
+        </label>
       </div>
+      {/* Status */}
+      <label style={badgeLabel}>Estado del producto</label>
       <select
         name="status"
         value={product.status}
@@ -198,6 +317,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         <option value="active">Activo</option>
         <option value="inactive">Inactivo</option>
       </select>
+      {/* Actions */}
       <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
         <button
           type="submit"
@@ -249,6 +369,31 @@ const inputStyle: React.CSSProperties = {
   color: "var(--text)",
   fontSize: "1rem",
   outline: "none",
+};
+
+const badgeLabel: React.CSSProperties = {
+  fontWeight: "bold",
+  color: "var(--accent)",
+  fontSize: "0.97rem",
+  marginBottom: 2,
+  marginLeft: 2,
+  display: "block",
+};
+
+const switchLabel: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+  fontWeight: 500,
+  color: "var(--accent)",
+  fontSize: "0.98rem",
+};
+
+const switchInput: React.CSSProperties = {
+  marginRight: 6,
+  accentColor: "var(--accent)",
+  width: 18,
+  height: 18,
 };
 
 export default ProductForm;

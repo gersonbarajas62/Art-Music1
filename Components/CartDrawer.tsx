@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const mockCart = [
@@ -27,11 +27,6 @@ interface CartDrawerProps {
 const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
 	const [cart, setCart] = useState(mockCart);
 	const router = useRouter();
-	const [isDark, setIsDark] = useState(false);
-
-	useEffect(() => {
-		setIsDark(document.documentElement.classList.contains("dark"));
-	}, []);
 
 	const handleQuantity = (id: number, delta: number) => {
 		setCart((cart) =>

@@ -1,11 +1,10 @@
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { v4 as uuidv4 } from "uuid";
-import { app } from "./firebase"; // Make sure you export 'app' from firebase.ts
+import { app } from "./firebase";
 
-const storage = getStorage(app);
-
-export async function uploadImage(file: File) {
-  const storageRef = ref(storage, `products/${uuidv4()}-${file.name}`);
+export async function uploadImage(file: File): Promise<string> {
+  const storage = getStorage(app);
+  const fileName = `products/${Date.now()}-${file.name.replace(/\s/g, "_")}`;
+  const storageRef = ref(storage, fileName);
   await uploadBytes(storageRef, file);
   return await getDownloadURL(storageRef);
 }

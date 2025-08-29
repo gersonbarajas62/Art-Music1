@@ -1,6 +1,19 @@
 "use client";
-import React, { useState } from "react";
-import ProductsPage from "./products"; // Import the ProductsPage component
+import React, { useState, useEffect } from "react";
+import ProductTable from "./components/ProductTable";
+import ProductForm from "./components/ProductForm";
+import { db } from "../../utils/firebase";
+import {
+  collection,
+  getDocs,
+  Timestamp,
+} from "firebase/firestore";
+import {
+  getProducts,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+} from "../../utils/firebaseProducts";
 
 const menuOptions = [
   { key: "overview", label: "Resumen", icon: "📊" },
@@ -13,8 +26,99 @@ const menuOptions = [
   { key: "settings", label: "Configuración", icon: "⚙️" },
 ];
 
+// Import the Product type/interface, not the component
+// Define Product type here if not exported from ProductForm
+export interface Product {
+  id: string;
+  title: string;
+  artist: string;
+  price: number;
+  oldPrice?: number;
+  image: string;
+  tipo: string;
+  genero: string;
+  estado: string;
+  condicion: string;
+  featured: boolean;
+  newArrival: boolean;
+  beatlesShowcase: boolean;
+  badge?: string;
+  quantity: number;
+  description: string;
+  createdAt?: any;
+  tags?: string[];
+  status: "active" | "inactive";
+  year?: string;
+}
+
 export default function Dashboard() {
   const [selected, setSelected] = useState("overview");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [showForm, setShowForm] = useState(false);
+
+  // Use CRUD helpers for Firestore operations
+  useEffect(() => {
+    async function fetchProducts() {
+      setLoading(true);
+      try {
+        const data = await getProducts();
+        setProducts(data);
+        setLoading(false);
+      } catch (err: any) {
+        setError("Error al cargar productos");
+        setLoading(false);
+      }
+    }
+    if (selected === "products") fetchProducts();
+  }, [selected, showForm]);
+
+  const handleSubmitProduct = async (product: Product) => {
+    setLoading(true);
+    try {
+      if (editingProduct && editingProduct.id) {
+        await updateProduct(editingProduct.id, {
+          ...product,
+          updatedAt: Timestamp.now(),
+        });
+      } else {
+        await addProduct({
+          ...product,
+          createdAt: Timestamp.now(),
+        });
+      }
+      setShowForm(false);
+      setEditingProduct(null);
+      setLoading(false);
+    } catch (err: any) {
+      setError("Error al guardar producto");
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    setLoading(true);
+    try {
+      await deleteProduct(id);
+      setLoading(false);
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+    } catch (err: any) {
+      setError("Error al eliminar producto");
+      setLoading(false);
+    }
+  };
+
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product);
+    setShowForm(true);
+  };
+
+  const handleAddProduct = () => {
+    setEditingProduct(null);
+    setShowForm(true);
+  };
 
   return (
     <div
@@ -81,7 +185,7 @@ export default function Dashboard() {
       </aside>
 
       {/* Main Content */}
-      <main style={{ flex: 1, padding: "40px 5vw" }}>
+      <main style={{ flex: 1, padding: "40px 5vw", position: "relative" }}>
         {selected === "overview" && (
           <div>
             <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--accent)" }}>
@@ -94,7 +198,124 @@ export default function Dashboard() {
           </div>
         )}
         {selected === "products" && (
-          <ProductsPage />
+          <div>
+            <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--accent)", marginBottom: 8 }}>
+              Catálogo de Productos
+            </h1>
+            <p style={{ color: "var(--muted)", marginBottom: 32 }}>
+              Administra el catálogo, nuevos lanzamientos, destacados y más.
+            </p>
+            <button
+              onClick={handleAddProduct}
+              style={{
+                position: "fixed",
+                right: "5vw",
+                bottom: "40px",
+                zIndex: 100,
+                background: "var(--accent)",
+                color: "var(--bg)",
+                border: "none",
+                borderRadius: 50,
+                padding: "16px 32px",
+                fontWeight: "bold",
+                fontSize: "1.15rem",
+                cursor: "pointer",
+                boxShadow: "var(--shadow)",
+                transition: "background 0.2s",
+              }}
+            >
+              + Agregar producto
+            </button>
+            {/* Modal for ProductForm */}
+            {showForm && (
+              <div
+                style={{
+                  position: "fixed",
+                  top: 0,
+                  right: 0,
+                  width: "540px",
+                  height: "100vh",
+                  background: "var(--card)",
+                  boxShadow: "var(--shadow)",
+                  zIndex: 99,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  borderLeft: "2px solid var(--border)",
+                  padding: "48px 32px 32px 32px",
+                  overflowY: "auto",
+                  transition: "right 0.35s cubic-bezier(.77,0,.175,1)",
+                }}
+                // Add tabIndex and onKeyDown for ESC key close
+                tabIndex={-1}
+                onClick={() => { setShowForm(false); setEditingProduct(null); }}
+                onKeyDown={e => {
+                  if (e.key === "Escape") {
+                    setShowForm(false);
+                    setEditingProduct(null);
+                  }
+                }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    maxWidth: "480px",
+                    background: "none",
+                    borderRadius: 0,
+                    boxShadow: "none",
+                    padding: 0,
+                    position: "relative",
+                    margin: "0 auto",
+                  }}
+                  onClick={e => e.stopPropagation()}
+                >
+                  {/* Close button top right */}
+                  <button
+                    aria-label="Cerrar"
+                    onClick={() => { setShowForm(false); setEditingProduct(null); }}
+                    style={{
+                      position: "absolute",
+                      top: 12,
+                      right: 12,
+                      background: "none",
+                      border: "none",
+                      fontSize: "1.7rem",
+                      color: "var(--accent)",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                      borderRadius: "50%",
+                      width: 36,
+                      height: 36,
+                      transition: "background 0.2s",
+                    }}
+                    onMouseOver={e => (e.currentTarget.style.background = "var(--section)")}
+                    onMouseOut={e => (e.currentTarget.style.background = "none")}
+                  >
+                    ×
+                  </button>
+                  <ProductForm
+                    initialData={editingProduct ?? undefined}
+                    onSubmit={handleSubmitProduct}
+                    onCancel={() => { setShowForm(false); setEditingProduct(null); }}
+                  />
+                </div>
+              </div>
+            )}
+            <div style={{ marginTop: 24 }}>
+              {loading ? (
+                <div style={{ color: "var(--muted)", marginTop: 24 }}>Cargando productos...</div>
+              ) : error ? (
+                <div style={{ color: "#b80000", marginTop: 24 }}>{error}</div>
+              ) : (
+                <ProductTable
+                  products={products}
+                  onEdit={handleEditProduct}
+                  onDelete={handleDeleteProduct}
+                />
+              )}
+            </div>
+          </div>
         )}
         {selected === "orders" && (
           <div>
