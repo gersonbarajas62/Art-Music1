@@ -103,7 +103,7 @@ const mockOnSale = [
 
 const infoStyle = (isDark: boolean) => ({
   fontSize: "0.95rem",
-  color: isDark ? "#bbb" : "#444",
+  color: "var(--muted)",
   marginBottom: "2px",
   textAlign: "left" as const,
   width: "100%",
@@ -154,15 +154,13 @@ const OnSale = () => {
   return (
     <section
       style={{
-        backgroundColor: "var(--vsc-bg)",
-        color: "var(--vsc-foreground)",
+        background: "var(--section)",
+        color: "var(--text)",
         padding: "48px 0px",
-        borderRadius: "18px",
+        borderRadius: "16px",
         margin: "40px auto",
         maxWidth: "1600px",
-        boxShadow: isDark
-          ? "0 8px 24px rgba(0,0,0,0.8)"
-          : "0 8px 24px rgba(0,0,0,0.13)",
+        boxShadow: "var(--shadow)",
         animation: "fadeIn 1.2s cubic-bezier(.77,0,.175,1)",
         animationFillMode: "forwards",
         opacity: 1,
@@ -173,12 +171,10 @@ const OnSale = () => {
         style={{
           fontSize: "2rem",
           fontWeight: "bold",
-          color: "#FFD700",
+          color: "var(--accent)",
           marginBottom: "32px",
           textAlign: "center",
-          textShadow: !isDark
-            ? "2px 2px 0 #000, 0 0 8px #FFD700"
-            : "0 0 8px #FFD700",
+          textShadow: "0 2px 8px var(--bg)",
         }}
       >
         ¡Ofertas Especiales!
@@ -189,11 +185,9 @@ const OnSale = () => {
             <div key={item.id} style={{ padding: "18px 18px 32px 18px" }}>
               <div
                 style={{
-                  background: isDark ? "#232323" : "#fff",
-                  borderRadius: "16px",
-                  boxShadow: isDark
-                    ? "0 4px 16px rgba(0,0,0,0.45)"
-                    : "0 4px 16px rgba(0,0,0,0.10)",
+                  background: "var(--card)",
+                  borderRadius: "14px",
+                  boxShadow: "var(--shadow)",
                   padding: "28px 18px 22px 18px",
                   display: "flex",
                   flexDirection: "column",
@@ -202,11 +196,12 @@ const OnSale = () => {
                   minHeight: 420,
                   cursor: "pointer",
                   transition: "transform 0.2s, box-shadow 0.2s",
-                  outline: added === item.id ? "3px solid #FFD700" : "none",
+                  outline: added === item.id ? "2px solid var(--accent)" : "none",
                   transform: added === item.id ? "scale(1.04)" : "none",
                   width: 220,
                   margin: "0 auto",
                   gap: 8,
+                  border: "1px solid var(--border)",
                 }}
                 onClick={() => handleAddToCart(item.id)}
                 tabIndex={0}
@@ -218,13 +213,13 @@ const OnSale = () => {
                     position: "absolute",
                     top: 16,
                     left: 16,
-                    background: "#FFD700",
-                    color: "#000",
+                    background: "var(--accent)",
+                    color: "var(--bg)",
                     fontWeight: "bold",
                     fontSize: "0.95rem",
                     borderRadius: "6px",
                     padding: "4px 10px",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                    boxShadow: "var(--shadow)",
                     letterSpacing: "1px",
                   }}
                 >
@@ -239,9 +234,10 @@ const OnSale = () => {
                     height: "120px",
                     objectFit: "cover",
                     borderRadius: "10px",
-                    border: "2px solid #FFD700",
+                    border: "1.5px solid var(--border)",
                     marginBottom: "18px",
-                    background: "#fff",
+                    background: "var(--card)",
+                    boxShadow: "var(--shadow)",
                   }}
                 />
                 {/* Info */}
@@ -250,18 +246,16 @@ const OnSale = () => {
                     textAlign: "center",
                     marginBottom: "10px",
                     fontWeight: "bold",
-                    color: "#FFD700",
+                    color: "var(--accent)",
                     fontSize: "1.1rem",
-                    textShadow: !isDark
-                      ? "1px 1px 0 #000, 0 0 6px #FFD700"
-                      : "0 0 6px #FFD700",
+                    textShadow: "0 2px 8px var(--bg)",
                   }}
                 >
                   {item.title}
                 </div>
                 <div
                   style={{
-                    color: isDark ? "#bbb" : "#444",
+                    color: "var(--muted)",
                     fontSize: "1rem",
                     marginBottom: "8px",
                     fontWeight: 500,
@@ -272,7 +266,7 @@ const OnSale = () => {
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                   <span
                     style={{
-                      color: "#FFD700",
+                      color: "var(--accent)",
                       fontWeight: "bold",
                       fontSize: "1.2rem",
                     }}
@@ -282,7 +276,7 @@ const OnSale = () => {
                   <span
                     style={{
                       textDecoration: "line-through",
-                      color: isDark ? "#888" : "#bbb",
+                      color: "var(--muted)",
                       fontSize: "1rem",
                     }}
                   >
@@ -314,17 +308,17 @@ const OnSale = () => {
                     padding: "12px 24px",
                     borderRadius: "8px",
                     border: "none",
-                    backgroundColor: added === item.id ? "#FFD700" : "#FFD700",
-                    color: "#000",
+                    background: "var(--accent)",
+                    color: "var(--bg)",
                     fontWeight: "bold",
                     fontSize: "1rem",
                     cursor: "pointer",
                     textTransform: "uppercase",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                    boxShadow: "var(--shadow)",
                     letterSpacing: "1px",
                     transition: "background-color 0.3s, transform 0.3s",
                     width: "100%",
-                    outline: added === item.id ? "2px solid #FFD700" : "none",
+                    outline: added === item.id ? "2px solid var(--accent)" : "none",
                     opacity: added === item.id ? 0.7 : 1,
                   }}
                   onClick={e => {

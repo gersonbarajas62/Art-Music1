@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 // import CheckoutForm from "./CheckoutForm"; // If you split it, or just use the function directly
@@ -48,10 +48,11 @@ function CheckoutForm() {
   const [loading, setLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(false);
 
-  const isDark =
-    typeof window !== "undefined" &&
-    document.documentElement.classList.contains("dark");
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains("dark"));
+  }, []);
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
@@ -94,7 +95,7 @@ function CheckoutForm() {
         <div key={label} style={{
           display: "flex",
           alignItems: "center",
-          color: idx === step ? "#FFD700" : isDark ? "#bbb" : "#888",
+          color: idx === step ? "var(--accent)" : "var(--muted)",
           fontWeight: idx === step ? "bold" : "normal",
           fontSize: "1.05rem",
         }}>
@@ -103,21 +104,21 @@ function CheckoutForm() {
             width: 22,
             height: 22,
             borderRadius: "50%",
-            background: idx <= step ? "#FFD700" : isDark ? "#232323" : "#eee",
-            color: idx <= step ? "#000" : isDark ? "#bbb" : "#888",
+            background: idx <= step ? "var(--accent)" : "var(--card)",
+            color: idx <= step ? "var(--bg)" : "var(--muted)",
             textAlign: "center",
             lineHeight: "22px",
             marginRight: 8,
             fontWeight: "bold",
-            border: idx === step ? "2px solid #FFD700" : "2px solid #ccc",
-            boxShadow: idx === step ? "0 0 8px #FFD700" : undefined,
+            border: idx === step ? "2px solid var(--accent)" : "2px solid var(--border)",
+            boxShadow: idx === step ? "0 0 8px var(--accent)" : undefined,
             transition: "all 0.2s",
           }}>{idx + 1}</span>
           {label}
           {idx < steps.length - 1 && (
             <span style={{
               margin: "0 12px",
-              color: "#FFD700",
+              color: "var(--accent)",
               fontWeight: "bold",
               fontSize: "1.2rem",
             }}>→</span>
@@ -130,15 +131,13 @@ function CheckoutForm() {
   return (
     <section
       style={{
-        backgroundColor: "var(--vsc-bg)",
-        color: "var(--vsc-foreground)",
+        background: "var(--section)",
+        color: "var(--text)",
         padding: "48px 20px",
-        borderRadius: "18px",
+        borderRadius: "16px",
         margin: "40px auto",
         maxWidth: "900px",
-        boxShadow: isDark
-          ? "0 8px 24px rgba(0,0,0,0.8)"
-          : "0 8px 24px rgba(0,0,0,0.13)",
+        boxShadow: "var(--shadow)",
         animation: "fadeIn 1.2s cubic-bezier(.77,0,.175,1)",
         animationFillMode: "forwards",
         opacity: 1,
@@ -150,7 +149,7 @@ function CheckoutForm() {
       {orderPlaced ? (
         <div style={{
           textAlign: "center",
-          color: "#FFD700",
+          color: "var(--accent)",
           fontWeight: "bold",
           fontSize: "1.3rem",
           padding: "60px 0",
@@ -171,11 +170,9 @@ function CheckoutForm() {
               style={{
                 fontSize: "1.3rem",
                 fontWeight: "bold",
-                color: "#FFD700",
+                color: "var(--accent)",
                 marginBottom: "18px",
-                textShadow: !isDark
-                  ? "2px 2px 0 #000, 0 0 8px #FFD700"
-                  : "0 0 8px #FFD700",
+                textShadow: "0 2px 8px var(--bg)",
               }}
             >
               Resumen de tu compra
@@ -187,13 +184,12 @@ function CheckoutForm() {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    background: isDark ? "#232323" : "#fff",
+                    background: "var(--card)",
                     borderRadius: "10px",
-                    boxShadow: isDark
-                      ? "0 2px 8px rgba(0,0,0,0.45)"
-                      : "0 2px 8px rgba(0,0,0,0.08)",
+                    boxShadow: "var(--shadow)",
                     padding: "10px",
                     gap: "14px",
+                    border: "1px solid var(--border)",
                   }}
                 >
                   <img
@@ -204,8 +200,9 @@ function CheckoutForm() {
                       height: "54px",
                       objectFit: "cover",
                       borderRadius: "8px",
-                      border: "1px solid #FFD700",
-                      background: "#fff",
+                      border: "1px solid var(--border)",
+                      background: "var(--card)",
+                      boxShadow: "var(--shadow)",
                     }}
                   />
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -213,10 +210,7 @@ function CheckoutForm() {
                       style={{
                         fontWeight: "bold",
                         fontSize: "1rem",
-                        color: "#FFD700",
-                        textShadow: !isDark
-                          ? "1px 1px 0 #000, 0 0 6px #FFD700"
-                          : "0 0 6px #FFD700",
+                        color: "var(--accent)",
                         marginBottom: 2,
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -226,11 +220,11 @@ function CheckoutForm() {
                     >
                       {item.name}
                     </div>
-                    <div style={{ fontSize: "0.95rem", color: isDark ? "#eee" : "#222" }}>
+                    <div style={{ fontSize: "0.95rem", color: "var(--muted)" }}>
                       ${item.price} x {item.quantity}
                     </div>
                   </div>
-                  <div style={{ fontWeight: "bold", color: "#FFD700" }}>
+                  <div style={{ fontWeight: "bold", color: "var(--accent)" }}>
                     ${item.price * item.quantity}
                   </div>
                 </div>
@@ -238,14 +232,14 @@ function CheckoutForm() {
             </div>
             <div
               style={{
-                borderTop: "1px solid #FFD700",
+                borderTop: "1px solid var(--border)",
                 marginTop: "22px",
                 paddingTop: "16px",
                 display: "flex",
                 justifyContent: "space-between",
                 fontWeight: "bold",
                 fontSize: "1.1rem",
-                color: "#FFD700",
+                color: "var(--accent)",
               }}
             >
               <span>Total</span>
@@ -257,15 +251,14 @@ function CheckoutForm() {
           <div style={{
             flex: "1 1 320px",
             minWidth: 280,
-            background: isDark ? "#181818" : "#fffbe6",
+            background: "var(--card)",
             borderRadius: "12px",
-            boxShadow: isDark
-              ? "0 2px 8px rgba(0,0,0,0.45)"
-              : "0 2px 8px rgba(0,0,0,0.08)",
+            boxShadow: "var(--shadow)",
             padding: "28px 22px",
             display: "flex",
             flexDirection: "column",
             gap: "22px",
+            border: "1px solid var(--border)",
           }}>
             {/* Shipping Step */}
             {step === 0 && (
@@ -273,11 +266,9 @@ function CheckoutForm() {
                 <h3 style={{
                   fontSize: "1.1rem",
                   fontWeight: "bold",
-                  color: "#FFD700",
+                  color: "var(--accent)",
                   marginBottom: "10px",
-                  textShadow: !isDark
-                    ? "1px 1px 0 #000, 0 0 6px #FFD700"
-                    : "0 0 6px #FFD700",
+                  textShadow: "0 2px 8px var(--bg)",
                 }}>
                   Dirección de envío
                 </h3>
@@ -288,7 +279,7 @@ function CheckoutForm() {
                   onChange={handleShippingChange}
                   placeholder="Nombre completo"
                   required
-                  style={inputStyle(isDark)}
+                  style={inputStyle()}
                 />
                 <input
                   type="email"
@@ -297,7 +288,7 @@ function CheckoutForm() {
                   onChange={handleShippingChange}
                   placeholder="Correo electrónico"
                   required
-                  style={inputStyle(isDark)}
+                  style={inputStyle()}
                 />
                 <input
                   type="text"
@@ -306,7 +297,7 @@ function CheckoutForm() {
                   onChange={handleShippingChange}
                   placeholder="Dirección"
                   required
-                  style={inputStyle(isDark)}
+                  style={inputStyle()}
                 />
                 <input
                   type="text"
@@ -315,7 +306,7 @@ function CheckoutForm() {
                   onChange={handleShippingChange}
                   placeholder="Ciudad"
                   required
-                  style={inputStyle(isDark)}
+                  style={inputStyle()}
                 />
                 <input
                   type="text"
@@ -324,7 +315,7 @@ function CheckoutForm() {
                   onChange={handleShippingChange}
                   placeholder="Código postal"
                   required
-                  style={inputStyle(isDark)}
+                  style={inputStyle()}
                 />
                 <input
                   type="text"
@@ -333,12 +324,12 @@ function CheckoutForm() {
                   onChange={handleShippingChange}
                   placeholder="País"
                   required
-                  style={inputStyle(isDark)}
+                  style={inputStyle()}
                 />
                 <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
                   <button
                     type="submit"
-                    style={buttonStyle("#FFD700", "#000")}
+                    style={buttonStyle("var(--accent)", "var(--bg)")}
                   >
                     Siguiente
                   </button>
@@ -352,11 +343,9 @@ function CheckoutForm() {
                 <h3 style={{
                   fontSize: "1.1rem",
                   fontWeight: "bold",
-                  color: "#FFD700",
+                  color: "var(--accent)",
                   marginBottom: "10px",
-                  textShadow: !isDark
-                    ? "1px 1px 0 #000, 0 0 6px #FFD700"
-                    : "0 0 6px #FFD700",
+                  textShadow: "0 2px 8px var(--bg)",
                 }}>
                   Información de pago
                 </h3>
@@ -366,7 +355,7 @@ function CheckoutForm() {
                   name="card"
                   placeholder="Número de tarjeta"
                   required
-                  style={inputStyle(isDark)}
+                  style={inputStyle()}
                 />
                 <div style={{ display: "flex", gap: 10 }}>
                   <input
@@ -374,14 +363,14 @@ function CheckoutForm() {
                     name="exp"
                     placeholder="MM/AA"
                     required
-                    style={{ ...inputStyle(isDark), flex: 1 }}
+                    style={{ ...inputStyle(), flex: 1 }}
                   />
                   <input
                     type="text"
                     name="cvc"
                     placeholder="CVC"
                     required
-                    style={{ ...inputStyle(isDark), flex: 1 }}
+                    style={{ ...inputStyle(), flex: 1 }}
                   />
                 </div>
                 <input
@@ -389,19 +378,19 @@ function CheckoutForm() {
                   name="name"
                   placeholder="Nombre en la tarjeta"
                   required
-                  style={inputStyle(isDark)}
+                  style={inputStyle()}
                 />
                 <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
                   <button
                     type="button"
                     onClick={handleBack}
-                    style={buttonStyle(isDark ? "#232323" : "#eee", isDark ? "#FFD700" : "#FFD700")}
+                    style={buttonStyle("var(--card)", "var(--accent)")}
                   >
                     Atrás
                   </button>
                   <button
                     type="submit"
-                    style={buttonStyle("#FFD700", "#000")}
+                    style={buttonStyle("var(--accent)", "var(--bg)")}
                   >
                     Siguiente
                   </button>
@@ -415,11 +404,9 @@ function CheckoutForm() {
                 <h3 style={{
                   fontSize: "1.1rem",
                   fontWeight: "bold",
-                  color: "#FFD700",
+                  color: "var(--accent)",
                   marginBottom: "10px",
-                  textShadow: !isDark
-                    ? "1px 1px 0 #000, 0 0 6px #FFD700"
-                    : "0 0 6px #FFD700",
+                  textShadow: "0 2px 8px var(--bg)",
                 }}>
                   Revisar y confirmar
                 </h3>
@@ -438,13 +425,13 @@ function CheckoutForm() {
                   <button
                     type="button"
                     onClick={handleBack}
-                    style={buttonStyle(isDark ? "#232323" : "#eee", isDark ? "#FFD700" : "#FFD700")}
+                    style={buttonStyle("var(--card)", "var(--accent)")}
                   >
                     Atrás
                   </button>
                   <button
                     type="submit"
-                    style={buttonStyle("#FFD700", "#000")}
+                    style={buttonStyle("var(--accent)", "var(--bg)")}
                     disabled={loading}
                   >
                     {loading ? "Procesando..." : "Finalizar compra"}
@@ -469,13 +456,13 @@ function CheckoutForm() {
 };
 
 // Helper styles
-function inputStyle(isDark: boolean) {
+function inputStyle() {
   return {
     padding: "12px",
     borderRadius: "8px",
-    border: "1px solid #FFD700",
-    backgroundColor: isDark ? "#1e1e1e" : "#fff",
-    color: isDark ? "#fff" : "#222",
+    border: "1px solid var(--border)",
+    background: "var(--card)",
+    color: "var(--text)",
     fontSize: "1rem",
     outline: "none",
     marginBottom: "4px",
@@ -487,13 +474,13 @@ function buttonStyle(bg: string, color: string) {
     padding: "12px 18px",
     borderRadius: "8px",
     border: "none",
-    backgroundColor: bg,
+    background: bg,
     color: color,
     fontSize: "1rem",
     fontWeight: "bold",
     cursor: "pointer",
     textTransform: "uppercase",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+    boxShadow: "var(--shadow)",
     letterSpacing: "1px",
     transition: "background-color 0.3s, transform 0.3s",
   } as React.CSSProperties;
