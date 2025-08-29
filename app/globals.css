@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* VS Code Light Theme */
+  --vsc-bg: #ffffff;
+  --vsc-paneBg: #f3f3f3;
+  --vsc-sideBarBg: #f3f3f3;
+  --vsc-foreground: #333333;
+  --vsc-border: #cccccc;
+  --vsc-buttonBg: #0e639c;
+  --vsc-buttonFg: #ffffff;
+  --vsc-buttonHoverBg: #1177bb;
+
+  --bg: #fff;
+  --section: #f7f7f7;
+  --card: #fff;
+  --text: #181818;
+  --muted: #555;
+  --border: #e0e0e0;
+  --accent: #222;
+  --shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+
+.dark {
+  /* VS Code Dark Theme */
+  --vsc-bg: #1e1e1e;
+  --vsc-paneBg: #252526;
+  --vsc-sideBarBg: #252526;
+  --vsc-foreground: #cccccc;
+  --vsc-border: #3f3f46;
+  --vsc-buttonBg: #0e639c;
+  --vsc-buttonFg: #ffffff;
+  --vsc-buttonHoverBg: #1177bb;
+
+  --bg: #111214;
+  --section: #18191b;
+  --card: #18191b;
+  --text: #f5f5f7;
+  --muted: #b0b3b8;
+  --border: #232323;
+  --accent: #fff;
+  --shadow: 0 4px 24px rgba(0,0,0,0.45);
+}
+
+/* Apply to body/html */
+html, body {
+  background-color: var(--vsc-bg);
+  color: var(--vsc-foreground);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* A utility for all pane backgrounds */
+.bg-pane { background-color: var(--vsc-paneBg); }
+.bg-sidebar { background-color: var(--vsc-sideBarBg); }
+.text-default { color: var(--vsc-foreground); }
+.border-default { border-color: var(--vsc-border); }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+h1, h2, .some-class {
+  color: var(--text);
+}
+
+/* Responsive Beatles cards */
+@media (max-width: 900px) {
+  .beatles-card {
+    min-width: 45vw;
+    max-width: 48vw;
+  }
+}
+@media (max-width: 600px) {
+  .beatles-card {
+    min-width: 90vw;
+    max-width: 95vw;
+    padding: 14px 6px 18px;
+  }
+}
