@@ -65,7 +65,30 @@ export default function Dashboard() {
       setLoading(true);
       try {
         const data = await getProducts();
-        setProducts(data);
+        // Ensure each product has all required Product fields
+        const productsData: Product[] = data.map((item: any) => ({
+          id: item.id,
+          title: item.title ?? "",
+          artist: item.artist ?? "",
+          price: item.price ?? 0,
+          oldPrice: item.oldPrice,
+          image: item.image ?? "",
+          tipo: item.tipo ?? "",
+          genero: item.genero ?? "",
+          estado: item.estado ?? "",
+          condicion: item.condicion ?? "",
+          featured: item.featured ?? false,
+          newArrival: item.newArrival ?? false,
+          beatlesShowcase: item.beatlesShowcase ?? false,
+          badge: item.badge,
+          quantity: item.quantity ?? 0,
+          description: item.description ?? "",
+          createdAt: item.createdAt,
+          tags: item.tags ?? [],
+          status: item.status ?? "active",
+          year: item.year,
+        }));
+        setProducts(productsData);
         setLoading(false);
       } catch (err: any) {
         setError("Error al cargar productos");
@@ -84,10 +107,11 @@ export default function Dashboard() {
           updatedAt: Timestamp.now(),
         });
       } else {
-        await addProduct({
+        const newProduct = await addProduct({
           ...product,
           createdAt: Timestamp.now(),
         });
+        setProducts((prev) => [...prev, newProduct]);
       }
       setShowForm(false);
       setEditingProduct(null);
@@ -102,8 +126,8 @@ export default function Dashboard() {
     setLoading(true);
     try {
       await deleteProduct(id);
-      setLoading(false);
       setProducts((prev) => prev.filter((p) => p.id !== id));
+      setLoading(false);
     } catch (err: any) {
       setError("Error al eliminar producto");
       setLoading(false);
