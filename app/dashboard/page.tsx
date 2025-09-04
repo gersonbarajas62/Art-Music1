@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import ProductTable from "./components/ProductTable";
 import ProductForm from "./components/ProductForm";
-import { db } from "../../utils/firebase";
 import {
   collection,
   getDocs,
@@ -13,7 +12,7 @@ import {
   addProduct,
   updateProduct,
   deleteProduct,
-} from "../../utils/firebaseProducts";
+} from "../../utils/supabaseProducts";
 
 const menuOptions = [
   { key: "overview", label: "Resumen", icon: "📊" },
@@ -98,20 +97,16 @@ export default function Dashboard() {
     if (selected === "products") fetchProducts();
   }, [selected, showForm]);
 
-  const handleSubmitProduct = async (product: Product) => {
+  const handleSubmitProduct = async (product: { title: string; artist: string; createdAt: string }) => {
     setLoading(true);
     try {
       if (editingProduct && editingProduct.id) {
-        await updateProduct(editingProduct.id, {
-          ...product,
-          updatedAt: Timestamp.now(),
-        });
+        await updateProduct(editingProduct.id, product);
       } else {
-        const newProduct = await addProduct({
-          ...product,
-          createdAt: Timestamp.now(),
-        });
-        setProducts((prev) => [...prev, newProduct]);
+        const newProduct = await addProduct(product);
+        if (newProduct) {
+          setProducts((prev) => [...prev, newProduct]);
+        }
       }
       setShowForm(false);
       setEditingProduct(null);
@@ -319,9 +314,20 @@ export default function Dashboard() {
                     ×
                   </button>
                   <ProductForm
-                    initialData={editingProduct ?? undefined}
+                    initialData={
+                      editingProduct
+                        ? {
+                            title: editingProduct.title,
+                            artist: editingProduct.artist,
+                            createdAt: editingProduct.createdAt,
+                          }
+                        : undefined
+                    }
                     onSubmit={handleSubmitProduct}
-                    onCancel={() => { setShowForm(false); setEditingProduct(null); }}
+                    onCancel={() => {
+                      setShowForm(false);
+                      setEditingProduct(null);
+                    }}
                   />
                 </div>
               </div>

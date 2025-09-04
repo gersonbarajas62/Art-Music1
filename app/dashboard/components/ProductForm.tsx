@@ -1,36 +1,102 @@
 import React, { useState } from "react";
-import { uploadImage } from "../../../utils/uploadImage";
-import type { Product } from "../page";
+import { uploadImage } from "../../../utils/supabaseUploadImage"; // adjust path if needed
 
 type ProductFormProps = {
-  initialData?: Product;
-  onSubmit: (product: Product) => Promise<void>;
+  initialData?: {
+    title?: string;
+    artist?: string;
+    tipo?: string;
+    genero?: string;
+    estado?: string;
+    condicion?: string;
+    badge?: string;
+    description?: string;
+    year?: string;
+    featured?: boolean;
+    newArrival?: boolean;
+    beatlesShowcase?: boolean;
+    status?: string;
+    price?: number | string;
+    oldPrice?: number | string;
+    quantity?: number | string;
+    createdAt?: string;
+    tags?: string[] | string;
+    image?: string;
+    images?: string[] | string;
+  };
+  onSubmit: (
+    product: {
+      title: string;
+      artist: string;
+      tipo: string;
+      genero: string;
+      estado: string;
+      condicion: string;
+      badge: string;
+      description: string;
+      year: string;
+      featured: boolean;
+      newArrival: boolean;
+      beatlesShowcase: boolean;
+      status: string;
+      price: number;
+      oldPrice: number;
+      quantity: number;
+      createdAt: string;
+      tags: string[];
+      image: string;
+      images: string[];
+    }
+  ) => Promise<void>;
   onCancel?: () => void;
 };
 
-const defaultProduct: Product = {
-  id: "",
+// Add estado and condicion to defaultProduct
+const defaultProduct = {
   title: "",
   artist: "",
-  price: 0,
-  oldPrice: 0,
-  image: "",
   tipo: "",
   genero: "",
   estado: "",
   condicion: "",
+  badge: "",
+  description: "",
+  year: "",
   featured: false,
   newArrival: false,
   beatlesShowcase: false,
-  badge: "",
-  quantity: 1,
-  description: "",
-  tags: [],
   status: "active",
-  year: "",
+  price: "",      // <-- empty string for input
+  oldPrice: "",   // <-- empty string for input
+  quantity: "",   // <-- empty string for input
+  createdAt: undefined,
+  tags: [],
+  image: "",
+  images: [],
 };
 
-type ProductFormState = Product & { imageFile?: File };
+type ProductFormState = {
+  title: string;
+  artist: string;
+  tipo: string;
+  genero: string;
+  estado: string;
+  condicion: string;
+  badge: string;
+  description: string;
+  year: string;
+  featured: boolean;
+  newArrival: boolean;
+  beatlesShowcase: boolean;
+  status: string;
+  price: number | string;
+  oldPrice: number | string;
+  quantity: number | string;
+  createdAt?: string;
+  tags: string[] | string;
+  image: string;
+  images: string[] | string;
+};
 
 const ProductForm: React.FC<ProductFormProps> = ({
   initialData,
@@ -40,30 +106,88 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [product, setProduct] = useState<ProductFormState>({
     ...defaultProduct,
     ...initialData,
+    title: initialData?.title ?? "",
+    artist: initialData?.artist ?? "",
+    tipo: initialData?.tipo ?? "",
+    genero: initialData?.genero ?? "",
+    estado: initialData?.estado ?? "",
+    condicion: initialData?.condicion ?? "",
+    badge: initialData?.badge ?? "",
+    description: initialData?.description ?? "",
+    year: initialData?.year ?? "",
+    featured: initialData?.featured ?? false,
+    newArrival: initialData?.newArrival ?? false,
+    beatlesShowcase: initialData?.beatlesShowcase ?? false,
+    status: initialData?.status ?? "active",
+    price: initialData?.price ?? "",
+    oldPrice: initialData?.oldPrice ?? "",
+    quantity: initialData?.quantity ?? "",
+    createdAt: initialData?.createdAt ?? undefined,
+    tags: Array.isArray(initialData?.tags)
+      ? initialData.tags
+      : typeof initialData?.tags === "string" && initialData?.tags
+      ? initialData.tags.split(",").map((t) => t.trim()).filter(Boolean)
+      : [],
+    image: initialData?.image ?? "",
+    images: Array.isArray(initialData?.images)
+      ? initialData.images
+      : typeof initialData?.images === "string" && initialData?.images
+      ? initialData.images.split(",").map((t) => t.trim()).filter(Boolean)
+      : [],
   });
+  const [uploading, setUploading] = useState(false);
 
-  // For image preview (simulate upload)
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setProduct((p) => ({ ...p, imageFile: file }));
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        setProduct((p) => ({ ...p, image: ev.target?.result as string }));
-      };
-      reader.readAsDataURL(file);
+  // Handle image upload
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    setUploading(true);
+    const uploadedUrls: string[] = [];
+    for (const file of files) {
+      try {
+        const url = await uploadImage(file);
+        uploadedUrls.push(url);
+      } catch (err) {
+        // Optionally show error to user
+      }
     }
+    setProduct((p) => {
+      const allImages = [...(Array.isArray(p.images) ? p.images : []), ...uploadedUrls];
+      return {
+        ...p,
+        images: allImages,
+        image: allImages[0] ?? "",
+      };
+    });
+    setUploading(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  // Remove image from preview and array
+  const handleRemoveImage = (idx: number) => {
+    setProduct((p) => {
+      const newImages = Array.isArray(p.images) ? [...p.images] : [];
+      newImages.splice(idx, 1);
+      return {
+        ...p,
+        images: newImages,
+        image: newImages[0] ?? "",
+      };
+    });
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value, type } = e.target;
     if (type === "checkbox") {
-      const checked = (e.target as HTMLInputElement).checked;
-      setProduct((p) => ({ ...p, [name]: checked }));
+      setProduct((p) => ({ ...p, [name]: (e.target as HTMLInputElement).checked }));
     } else if (name === "price" || name === "oldPrice" || name === "quantity") {
-      setProduct((p) => ({ ...p, [name]: value === "" ? "" : Number(value) }));
-    } else if (name === "stock") {
-      setProduct((p) => ({ ...p, quantity: value === "" ? 0 : Number(value) }));
+      setProduct((p) => ({ ...p, [name]: value }));
+    } else if (name === "tags") {
+      setProduct((p) => ({
+        ...p,
+        tags: value.split(",").map((t) => t.trim()).filter(Boolean),
+      }));
     } else {
       setProduct((p) => ({ ...p, [name]: value }));
     }
@@ -71,19 +195,40 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    let imageUrl = product.image;
-    if (product.imageFile) {
-      imageUrl = await uploadImage(product.imageFile);
-    }
-    // Convert blank string to 0 for Firestore
-    const safeProduct: Product = {
-      ...product,
-      price: typeof product.price === "string" && product.price === "" ? 0 : Number(product.price),
-      oldPrice: typeof product.oldPrice === "string" && product.oldPrice === "" ? 0 : Number(product.oldPrice ?? 0),
-      quantity: typeof product.quantity === "string" && product.quantity === "" ? 0 : Number(product.quantity),
-      image: imageUrl,
+    const safeProduct = {
+      title: product.title,
+      artist: product.artist,
+      tipo: product.tipo,
+      genero: product.genero,
+      estado: product.estado,
+      condicion: product.condicion,
+      badge: product.badge,
+      description: product.description,
+      year: product.year,
+      featured: product.featured,
+      newArrival: product.newArrival,
+      beatlesShowcase: product.beatlesShowcase,
+      status: product.status === "true" ? true : false,
+      image: Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : "",
+      images: Array.isArray(product.images) ? product.images : [],
+      tags: Array.isArray(product.tags)
+        ? product.tags
+        : typeof product.tags === "string" && product.tags
+        ? product.tags.split(",").map((t) => t.trim()).filter(Boolean)
+        : [],
+      price: product.price === "" ? 0 : Number(product.price),
+      oldPrice: product.oldPrice === "" ? 0 : Number(product.oldPrice),
+      quantity: product.quantity === "" ? 0 : Number(product.quantity),
+      createdAt:
+        product.createdAt && typeof product.createdAt === "string"
+          ? product.createdAt
+          : new Date().toISOString(),
     };
-    await onSubmit(safeProduct);
+    try {
+      await onSubmit(safeProduct);
+    } catch (err) {
+      console.error("Error submitting product:", err);
+    }
   };
 
   return (
@@ -126,31 +271,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
         required
         style={inputStyle}
       />
-      {/* Price */}
-      <label style={badgeLabel}>Precio (MXN)</label>
-      <input
-        type="number"
-        name="price"
-        placeholder="Precio"
-        value={product.price === 0 ? "" : product.price}
-        onChange={handleChange}
-        required
-        style={inputStyle}
-        min={0}
-      />
-      {/* Old Price */}
-      <label style={badgeLabel}>Precio anterior (opcional)</label>
-      <input
-        type="number"
-        name="oldPrice"
-        placeholder="Precio anterior"
-        value={product.oldPrice === 0 ? "" : product.oldPrice}
-        onChange={handleChange}
-        style={inputStyle}
-        min={0}
-      />
       {/* Tipo */}
-      <label style={badgeLabel}>Tipo (Vinilo, CD, etc.)</label>
+      <label style={badgeLabel}>Tipo</label>
       <input
         type="text"
         name="tipo"
@@ -172,7 +294,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         style={inputStyle}
       />
       {/* Estado */}
-      <label style={badgeLabel}>Estado (Nuevo, Usado)</label>
+      <label style={badgeLabel}>Estado</label>
       <input
         type="text"
         name="estado"
@@ -183,7 +305,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         style={inputStyle}
       />
       {/* Condicion */}
-      <label style={badgeLabel}>Condición (Sellado, Excelente, etc.)</label>
+      <label style={badgeLabel}>Condición</label>
       <input
         type="text"
         name="condicion"
@@ -194,34 +316,12 @@ const ProductForm: React.FC<ProductFormProps> = ({
         style={inputStyle}
       />
       {/* Badge */}
-      <label style={badgeLabel}>Badge (opcional)</label>
+      <label style={badgeLabel}>Badge</label>
       <input
         type="text"
         name="badge"
         placeholder="Badge"
         value={product.badge}
-        onChange={handleChange}
-        style={inputStyle}
-      />
-      {/* Quantity */}
-      <label style={badgeLabel}>Cantidad en stock</label>
-      <input
-        type="number"
-        name="quantity"
-        placeholder="Cantidad en stock"
-        value={product.quantity === 0 ? "" : product.quantity}
-        onChange={handleChange}
-        required
-        style={inputStyle}
-        min={0}
-      />
-      {/* Year */}
-      <label style={badgeLabel}>Año (opcional)</label>
-      <input
-        type="text"
-        name="year"
-        placeholder="Año"
-        value={product.year}
         onChange={handleChange}
         style={inputStyle}
       />
@@ -236,76 +336,49 @@ const ProductForm: React.FC<ProductFormProps> = ({
         rows={3}
         style={{ ...inputStyle, resize: "vertical" }}
       />
-      {/* Tags */}
-      <label style={badgeLabel}>Etiquetas (separadas por coma)</label>
+      {/* Year */}
+      <label style={badgeLabel}>Año</label>
       <input
         type="text"
-        name="tags"
-        placeholder="Etiquetas"
-        value={product.tags?.join(", ") || ""}
-        onChange={e =>
-          setProduct((p) => ({
-            ...p,
-            tags: e.target.value.split(",").map((t) => t.trim()).filter(Boolean),
-          }))
-        }
+        name="year"
+        placeholder="Año"
+        value={product.year}
+        onChange={handleChange}
         style={inputStyle}
       />
-      {/* Image */}
-      <label style={badgeLabel}>Imagen de portada</label>
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        style={{ marginTop: 8 }}
-      />
-      {product.image && (
-        <img
-          src={product.image}
-          alt="Portada"
-          style={{
-            width: 80,
-            height: 80,
-            objectFit: "cover",
-            borderRadius: 8,
-            marginTop: 8,
-            boxShadow: "var(--shadow)",
-          }}
+      {/* Featured */}
+      <label style={badgeLabel}>
+        <input
+          type="checkbox"
+          name="featured"
+          checked={product.featured}
+          onChange={handleChange}
+          style={{ marginRight: 8 }}
         />
-      )}
-      {/* Switches */}
-      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 8 }}>
-        <label style={switchLabel}>
-          <input
-            type="checkbox"
-            name="featured"
-            checked={product.featured}
-            onChange={handleChange}
-            style={switchInput}
-          />
-          Destacado
-        </label>
-        <label style={switchLabel}>
-          <input
-            type="checkbox"
-            name="newArrival"
-            checked={product.newArrival}
-            onChange={handleChange}
-            style={switchInput}
-          />
-          Nuevo lanzamiento
-        </label>
-        <label style={switchLabel}>
-          <input
-            type="checkbox"
-            name="beatlesShowcase"
-            checked={product.beatlesShowcase}
-            onChange={handleChange}
-            style={switchInput}
-          />
-          Beatles Showcase
-        </label>
-      </div>
+        Destacado
+      </label>
+      {/* New Arrival */}
+      <label style={badgeLabel}>
+        <input
+          type="checkbox"
+          name="newArrival"
+          checked={product.newArrival}
+          onChange={handleChange}
+          style={{ marginRight: 8 }}
+        />
+        Nuevo lanzamiento
+      </label>
+      {/* Beatles Showcase */}
+      <label style={badgeLabel}>
+        <input
+          type="checkbox"
+          name="beatlesShowcase"
+          checked={product.beatlesShowcase}
+          onChange={handleChange}
+          style={{ marginRight: 8 }}
+        />
+        Beatles Showcase
+      </label>
       {/* Status */}
       <label style={badgeLabel}>Estado del producto</label>
       <select
@@ -314,9 +387,106 @@ const ProductForm: React.FC<ProductFormProps> = ({
         onChange={handleChange}
         style={inputStyle}
       >
-        <option value="active">Activo</option>
-        <option value="inactive">Inactivo</option>
+        <option value="true">Activo</option>
+        <option value="false">Inactivo</option>
       </select>
+      {/* Price */}
+      <label style={badgeLabel}>Precio</label>
+      <input
+        type="number"
+        name="price"
+        placeholder="Precio"
+        value={product.price}
+        onChange={handleChange}
+        style={inputStyle}
+        min={0}
+      />
+      {/* Old Price */}
+      <label style={badgeLabel}>Precio anterior</label>
+      <input
+        type="number"
+        name="oldPrice"
+        placeholder="Precio anterior"
+        value={product.oldPrice}
+        onChange={handleChange}
+        style={inputStyle}
+        min={0}
+      />
+      {/* Quantity */}
+      <label style={badgeLabel}>Cantidad en stock</label>
+      <input
+        type="number"
+        name="quantity"
+        placeholder="Cantidad en stock"
+        value={product.quantity}
+        onChange={handleChange}
+        style={inputStyle}
+        min={0}
+      />
+      {/* Tags */}
+      <label style={badgeLabel}>Etiquetas (separadas por coma)</label>
+      <input
+        type="text"
+        name="tags"
+        placeholder="ej: rock, vinilo, clásico"
+        value={Array.isArray(product.tags) ? product.tags.join(", ") : ""}
+        onChange={handleChange}
+        style={inputStyle}
+      />
+      {/* Imágenes del producto */}
+      <label style={badgeLabel}>Imágenes del producto</label>
+      <input
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleImageChange}
+        style={{ marginTop: 8 }}
+        disabled={uploading}
+      />
+      {uploading && (
+        <div style={{ color: "var(--accent)", marginTop: 8 }}>Subiendo imágenes...</div>
+      )}
+      {Array.isArray(product.images) && product.images.length > 0 && (
+        <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+          {product.images.map((img, idx) => (
+            <div key={idx} style={{ position: "relative" }}>
+              <img
+                src={img}
+                alt={`Imagen ${idx + 1}`}
+                style={{
+                  width: 80,
+                  height: 80,
+                  objectFit: "cover",
+                  borderRadius: 8,
+                  boxShadow: "var(--shadow)",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => handleRemoveImage(idx)}
+                style={{
+                  position: "absolute",
+                  top: 2,
+                  right: 2,
+                  background: "#b80000",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 22,
+                  height: 22,
+                  fontWeight: "bold",
+                  fontSize: "1rem",
+                  cursor: "pointer",
+                  boxShadow: "var(--shadow)",
+                }}
+                title="Eliminar imagen"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
       {/* Actions */}
       <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
         <button
@@ -378,22 +548,6 @@ const badgeLabel: React.CSSProperties = {
   marginBottom: 2,
   marginLeft: 2,
   display: "block",
-};
-
-const switchLabel: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 6,
-  fontWeight: 500,
-  color: "var(--accent)",
-  fontSize: "0.98rem",
-};
-
-const switchInput: React.CSSProperties = {
-  marginRight: 6,
-  accentColor: "var(--accent)",
-  width: 18,
-  height: 18,
 };
 
 export default ProductForm;

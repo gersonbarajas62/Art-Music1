@@ -1,4 +1,4 @@
-import { db } from "./firebase";
+/*import { db } from "./firebase";
 import {
   collection,
   getDocs,
@@ -42,4 +42,4 @@ export async function deleteProduct(id: string) {
   } catch (err) {
     throw new Error("No se pudo eliminar el producto");
   }
-}
+}*/

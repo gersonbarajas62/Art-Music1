@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { auth, googleProvider } from "../../utils/firebase";
+import { supabase } from "../../utils/supabaseClient";
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -36,26 +36,28 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      localStorage.setItem("user", "authenticated");
-      router.push("/dashboard");
-    } catch (err: any) {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
       setError("Correo o contraseña incorrectos.");
+      setLoading(false);
+      return;
     }
+    localStorage.setItem("user", "authenticated");
+    router.push("/dashboard");
     setLoading(false);
   };
 
   const handleGoogleSignIn = async () => {
     setError("");
     setLoading(true);
-    try {
-      await signInWithPopup(auth, googleProvider);
-      localStorage.setItem("user", "authenticated");
-      router.push("/dashboard");
-    } catch (err: any) {
+    const { error } = await supabase.auth.signInWithOAuth({ provider: "google" });
+    if (error) {
       setError("No se pudo iniciar sesión con Google.");
+      setLoading(false);
+      return;
     }
+    localStorage.setItem("user", "authenticated");
+    router.push("/dashboard");
     setLoading(false);
   };
 

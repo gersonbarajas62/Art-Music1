@@ -1,4 +1,4 @@
-"use client";
+/*"use client";
 import React, { useState, useEffect } from "react";
 import ProductForm from "./components/ProductForm";
 import ProductTable from "./components/ProductTable";
@@ -7,7 +7,7 @@ import {
   addProduct,
   updateProduct,
   deleteProduct,
-} from "../../utils/firebaseProducts";
+} from "../../utils/supabaseProducts";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -96,4 +96,4 @@ export default function ProductsPage() {
       )}
     </div>
   );
-}
+}*/
