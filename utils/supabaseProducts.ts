@@ -57,6 +57,9 @@ function mapProductToSchema(product: any) {
     viniloExclusivo: product.viniloExclusivo ?? false,
     exitosRock: product.exitosRock ?? false,
     edicionColeccion: product.edicionColeccion ?? false,
+    vinilNuevo: product.vinilNuevo ?? false,
+    vinilosenVista: product.vinilosenVista ?? false,
+    eleccion: product.eleccion ?? false,
   };
 }
 

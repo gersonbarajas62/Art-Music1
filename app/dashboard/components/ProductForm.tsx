@@ -36,6 +36,9 @@ const defaultProduct = {
   viniloExclusivo: false,
   exitosRock: false,
   edicionColeccion: false,
+  vinilNuevo: false,
+  vinilosenVista: false,
+  eleccion: false,
 };
 
 type ProductFormState = {
@@ -63,6 +66,9 @@ type ProductFormState = {
   viniloExclusivo: boolean;
   exitosRock: boolean;
   edicionColeccion: boolean;
+  vinilNuevo: boolean;
+  vinilosenVista: boolean;
+  eleccion: boolean;
 };
 
 const ProductForm: React.FC<ProductFormProps> = ({
@@ -105,6 +111,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
     viniloExclusivo: initialData?.viniloExclusivo ?? false,
     exitosRock: initialData?.exitosRock ?? false,
     edicionColeccion: initialData?.edicionColeccion ?? false,
+    vinilNuevo: initialData?.vinilNuevo ?? false,
+    vinilosenVista: initialData?.vinilosenVista ?? false,
+    eleccion: initialData?.eleccion ?? false,
   });
   const [uploading, setUploading] = useState(false);
 
@@ -335,6 +344,18 @@ const ProductForm: React.FC<ProductFormProps> = ({
         <label style={switchLabel}>
           <input type="checkbox" name="edicionColeccion" checked={product.edicionColeccion} onChange={handleChange} style={switchInput} />
           Edición de Colección
+        </label>
+        <label style={switchLabel}>
+          <input type="checkbox" name="vinilNuevo" checked={product.vinilNuevo} onChange={handleChange} style={switchInput} />
+          Hot New Vinyl
+        </label>
+        <label style={switchLabel}>
+          <input type="checkbox" name="vinilosenVista" checked={product.vinilosenVista} onChange={handleChange} style={switchInput} />
+          Mostrar en Hot New Vinyls
+        </label>
+        <label style={switchLabel}>
+          <input type="checkbox" name="eleccion" checked={product.eleccion} onChange={handleChange} style={switchInput} />
+          Staff Pick
         </label>
       </div>
       {/* Imágenes del producto */}
