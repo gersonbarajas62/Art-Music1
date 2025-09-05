@@ -2,24 +2,31 @@
 
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
+import { getProductsWithImages } from "../utils/supabaseProducts";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "@/styles/Features.css";
-import Link from "next/link";
 
 const Slider = dynamic(() => import("react-slick"), { ssr: false });
 
 const Features = () => {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const [products, setProducts] = useState<any[]>([]);
+  useEffect(() => {
+    async function fetchProducts() {
+      const all = await getProductsWithImages();
+      setProducts(all);
+    }
+    fetchProducts();
+    setMounted(true);
+  }, []);
 
-  const newReleases = [
-    { id: 1, title: "Vinilo Raro de The Beatles", price: "$150", image: "/images/beatles-vinyl.jpg" },
-    { id: 2, title: "Edición Limitada de Pink Floyd", price: "$200", image: "/images/pink-floyd.jpg" },
-    { id: 3, title: "CD de Rock Japonés", price: "$80", image: "/images/japanese-rock.jpg" },
-    { id: 4, title: "Vinilo de The Rolling Stones", price: "$180", image: "/images/rolling-stones.jpg" },
-    { id: 5, title: "Álbum Raro de Nirvana", price: "$250", image: "/images/nirvana.jpg" },
-  ];
+  // Filter products for each section
+  const vinilosExclusivos = products.filter((p) => p.viniloExclusivo);
+  const exitosRock = products.filter((p) => p.exitosRock);
+  const edicionesColeccion = products.filter((p) => p.edicionColeccion);
+  const nuevasLlegadas = products.filter((p) => p.newArrival);
 
   // Use CSS variables for palette
   const overlayColor = "var(--section)";
@@ -34,12 +41,13 @@ const Features = () => {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: 4, // Show 4 cards per view
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 5000,
+    autoplaySpeed: 3000, // 3 seconds animation
     arrows: true,
     responsive: [
+      { breakpoint: 1200, settings: { slidesToShow: 3 } },
       { breakpoint: 900, settings: { slidesToShow: 2 } },
       { breakpoint: 600, settings: { slidesToShow: 1 } },
     ],
@@ -48,18 +56,21 @@ const Features = () => {
   const categorySections = [
     {
       title: "Vinilos Exclusivos",
-      image: "/images/beatles-vinyl.jpg",
-      href: "/categories/vinilos-exclusivos",
+      image: vinilosExclusivos[0]?.images?.[0] || "/images/beatles-vinyl.jpg",
+      href: "/vinilos-exclusivos",
+      count: vinilosExclusivos.length,
     },
     {
       title: "Éxitos de Rock",
-      image: "/images/pink-floyd.jpg",
-      href: "/categories/exitos-rock",
+      image: exitosRock[0]?.images?.[0] || "/images/pink-floyd.jpg",
+      href: "/exitos-rock",
+      count: exitosRock.length,
     },
     {
       title: "Ediciones de Colección",
-      image: "/images/metallica.jpg",
-      href: "/categories/ediciones-coleccion",
+      image: edicionesColeccion[0]?.images?.[0] || "/images/metallica.jpg",
+      href: "/ediciones-coleccion",
+      count: edicionesColeccion.length,
     },
   ];
 
@@ -101,7 +112,7 @@ const Features = () => {
               display: "block",
               borderRadius: "14px",
               boxShadow: "var(--shadow)",
-              background: card,
+              background: "var(--card)",
               padding: "24px 10px",
               textAlign: "center",
               transition: "transform 0.2s, box-shadow 0.2s",
@@ -139,7 +150,7 @@ const Features = () => {
                 fontSize: "0.98rem",
               }}
             >
-              Ver más &rarr;
+              {cat.count} productos &nbsp;|&nbsp; Ver más &rarr;
             </span>
           </Link>
         ))}
@@ -161,46 +172,82 @@ const Features = () => {
         </h2>
         {mounted && (
           <Slider {...settings}>
-            {newReleases.map((release) => (
-              <div key={release.id} className="carousel-item" style={{ position: "relative", padding: "10px" }}>
-                <Link href={`/albumdetails?id=${release.id}`}>
-                  <div style={{
-                    borderRadius: "12px",
-                    overflow: "hidden",
-                    boxShadow: "var(--shadow)",
-                    transition: "transform 0.3s",
-                    background: card,
-                    cursor: "pointer",
-                    animation: "slideUp 1s cubic-bezier(.77,0,.175,1)",
-                  }}>
+            {nuevasLlegadas.map((release) => (
+              <div
+                key={release.id}
+                className="carousel-item card-hover"
+                style={{
+                  position: "relative",
+                  padding: "18px 12px",
+                  margin: "0 8px",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                }}
+              >
+                <Link href={`/albumdetails/${release.id}`}>
+                  <div
+                    style={{
+                      borderRadius: "12px",
+                      overflow: "hidden",
+                      boxShadow: "var(--shadow)",
+                      background: "var(--card)",
+                      cursor: "pointer",
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      padding: "18px 10px",
+                      minHeight: "320px",
+                      height: "100%",
+                      width: "100%",
+                    }}
+                  >
                     <img
                       src={release.image}
                       alt={release.title}
                       className="carousel-image"
                       style={{
-                        width: "100%",
-                        height: "220px",
+                        width: "100px",
+                        height: "100px",
                         objectFit: "cover",
-                        display: "block",
-                        transition: "transform 0.3s",
+                        borderRadius: "8px",
+                        marginBottom: "10px",
+                        boxShadow: "var(--shadow)",
+                        transition: "transform 0.2s",
                       }}
                     />
-                    <div style={{
-                      textAlign: "center",
-                      padding: "10px 0 0 0",
-                    }}>
-                      <h4 style={{
-                        margin: 0,
-                        color: "var(--accent)",
-                        fontWeight: "bold",
-                        fontSize: "1.05rem",
-                      }}>{release.title}</h4>
-                      <p style={{
-                        margin: 0,
-                        color: text,
-                        fontWeight: "bold",
-                        fontSize: "0.98rem",
-                      }}>{release.price}</p>
+                    <div
+                      style={{
+                        textAlign: "center",
+                        padding: "10px 0 0 0",
+                        width: "100%",
+                      }}
+                    >
+                      <h4
+                        style={{
+                          margin: 0,
+                          color: "var(--accent)",
+                          fontWeight: "bold",
+                          fontSize: "1.05rem",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        {release.title}
+                      </h4>
+                      <p
+                        style={{
+                          margin: 0,
+                          color: text,
+                          fontWeight: "bold",
+                          fontSize: "0.98rem",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        {release.price}
+                      </p>
                       <span
                         style={{
                           display: "inline-block",
@@ -222,6 +269,29 @@ const Features = () => {
             ))}
           </Slider>
         )}
+        {/* Button only below the carousel */}
+        <div style={{ textAlign: "center", marginTop: 32 }}>
+          <Link href="/nuevas-llegadas">
+            <button
+              style={{
+                background: "var(--accent)",
+                color: "var(--bg)",
+                borderRadius: "10px",
+                padding: "14px 38px",
+                fontWeight: "bold",
+                fontSize: "1.12rem",
+                border: "none",
+                boxShadow: "var(--shadow)",
+                cursor: "pointer",
+                margin: "0 auto",
+                letterSpacing: "1px",
+                transition: "background 0.2s, color 0.2s",
+              }}
+            >
+              Ver todo lo nuevo &rarr;
+            </button>
+          </Link>
+        </div>
       </div>
       <style>
         {`
@@ -233,10 +303,30 @@ const Features = () => {
             from { opacity: 0; transform: translateY(40px);}
             to { opacity: 1; transform: translateY(0);}
           }
-          .carousel-item:hover img {
-            transform: scale(1.05);
+          .carousel-item.card-hover {
+            margin: 0 8px;
+            min-width: 220px;
+            max-width: 260px;
+            box-sizing: border-box;
           }
-          @media (max-width: 900px) {
+          .carousel-item.card-hover:hover {
+            transform: scale(1.045);
+            box-shadow: 0 8px 32px var(--accent), 0 2px 12px var(--accent);
+            border: 2px solid var(--accent);
+          }
+          .carousel-image:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px var(--accent);
+          }
+          .features-carousel-row .slick-slide {
+            display: flex !important;
+            align-items: stretch;
+            height: auto !important;
+          }
+          .features-carousel-row .slick-list {
+            padding: 12px 0 !important;
+          }
+          @media (max-width: 1200px) {
             .features-container {
               padding: 18px 2vw;
             }
@@ -245,7 +335,7 @@ const Features = () => {
               max-width: 80vw;
             }
           }
-          @media (max-width: 600px) {
+          @media (max-width: 900px) {
             .features-container {
               padding: 10px 1vw;
             }

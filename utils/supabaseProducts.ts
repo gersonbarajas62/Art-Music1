@@ -23,6 +23,9 @@ function mapProductToSchema(product: any) {
     createdAt,
     tags = [],
     beatlesFeatured = false,
+    viniloExclusivo = false,
+    exitosRock = false,
+    edicionColeccion = false,
   } = product;
 
   return {
@@ -51,6 +54,9 @@ function mapProductToSchema(product: any) {
     price: typeof price === "string" ? Number(price) : price,
     createdAt: createdAt ?? new Date().toISOString(),
     beatlesFeatured,
+    viniloExclusivo: product.viniloExclusivo ?? false,
+    exitosRock: product.exitosRock ?? false,
+    edicionColeccion: product.edicionColeccion ?? false,
   };
 }
 

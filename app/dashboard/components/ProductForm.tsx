@@ -33,6 +33,9 @@ const defaultProduct = {
   image: "",
   images: [],
   beatlesFeatured: false,
+  viniloExclusivo: false,
+  exitosRock: false,
+  edicionColeccion: false,
 };
 
 type ProductFormState = {
@@ -57,6 +60,9 @@ type ProductFormState = {
   image: string;
   images: string[] | string;
   beatlesFeatured: boolean;
+  viniloExclusivo: boolean;
+  exitosRock: boolean;
+  edicionColeccion: boolean;
 };
 
 const ProductForm: React.FC<ProductFormProps> = ({
@@ -96,6 +102,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
       ? initialData.images.split(",").map((t: string) => t.trim()).filter(Boolean)
       : [],
     beatlesFeatured: initialData?.beatlesFeatured ?? false,
+    viniloExclusivo: initialData?.viniloExclusivo ?? false,
+    exitosRock: initialData?.exitosRock ?? false,
+    edicionColeccion: initialData?.edicionColeccion ?? false,
   });
   const [uploading, setUploading] = useState(false);
 
@@ -314,6 +323,18 @@ const ProductForm: React.FC<ProductFormProps> = ({
             style={switchInput}
           />
           Beatles Featured
+        </label>
+        <label style={switchLabel}>
+          <input type="checkbox" name="viniloExclusivo" checked={product.viniloExclusivo} onChange={handleChange} style={switchInput} />
+          Vinilo Exclusivo
+        </label>
+        <label style={switchLabel}>
+          <input type="checkbox" name="exitosRock" checked={product.exitosRock} onChange={handleChange} style={switchInput} />
+          Éxitos del Rock
+        </label>
+        <label style={switchLabel}>
+          <input type="checkbox" name="edicionColeccion" checked={product.edicionColeccion} onChange={handleChange} style={switchInput} />
+          Edición de Colección
         </label>
       </div>
       {/* Imágenes del producto */}
