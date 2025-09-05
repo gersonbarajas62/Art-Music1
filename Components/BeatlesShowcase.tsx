@@ -1,53 +1,31 @@
 "use client";
-import Link from "next/link";
 import { useEffect, useState } from "react";
-
-const beatlesItems = [
-	{
-		id: 1,
-		title: "The Beatles: Abbey Road (Vinilo Edición Limitada)",
-		price: "$59.99",
-		image: "/images/beatles-abbeyroad.jpg",
-		badge: "Edición Limitada",
-		featured: true,
-	},
-	{
-		id: 2,
-		title: "The Beatles: White Album (Box Set)",
-		price: "$129.99",
-		image: "/images/beatles-whitealbum.jpg",
-		badge: "Box Set",
-	},
-	{
-		id: 3,
-		title: "The Beatles: Sgt. Pepper's (Vinilo Remasterizado)",
-		price: "$49.99",
-		image: "/images/beatles-sgtpepper.jpg",
-		badge: "Remasterizado",
-	},
-	{
-		id: 4,
-		title: "The Beatles: Revolver (CD Deluxe)",
-		price: "$34.99",
-		image: "/images/beatles-revolver.jpg",
-		badge: "Deluxe",
-	},
-	{
-		id: 5,
-		title: "The Beatles: Let It Be (Vinilo)",
-		price: "$44.99",
-		image: "/images/beatles-letitbe.jpg",
-		badge: "Vinilo",
-	},
-];
+import { getProductsWithImages } from "../utils/supabaseProducts";
+import { useRouter } from "next/navigation";
 
 const BeatlesShowcase = () => {
-	const [cart, setCart] = useState<number[]>([]);
+	const [beatlesProducts, setBeatlesProducts] = useState<any[]>([]);
 	const [isDark, setIsDark] = useState(false);
+	const [mounted, setMounted] = useState(false);
+	const router = useRouter();
 
 	useEffect(() => {
-		setIsDark(document.documentElement.classList.contains("dark"));
+		setMounted(true);
+		if (typeof window !== "undefined") {
+			setIsDark(document.documentElement.classList.contains("dark"));
+		}
+		async function fetchBeatles() {
+			const allProducts = await getProductsWithImages();
+			setBeatlesProducts(
+				allProducts.filter(
+					(p: any) => p.beatlesShowcase === true && p.beatlesFeatured === true
+				)
+			);
+		}
+		fetchBeatles();
 	}, []);
+
+	if (!mounted) return null; // Prevent SSR hydration mismatch
 
 	return (
 		<section
@@ -63,7 +41,7 @@ const BeatlesShowcase = () => {
 				overflow: "hidden",
 			}}
 		>
-			{/* Beatles Specialist Ribbon (keep gold) */}
+			{/* Beatles Specialist Ribbon */}
 			<div
 				style={{
 					position: "absolute",
@@ -86,8 +64,7 @@ const BeatlesShowcase = () => {
 				</span>{" "}
 				Especialistas en The Beatles
 			</div>
-
-			{/* Trust badge (keep gold, but make star visible in dark mode) */}
+			{/* Trust badge */}
 			<div
 				style={{
 					display: "flex",
@@ -128,7 +105,6 @@ const BeatlesShowcase = () => {
 					+500 ventas &nbsp;|&nbsp; Garantía de autenticidad
 				</span>
 			</div>
-
 			<h2
 				style={{
 					textAlign: "center",
@@ -168,176 +144,173 @@ const BeatlesShowcase = () => {
 					position: "relative",
 				}}
 			>
-				{beatlesItems.map((item) => (
+				{beatlesProducts.length === 0 ? (
 					<div
-						key={item.id}
 						style={{
-							minWidth: 260,
-							maxWidth: 340,
-							flex: "1 1 300px",
-							backgroundColor: "var(--card)",
-							borderRadius: "18px",
-							boxShadow: "var(--shadow)",
-							padding: "24px 12px 28px",
-							textAlign: "center",
-							position: "relative",
-							transition: "transform 0.25s, box-shadow 0.25s",
-							border: "3px solid var(--border)",
-							margin: "12px 0",
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "space-between",
+							color: "var(--muted)",
+							fontWeight: "bold",
+							fontSize: "1.1rem",
+							padding: 24,
 						}}
-						className="beatles-card"
 					>
-						{item.featured && (
-							<span
+						No hay productos Beatles registrados.
+					</div>
+				) : (
+					beatlesProducts.map((item: any) => (
+						<div
+							key={item.id}
+							style={{
+								minWidth: 260,
+								maxWidth: 340,
+								flex: "1 1 300px",
+								backgroundColor: "var(--card)",
+								borderRadius: "18px",
+								boxShadow: "var(--shadow)",
+								padding: "24px 12px 28px",
+								textAlign: "center",
+								position: "relative",
+								transition: "transform 0.25s, box-shadow 0.25s",
+								border: "3px solid var(--border)",
+								margin: "12px 0",
+								display: "flex",
+								flexDirection: "column",
+								justifyContent: "space-between",
+							}}
+							className="beatles-card"
+						>
+							{item.badge && (
+								<span
+									style={{
+										position: "absolute",
+										top: 18,
+										left: 18,
+										background: "linear-gradient(90deg, #FFD700 60%, #fffbe6 100%)",
+										color: "#222",
+										fontWeight: "bold",
+										borderRadius: "8px",
+										padding: "4px 16px",
+										fontSize: "1rem",
+										boxShadow: "0 1px 6px rgba(0,0,0,0.13)",
+										letterSpacing: "0.5px",
+										zIndex: 2,
+									}}
+								>
+									{item.badge}
+								</span>
+							)}
+							{item.images && item.images.length > 0 ? (
+								<div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 16 }}>
+									{item.images.map((img: string, idx: number) => (
+										<img
+											key={idx}
+											src={img}
+											alt={`${item.title} img${idx + 1}`}
+											style={{
+												width: "80px",
+												height: "80px",
+												objectFit: "cover",
+												borderRadius: "8px",
+												boxShadow: "var(--shadow)",
+												marginBottom: "4px",
+											}}
+										/>
+									))}
+								</div>
+							) : (
+								<div
+									style={{
+										width: "100%",
+										height: "80px",
+										borderRadius: "8px",
+										background: "var(--section)",
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+										color: "var(--muted)",
+										fontWeight: "bold",
+										fontSize: "1.1rem",
+										marginBottom: "16px",
+									}}
+								>
+									Sin imagen
+								</div>
+							)}
+							<h3
 								style={{
-									position: "absolute",
-									top: 18,
-									right: 18,
-									background: "linear-gradient(90deg, #FFD700 60%, #fffbe6 100%)",
-									color: "#b80000",
-									fontWeight: "bold",
-									borderRadius: "8px",
-									padding: "4px 16px",
-									fontSize: "1rem",
-									boxShadow: "0 1px 6px rgba(0,0,0,0.13)",
-									letterSpacing: "0.5px",
-									zIndex: 2,
-									border: "2px solid #b80000",
+									margin: "18px 0 6px",
+									color: "var(--text)",
+									fontWeight: 700,
+									fontSize: "1.18rem",
+									minHeight: "2.2em",
 								}}
 							>
-								★ Destacado
-							</span>
-						)}
-						<img
-							src={item.image}
-							alt={item.title}
-							style={{
-								width: "100%",
-								height: "220px",
-								objectFit: "cover",
-								borderRadius: "12px",
-								marginBottom: "16px",
-								boxShadow: "0 2px 12px rgba(0,0,0,0.18)",
-							}}
-						/>
-						<span
-							style={{
-								position: "absolute",
-								top: 18,
-								left: 18,
-								background: "linear-gradient(90deg, #FFD700 60%, #fffbe6 100%)",
-								color: "#222",
-								fontWeight: "bold",
-								borderRadius: "8px",
-								padding: "4px 16px",
-								fontSize: "1rem",
-								boxShadow: "0 1px 6px rgba(0,0,0,0.13)",
-								letterSpacing: "0.5px",
-								zIndex: 2,
-							}}
-						>
-							{item.badge}
-						</span>
-						<h3
-							style={{
-								margin: "18px 0 6px",
-								color: "var(--text)",
-								fontWeight: 700,
-								fontSize: "1.18rem",
-								minHeight: "2.2em",
-							}}
-						>
-							{item.title}
-						</h3>
-						<p
-							style={{
-								margin: 0,
-								fontWeight: "bold",
-								color: "var(--text)",
-								fontSize: "1.13rem",
-							}}
-						>
-							{item.price}
-						</p>
-						<div
-							style={{
-								marginTop: 18,
-								display: "flex",
-								gap: 10,
-								justifyContent: "center",
-							}}
-						>
-							<Link
-								href={`/albumdetails?id=${item.id}`}
+								{item.title}
+							</h3>
+							<div
 								style={{
+									color: "var(--muted)",
+									fontSize: "1.08rem",
+									marginBottom: 4,
+								}}
+							>
+								{item.artist}
+							</div>
+							<div style={{ fontSize: "1.05rem", marginBottom: 4 }}>
+								<b>Tipo:</b> {item.tipo}
+							</div>
+							<p
+								style={{
+									margin: 0,
+									fontWeight: "bold",
+									color: "var(--accent)",
+									fontSize: "1.13rem",
+								}}
+							>
+								${item.price}
+							</p>
+							<button
+								style={{
+									marginTop: 16,
 									background: "var(--accent)",
 									color: "var(--bg)",
 									borderRadius: "8px",
-									padding: "12px 18px",
+									padding: "10px 18px",
 									fontWeight: "bold",
-									textDecoration: "none",
-									fontSize: "1.08rem",
-									boxShadow: "var(--shadow)",
-									transition: "background 0.2s, color 0.2s",
-									display: "inline-block",
-								}}
-							>
-								Ver detalle
-							</Link>
-							<button
-								onClick={() =>
-									setCart((prev) =>
-										prev.includes(item.id)
-											? prev
-											: [...prev, item.id]
-									)
-								}
-								disabled={cart.includes(item.id)}
-								style={{
-									background: cart.includes(item.id) ? "#bbb" : "var(--accent)",
-									color: "var(--bg)",
-									borderRadius: "8px",
-									padding: "12px 18px",
-									fontWeight: "bold",
-									fontSize: "1.08rem",
+									fontSize: "1.05rem",
 									border: "none",
-									cursor: cart.includes(item.id)
-										? "not-allowed"
-										: "pointer",
+									cursor: "pointer",
 									boxShadow: "var(--shadow)",
 									transition: "background 0.2s, color 0.2s",
-									marginLeft: 0,
 									display: "inline-block",
 								}}
+								onClick={() => router.push(`/beatles/${item.id}`)}
 							>
-								{cart.includes(item.id) ? "Agregado" : "Agregar"}
+								Ver más
 							</button>
 						</div>
-					</div>
-				))}
+					))
+				)}
 			</div>
 			{/* Highlighted call-to-action button */}
 			<div style={{ textAlign: "center", marginTop: 44 }}>
-				<a
-					href="/categories/vinilos-exclusivos?artist=the-beatles"
+				<button
+					onClick={() => router.push("/beatles")}
 					style={{
 						background: "var(--accent)",
-						color: "var(--bg)", // <-- now always visible
+						color: "var(--bg)",
 						borderRadius: "12px",
 						padding: "18px 44px",
 						fontWeight: "bold",
 						fontSize: "1.18rem",
-						textDecoration: "none",
+						border: "none",
 						boxShadow: "0 2px 12px var(--shadow)",
 						transition: "background 0.2s, color 0.2s",
 						display: "inline-block",
+						cursor: "pointer",
 					}}
 				>
 					Ver toda la colección de The Beatles &rarr;
-				</a>
+				</button>
 			</div>
 			<style>
 				{`
