@@ -22,32 +22,61 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
 
-  const baseClasses = [
-    "flex items-center justify-between",
-    "bg-sidebar dark:bg-sidebar",
-    "text-default",
-    "border-b border-border",
-    "px-6 py-3",
-    "transition-colors"
-  ].join(" ");
-
+  // Fix: Use a container and flex for proper spacing and alignment
   return (
-<header className={`w-full ${baseClasses} ${className}`.trim()}>
-      {/* Logo */}
-      <h1 className="font-bold cursor-pointer" onClick={() => router.push('/')}>ART Music</h1>
+    <header
+      className={`w-full bg-sidebar dark:bg-sidebar text-default border-b border-border px-6 py-3 transition-colors ${className}`}
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 100,
+        boxShadow: "0 2px 8px var(--shadow)",
+        background: "var(--section)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          maxWidth: "1400px",
+          margin: "0 auto",
+        }}
+      >
+        {/* Logo */}
+        <h1
+          className="font-bold cursor-pointer"
+          style={{
+            fontSize: "1.7rem",
+            color: "var(--accent)",
+            letterSpacing: "1px",
+            marginRight: "32px",
+            fontWeight: "bold",
+            textShadow: "0 2px 8px var(--bg)",
+          }}
+          onClick={() => router.push("/")}
+        >
+          ART Music
+        </h1>
 
-      {/* Right controls: nav links + login + cart + theme toggle */}
-      <div className="flex items-center space-x-4">
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-4">
-          <Link href="/" className="hover:underline">Home</Link>
-          <button
-            onClick={() => router.push("/onsale")}
-            className="hover:underline"
-          >
+        <nav
+          className="hidden md:flex items-center gap-4"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "24px",
+            fontWeight: 500,
+            fontSize: "1.08rem",
+          }}
+        >
+          <Link href="/" className="hover:underline" style={{ color: "var(--text)" }}>
+            Home
+          </Link>
+          <Link href="/onsale" className="hover:underline" style={{ color: "var(--text)" }}>
             On Sale
-          </button>
-          <Link href="/genres" className="hover:underline">
+          </Link>
+          <Link href="/genres" className="hover:underline" style={{ color: "var(--text)" }}>
             Genres
           </Link>
           <button
@@ -55,61 +84,115 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             className="flex items-center hover:underline"
             aria-label="Cart"
             type="button"
+            style={{ background: "none", border: "none", color: "var(--accent)", fontSize: "1.2rem" }}
           >
-            <ShoppingCart size={20} />
+            <ShoppingCart size={22} />
           </button>
-          <button
-            onClick={() => router.push("/login")}
+          <Link
+            href="/login"
             className="bg-button text-button-fg hover:bg-button-hover px-4 py-2 rounded font-medium"
+            style={{
+              background: "var(--accent)",
+              color: "var(--bg)",
+              borderRadius: "8px",
+              fontWeight: "bold",
+              fontSize: "1rem",
+              boxShadow: "var(--shadow)",
+              marginLeft: "8px",
+              textDecoration: "none",
+            }}
           >
             Login
+          </Link>
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle Theme"
+            className="p-2 rounded hover:bg-pane transition"
+            style={{
+              background: "none",
+              border: "none",
+              marginLeft: "8px",
+              color: "var(--accent)",
+            }}
+          >
+            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
           </button>
         </nav>
-
-        {/* Theme toggle */}
-        <button
-          onClick={toggleTheme}
-          aria-label="Toggle Theme"
-          className="p-2 rounded hover:bg-pane transition"
-        >
-          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
 
         {/* Mobile menu toggle */}
         <button
           className="md:hidden p-2 rounded hover:bg-pane transition"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle Menu"
+          style={{
+            background: "none",
+            border: "none",
+            color: "var(--accent)",
+            marginLeft: "12px",
+            fontSize: "1.5rem",
+          }}
         >
-          {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          {menuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
 
       {/* Mobile nav */}
       {menuOpen && (
-        <nav className="absolute top-full left-0 w-full bg-sidebar dark:bg-sidebar flex flex-col items-start gap-4 p-4 border-b border-border">
-          {['Home', 'On Sale', 'Genres'].map((label) => (
-            <a
-              key={label}
-              href={label === 'Home' ? '/' : '#'}
-              className="w-full hover:underline"
-            >
-              {label}
-            </a>
-          ))}
+        <nav
+          className="absolute top-full left-0 w-full bg-sidebar dark:bg-sidebar flex flex-col items-start gap-4 p-4 border-b border-border"
+          style={{
+            background: "var(--section)",
+            boxShadow: "0 2px 8px var(--shadow)",
+            borderBottom: "1px solid var(--border)",
+            zIndex: 99,
+          }}
+        >
+          <Link href="/" className="w-full hover:underline" style={{ color: "var(--text)", fontWeight: 500 }}>
+            Home
+          </Link>
+          <Link href="/onsale" className="w-full hover:underline" style={{ color: "var(--text)", fontWeight: 500 }}>
+            On Sale
+          </Link>
+          <Link href="/genres" className="w-full hover:underline" style={{ color: "var(--text)", fontWeight: 500 }}>
+            Genres
+          </Link>
           <button
             onClick={() => setCartOpen(true)}
             className="flex items-center hover:underline"
             aria-label="Cart"
             type="button"
+            style={{ background: "none", border: "none", color: "var(--accent)", fontSize: "1.2rem" }}
           >
-            <ShoppingCart size={20} />
+            <ShoppingCart size={22} />
           </button>
-          <button
-            onClick={() => router.push("/login")}
+          <Link
+            href="/login"
             className="w-full text-left bg-button text-button-fg hover:bg-button-hover px-4 py-2 rounded font-medium"
+            style={{
+              background: "var(--accent)",
+              color: "var(--bg)",
+              borderRadius: "8px",
+              fontWeight: "bold",
+              fontSize: "1rem",
+              boxShadow: "var(--shadow)",
+              marginTop: "8px",
+              textDecoration: "none",
+            }}
           >
             Login
+          </Link>
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle Theme"
+            className="p-2 rounded hover:bg-pane transition"
+            style={{
+              background: "none",
+              border: "none",
+              color: "var(--accent)",
+              marginTop: "8px",
+            }}
+          >
+            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
           </button>
         </nav>
       )}
