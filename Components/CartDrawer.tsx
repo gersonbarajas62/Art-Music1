@@ -1,51 +1,27 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { useRouter } from "next/navigation";
-
-const mockCart = [
-	{
-		id: 1,
-		name: "Vinilo: Pink Floyd – The Wall",
-		price: 1200,
-		image: "/images/pinkfloyd.jpg",
-		quantity: 1,
-	},
-	{
-		id: 2,
-		name: "CD: Led Zeppelin – IV",
-		price: 450,
-		image: "/images/ledzep.jpg",
-		quantity: 2,
-	},
-];
+import { CartContext } from "./CartProvider"; // Import context
 
 interface CartDrawerProps {
 	open: boolean;
 	onClose: () => void;
 }
 
+interface CartItem {
+	id: string;
+	name: string;
+	price: number;
+	quantity: number;
+	image: string;
+}
+
 const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
-	const [cart, setCart] = useState(mockCart);
+	const { cart, updateQuantity, removeFromCart } = useContext(CartContext);
 	const router = useRouter();
 
-	const handleQuantity = (id: number, delta: number) => {
-		setCart((cart) =>
-			cart
-				.map((item) =>
-					item.id === id
-						? { ...item, quantity: Math.max(1, item.quantity + delta) }
-						: item
-				)
-				.filter((item) => item.quantity > 0)
-		);
-	};
-
-	const handleRemove = (id: number) => {
-		setCart((cart) => cart.filter((item) => item.id !== id));
-	};
-
 	const total = cart.reduce(
-		(acc, item) => acc + item.price * item.quantity,
+		(acc: number, item: CartItem) => acc + item.price * item.quantity,
 		0
 	);
 
@@ -136,7 +112,7 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
 						El carrito está vacío.
 					</div>
 				) : (
-					cart.map((item) => (
+					cart.map((item: CartItem) => (
 						<div
 							key={item.id}
 							style={{
@@ -201,7 +177,7 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
 									}}
 								>
 									<button
-										onClick={() => handleQuantity(item.id, -1)}
+										onClick={() => updateQuantity(item.id, -1)}
 										style={{
 											background: "var(--accent)",
 											border: "none",
@@ -231,7 +207,7 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
 										{item.quantity}
 									</span>
 									<button
-										onClick={() => handleQuantity(item.id, 1)}
+										onClick={() => updateQuantity(item.id, 1)}
 										style={{
 											background: "var(--accent)",
 											border: "none",
@@ -252,7 +228,7 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
 									</button>
 									<button
 										aria-label="Eliminar"
-										onClick={() => handleRemove(item.id)}
+										onClick={() => removeFromCart(item.id)}
 										style={{
 											background: "none",
 											border: "none",

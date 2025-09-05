@@ -10,6 +10,7 @@ import Footer from "../../Components/Footer";
 import Link from "next/link";
 import BeatlesShowcase from "../../Components/BeatlesShowcase";
 import AboutUs from "../../Components/AboutUs";
+import { CartProvider } from "../../Components/CartProvider";
 
 export default function SharedLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -30,32 +31,34 @@ export default function SharedLayout({ children }: { children: React.ReactNode }
   // }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {!isLogin && <Header className="sticky top-0 z-50" />}
+    <CartProvider>
+      <div className="flex flex-col min-h-screen">
+        {!isLogin && <Header className="sticky top-0 z-50" />}
 
-      <div className="flex-1 overflow-y-auto">
-        {/* Only render landing sections on home page */}
-        {isHome ? (
-          <>
-            <Hero />
-            <BeatlesShowcase />
-            <Features />
-            <GenresAndVinyls />
-            <Contact />
-            <AboutUs />
-          </>
-        ) : isDashboard && user ? (
-          <div className="flex h-full">
-            {/* … your aside/nav … */}
-            <main className="flex-1 p-6">{children}</main>
-          </div>
-        ) : (
-          <main>{children}</main>
-        )}
+        <div className="flex-1 overflow-y-auto">
+          {/* Only render landing sections on home page */}
+          {isHome ? (
+            <>
+              <Hero />
+              <BeatlesShowcase />
+              <Features />
+              <GenresAndVinyls />
+              <Contact />
+              <AboutUs />
+            </>
+          ) : isDashboard && user ? (
+            <div className="flex h-full">
+              {/* … your aside/nav … */}
+              <main className="flex-1 p-6">{children}</main>
+            </div>
+          ) : (
+            <main>{children}</main>
+          )}
+        </div>
+
+        {/* Footer only on home page */}
+        {isHome && <Footer />}
       </div>
-
-      {/* Footer only on home page */}
-      {isHome && <Footer />}
-    </div>
+    </CartProvider>
   );
 }
