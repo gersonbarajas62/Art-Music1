@@ -101,17 +101,20 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
           </button>
           <Link
             href="/login"
-            className="bg-button text-button-fg hover:bg-button-hover px-4 py-2 rounded font-medium"
+            className="login-btn"
             style={{
-              background: "var(--accent)", // Ensure blue background
-              color: "var(--bg)", // Ensure white text
-              borderRadius: "8px",
+              background: "#0e639c", // Blue background
+              color: "#fff",         // White text
+              borderRadius: "6px",   // Squared corners
               fontWeight: "bold",
               fontSize: "1.08rem",
               boxShadow: "var(--shadow)",
               marginLeft: "8px",
               textDecoration: "none",
               border: "none",
+              padding: "8px 24px",
+              transition: "background 0.2s, color 0.2s",
+              display: "inline-block",
             }}
           >
             Login
@@ -244,6 +247,11 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
           .bg-button:hover, .hover\\:bg-button-hover:hover {
             background: var(--accent) !important;
             color: var(--bg) !important;
+            filter: brightness(0.95);
+          }
+          .login-btn:hover {
+            background: #1177bb !important;
+            color: #fff !important;
             filter: brightness(0.95);
           }
         `}

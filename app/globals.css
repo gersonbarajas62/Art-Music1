@@ -19,7 +19,7 @@
   --text: #181818;
   --muted: #555;
   --border: #e0e0e0;
-  --accent: #0e639c; /* Change from #222 to blue for light mode */
+  --accent: #222; /* Revert to dark gray for light mode */
   --shadow: 0 4px 24px rgba(0,0,0,0.06);
 }
 
@@ -40,7 +40,7 @@
   --text: #f5f5f7;
   --muted: #b0b3b8;
   --border: #232323;
-  --accent: #0e639c; /* Change from #fff to blue for dark mode */
+  --accent: #fff; /* Revert to white for dark mode */
   --shadow: 0 4px 24px rgba(0,0,0,0.45);
 }
 
