@@ -49,6 +49,7 @@ export interface Product {
   tags?: string[];
   status: "active" | "inactive";
   year?: string;
+  numerodeCatalogo?: string; // Added field
 }
 
 export default function Dashboard() {

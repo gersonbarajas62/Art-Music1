@@ -283,7 +283,7 @@ const BeatlesShowcase = () => {
 									transition: "background 0.2s, color 0.2s",
 									display: "inline-block",
 								}}
-								onClick={() => router.push(`/beatles/${item.id}`)}
+								onClick={() => router.push(`/albumdetails/${item.id}`)}
 							>
 								Ver más
 							</button>

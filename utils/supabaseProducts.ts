@@ -26,6 +26,7 @@ function mapProductToSchema(product: any) {
     viniloExclusivo = false,
     exitosRock = false,
     edicionColeccion = false,
+    numerodeCatalogo = "",
   } = product;
 
   return {
@@ -60,6 +61,7 @@ function mapProductToSchema(product: any) {
     vinilNuevo: product.vinilNuevo ?? false,
     vinilosenVista: product.vinilosenVista ?? false,
     eleccion: product.eleccion ?? false,
+    numerodeCatalogo,
   };
 }
 

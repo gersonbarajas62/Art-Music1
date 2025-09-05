@@ -253,6 +253,9 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
           <b>Tipo:</b> {product.tipo} &nbsp; <b>Estado:</b> {product.estado} &nbsp; <b>Condición:</b> {product.condicion}
         </div>
         <div style={{ marginBottom: 10 }}>
+          <b>Número de Catálogo:</b> {product.numerodeCatalogo || "-"}
+        </div>
+        <div style={{ marginBottom: 10 }}>
           <b>Stock:</b> {product.quantity}
         </div>
         <div style={{ marginBottom: 10 }}>

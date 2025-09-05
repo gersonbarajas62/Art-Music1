@@ -24,6 +24,7 @@ type Product = {
   year?: string;
   vinilNuevo?: boolean;
   eleccion?: boolean;
+  numerodeCatalogo?: string;
 };
 
 type ProductTableProps = {
@@ -408,6 +409,9 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onEdit, onDelete 
               >
                 {selectedProduct.status === "active" ? "Activo" : "Inactivo"}
               </span>
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <b>Número de Catálogo:</b> {selectedProduct.numerodeCatalogo || "-"}
             </div>
             <div style={{ display: "flex", gap: 12, marginTop: 18 }}>
               <button

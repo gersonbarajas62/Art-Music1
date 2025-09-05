@@ -1,6 +1,6 @@
 // app/components/Header.tsx
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Menu, X, ShoppingCart, Sun, Moon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "../app/context/ThemeProvider";
@@ -16,18 +16,6 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
   const [cartOpen, setCartOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
-  const [dark, setDark] = useState(false);
-
-  // Fix theme flicker: set initial theme based on system preference
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("theme");
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const initialTheme = stored || (prefersDark ? "dark" : "light");
-      document.documentElement.classList.toggle("dark", initialTheme === "dark");
-      setDark(initialTheme === "dark");
-    }
-  }, []);
 
   return (
     <header
@@ -102,20 +90,6 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
           <Link
             href="/login"
             className="login-btn"
-            style={{
-              background: "#0e639c", // Blue background
-              color: "#fff",         // White text
-              borderRadius: "6px",   // Squared corners
-              fontWeight: "bold",
-              fontSize: "1.08rem",
-              boxShadow: "var(--shadow)",
-              marginLeft: "8px",
-              textDecoration: "none",
-              border: "none",
-              padding: "8px 24px",
-              transition: "background 0.2s, color 0.2s",
-              display: "inline-block",
-            }}
           >
             Login
           </Link>
@@ -249,6 +223,20 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             color: var(--bg) !important;
             filter: brightness(0.95);
           }
+          .login-btn {
+            background: #0e639c !important;
+            color: #fff !important;
+            border-radius: 6px !important;
+            font-weight: bold !important;
+            font-size: 1.08rem !important;
+            box-shadow: var(--shadow) !important;
+            margin-left: 8px !important;
+            text-decoration: none !important;
+            border: none !important;
+            padding: 8px 24px !important;
+            transition: background 0.2s, color 0.2s !important;
+            display: inline-block !important;
+          }
           .login-btn:hover {
             background: #1177bb !important;
             color: #fff !important;
@@ -261,3 +249,4 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
 };
 
 export default Header;
+          

@@ -39,6 +39,7 @@ const defaultProduct = {
   vinilNuevo: false,
   vinilosenVista: false,
   eleccion: false,
+  numerodeCatalogo: "",
 };
 
 type ProductFormState = {
@@ -69,6 +70,7 @@ type ProductFormState = {
   vinilNuevo: boolean;
   vinilosenVista: boolean;
   eleccion: boolean;
+  numerodeCatalogo: string;
 };
 
 const ProductForm: React.FC<ProductFormProps> = ({
@@ -114,6 +116,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
     vinilNuevo: initialData?.vinilNuevo ?? false,
     vinilosenVista: initialData?.vinilosenVista ?? false,
     eleccion: initialData?.eleccion ?? false,
+    numerodeCatalogo: initialData?.numerodeCatalogo ?? "",
   });
   const [uploading, setUploading] = useState(false);
 
@@ -210,6 +213,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
       vinilNuevo: product.vinilNuevo,
       vinilosenVista: product.vinilosenVista,
       eleccion: product.eleccion,
+      numerodeCatalogo: product.numerodeCatalogo,
     };
     const imageUrls = Array.isArray(product.images) ? product.images : [];
     try {
@@ -309,6 +313,19 @@ const ProductForm: React.FC<ProductFormProps> = ({
             <option value="true">Activo</option>
             <option value="false">Inactivo</option>
           </select>
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 14 }}>
+        <div style={{ flex: 1 }}>
+          <label style={badgeLabel}>Número de Catálogo</label>
+          <input
+            type="text"
+            name="numerodeCatalogo"
+            placeholder="Ej: ABC123"
+            value={product.numerodeCatalogo}
+            onChange={handleChange}
+            style={inputStyle}
+          />
         </div>
       </div>
       <label style={badgeLabel}>Descripción</label>
