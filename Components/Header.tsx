@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
         background: "var(--section)",
         boxShadow: "0 2px 8px var(--shadow)",
         borderBottom: "1px solid var(--border)",
-        padding: "0",
+        padding: 0,
       }}
     >
       <div
@@ -64,13 +64,14 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
 
         {/* Desktop nav */}
         <nav
-          className="hidden md:flex items-center gap-4"
+          className="nav-desktop"
           style={{
             display: "flex",
             alignItems: "center",
             gap: "32px",
             fontWeight: 500,
             fontSize: "1.15rem",
+            marginLeft: "auto",
           }}
         >
           <Link href="/" className="hover:underline" style={{ color: "var(--text)", fontWeight: 600 }}>
@@ -96,13 +97,14 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             className="bg-button text-button-fg hover:bg-button-hover px-4 py-2 rounded font-medium"
             style={{
               background: "var(--accent)",
-              color: "var(--bg)",
+              color: "#000", // Black text for contrast
               borderRadius: "8px",
               fontWeight: "bold",
               fontSize: "1.08rem",
               boxShadow: "var(--shadow)",
               marginLeft: "8px",
               textDecoration: "none",
+              border: "none",
             }}
           >
             Login
@@ -122,9 +124,9 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
           </button>
         </nav>
 
-        {/* Mobile menu toggle */}
+        {/* Mobile menu toggle (only visible on small screens) */}
         <button
-          className="md:hidden p-2 rounded hover:bg-pane transition"
+          className="nav-mobile-toggle"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle Menu"
           style={{
@@ -133,21 +135,26 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             color: "var(--accent)",
             marginLeft: "12px",
             fontSize: "2rem",
+            display: "none",
           }}
         >
           {menuOpen ? <X size={32} /> : <Menu size={32} />}
         </button>
       </div>
 
-      {/* Mobile nav */}
+      {/* Mobile nav (only visible on small screens) */}
       {menuOpen && (
         <nav
-          className="absolute top-full left-0 w-full flex flex-col items-start gap-4 p-4 border-b border-border"
+          className="nav-mobile"
           style={{
             background: "var(--section)",
             boxShadow: "0 2px 8px var(--shadow)",
             borderBottom: "1px solid var(--border)",
             zIndex: 99,
+            display: "flex",
+            flexDirection: "column",
+            gap: "18px",
+            padding: "18px 24px",
           }}
         >
           <Link href="/" className="w-full hover:underline" style={{ color: "var(--text)", fontWeight: 600 }}>
@@ -173,13 +180,14 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             className="w-full text-left bg-button text-button-fg hover:bg-button-hover px-4 py-2 rounded font-medium"
             style={{
               background: "var(--accent)",
-              color: "var(--bg)",
+              color: "#000", // Black text for contrast
               borderRadius: "8px",
               fontWeight: "bold",
               fontSize: "1.08rem",
               boxShadow: "var(--shadow)",
               marginTop: "8px",
               textDecoration: "none",
+              border: "none",
             }}
           >
             Login
@@ -201,6 +209,28 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
       )}
 
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+
+      <style>
+        {`
+          /* Responsive nav: show/hide desktop/mobile */
+          @media (max-width: 900px) {
+            .nav-desktop {
+              display: none !important;
+            }
+            .nav-mobile-toggle {
+              display: block !important;
+            }
+          }
+          @media (min-width: 901px) {
+            .nav-mobile-toggle {
+              display: none !important;
+            }
+            .nav-mobile {
+              display: none !important;
+            }
+          }
+        `}
+      </style>
     </header>
   );
 };
