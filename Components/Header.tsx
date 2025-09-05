@@ -18,9 +18,16 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
   const router = useRouter();
   const [dark, setDark] = useState(false);
 
+  // Fix theme flicker: set initial theme based on system preference
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const initialTheme = stored || (prefersDark ? "dark" : "light");
+      document.documentElement.classList.toggle("dark", initialTheme === "dark");
+      setDark(initialTheme === "dark");
+    }
+  }, []);
 
   return (
     <header
@@ -96,8 +103,8 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             href="/login"
             className="bg-button text-button-fg hover:bg-button-hover px-4 py-2 rounded font-medium"
             style={{
-              background: "var(--accent)",
-              color: "var(--bg)", // Fix: use var(--bg) for dark background, not #000
+              background: "var(--accent)", // Ensure blue background
+              color: "var(--bg)", // Ensure white text
               borderRadius: "8px",
               fontWeight: "bold",
               fontSize: "1.08rem",
@@ -228,6 +235,16 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             .nav-mobile {
               display: none !important;
             }
+          }
+          /* Fix login button color for all themes */
+          .bg-button {
+            background: var(--accent) !important;
+            color: var(--bg) !important;
+          }
+          .bg-button:hover, .hover\\:bg-button-hover:hover {
+            background: var(--accent) !important;
+            color: var(--bg) !important;
+            filter: brightness(0.95);
           }
         `}
       </style>
