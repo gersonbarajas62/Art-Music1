@@ -19,11 +19,11 @@ const GenresAndVinyls = () => {
     image: products.find(p => p.genero === genre)?.images?.[0] || "/images/default-genre.jpg"
   }));
 
-  // Hot New Vinyls: vinilNuevo && vinilosenVista
-  const hotVinyls = products.filter(p => p.vinilNuevo && p.vinilosenVista);
+  // Hot New Vinyls: vinilNuevo === true && vinilosenVista === true
+  const hotVinyls = products.filter(p => p.vinilNuevo === true && p.vinilosenVista === true);
 
-  // Staff Picks: eleccion
-  const staffPicks = products.filter(p => p.eleccion);
+  // Staff Picks: eleccion === true
+  const staffPicks = products.filter(p => p.eleccion === true);
 
   const staffSettings = {
     dots: true,
@@ -37,7 +37,6 @@ const GenresAndVinyls = () => {
     ],
   };
 
-  // Make sure to return a single root element (wrap everything in a fragment if needed)
   return (
     <>
       <section
@@ -289,7 +288,7 @@ const GenresAndVinyls = () => {
           }}
         >
           ¿Buscas más?{" "}
-          <Link href="/onsale" style={{ color: "var(--bg)", textDecoration: 'underline', fontWeight: 'bold' }}>
+          <Link href="/catalogo" style={{ color: "var(--bg)", textDecoration: 'underline', fontWeight: 'bold' }}>
             Explora todo nuestro catálogo y ofertas →
           </Link>
         </div>
@@ -316,4 +315,3 @@ const GenresAndVinyls = () => {
 };
 
 export default GenresAndVinyls;
-        

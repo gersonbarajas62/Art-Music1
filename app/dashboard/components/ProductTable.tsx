@@ -22,6 +22,8 @@ type Product = {
   tags?: string[];
   status: "active" | "inactive";
   year?: string;
+  vinilNuevo?: boolean;
+  eleccion?: boolean;
 };
 
 type ProductTableProps = {
@@ -353,6 +355,12 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onEdit, onDelete 
             </div>
             <div style={{ marginBottom: 8 }}>
               <b>Condición:</b> {selectedProduct.condicion || "-"}
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <b>Hot New Vinyl:</b> {selectedProduct.vinilNuevo ? "✔️" : "—"}
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <b>Staff Pick:</b> {selectedProduct.eleccion ? "✔️" : "—"}
             </div>
             <div style={{ marginBottom: 8 }}>
               <b>Imágenes:</b>

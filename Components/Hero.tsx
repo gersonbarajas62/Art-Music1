@@ -18,7 +18,7 @@ const BUTTONS = [
       backgroundColor: "var(--text)",
       color: "var(--bg)",
     },
-    link: "/genres",
+    link: "/catalogo", // <-- Change from "/genres" to "/catalogo"
     isLink: true,
   },
   {

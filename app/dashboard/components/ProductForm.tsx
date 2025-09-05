@@ -204,6 +204,12 @@ const ProductForm: React.FC<ProductFormProps> = ({
           ? product.createdAt
           : new Date().toISOString(),
       beatlesFeatured: product.beatlesFeatured,
+      viniloExclusivo: product.viniloExclusivo,
+      exitosRock: product.exitosRock,
+      edicionColeccion: product.edicionColeccion,
+      vinilNuevo: product.vinilNuevo,
+      vinilosenVista: product.vinilosenVista,
+      eleccion: product.eleccion,
     };
     const imageUrls = Array.isArray(product.images) ? product.images : [];
     try {
