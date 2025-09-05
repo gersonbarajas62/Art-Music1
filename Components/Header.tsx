@@ -97,7 +97,7 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             className="bg-button text-button-fg hover:bg-button-hover px-4 py-2 rounded font-medium"
             style={{
               background: "var(--accent)",
-              color: "#000", // Black text for contrast
+              color: "var(--bg)", // Fix: use var(--bg) for dark background, not #000
               borderRadius: "8px",
               fontWeight: "bold",
               fontSize: "1.08rem",
@@ -180,7 +180,7 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             className="w-full text-left bg-button text-button-fg hover:bg-button-hover px-4 py-2 rounded font-medium"
             style={{
               background: "var(--accent)",
-              color: "#000", // Black text for contrast
+              color: "var(--bg)", // Fix: use var(--bg) for dark background, not #000
               borderRadius: "8px",
               fontWeight: "bold",
               fontSize: "1.08rem",
