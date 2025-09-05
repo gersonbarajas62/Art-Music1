@@ -22,16 +22,17 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
 
-  // Fix: Use a container and flex for proper spacing and alignment
   return (
     <header
-      className={`w-full bg-sidebar dark:bg-sidebar text-default border-b border-border px-6 py-3 transition-colors ${className}`}
+      className={`w-full ${className}`}
       style={{
         position: "sticky",
         top: 0,
         zIndex: 100,
-        boxShadow: "0 2px 8px var(--shadow)",
         background: "var(--section)",
+        boxShadow: "0 2px 8px var(--shadow)",
+        borderBottom: "1px solid var(--border)",
+        padding: "0",
       }}
     >
       <div
@@ -41,18 +42,20 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
           justifyContent: "space-between",
           maxWidth: "1400px",
           margin: "0 auto",
+          padding: "0 32px",
+          minHeight: "64px",
         }}
       >
         {/* Logo */}
         <h1
           className="font-bold cursor-pointer"
           style={{
-            fontSize: "1.7rem",
+            fontSize: "2rem",
             color: "var(--accent)",
             letterSpacing: "1px",
-            marginRight: "32px",
             fontWeight: "bold",
             textShadow: "0 2px 8px var(--bg)",
+            margin: 0,
           }}
           onClick={() => router.push("/")}
         >
@@ -65,18 +68,18 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "24px",
+            gap: "32px",
             fontWeight: 500,
-            fontSize: "1.08rem",
+            fontSize: "1.15rem",
           }}
         >
-          <Link href="/" className="hover:underline" style={{ color: "var(--text)" }}>
+          <Link href="/" className="hover:underline" style={{ color: "var(--text)", fontWeight: 600 }}>
             Home
           </Link>
-          <Link href="/onsale" className="hover:underline" style={{ color: "var(--text)" }}>
+          <Link href="/onsale" className="hover:underline" style={{ color: "var(--text)", fontWeight: 600 }}>
             On Sale
           </Link>
-          <Link href="/genres" className="hover:underline" style={{ color: "var(--text)" }}>
+          <Link href="/genres" className="hover:underline" style={{ color: "var(--text)", fontWeight: 600 }}>
             Genres
           </Link>
           <button
@@ -84,9 +87,9 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             className="flex items-center hover:underline"
             aria-label="Cart"
             type="button"
-            style={{ background: "none", border: "none", color: "var(--accent)", fontSize: "1.2rem" }}
+            style={{ background: "none", border: "none", color: "var(--accent)", fontSize: "1.25rem" }}
           >
-            <ShoppingCart size={22} />
+            <ShoppingCart size={24} />
           </button>
           <Link
             href="/login"
@@ -96,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
               color: "var(--bg)",
               borderRadius: "8px",
               fontWeight: "bold",
-              fontSize: "1rem",
+              fontSize: "1.08rem",
               boxShadow: "var(--shadow)",
               marginLeft: "8px",
               textDecoration: "none",
@@ -115,7 +118,7 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
               color: "var(--accent)",
             }}
           >
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            {theme === "dark" ? <Sun size={22} /> : <Moon size={22} />}
           </button>
         </nav>
 
@@ -129,17 +132,17 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             border: "none",
             color: "var(--accent)",
             marginLeft: "12px",
-            fontSize: "1.5rem",
+            fontSize: "2rem",
           }}
         >
-          {menuOpen ? <X size={28} /> : <Menu size={28} />}
+          {menuOpen ? <X size={32} /> : <Menu size={32} />}
         </button>
       </div>
 
       {/* Mobile nav */}
       {menuOpen && (
         <nav
-          className="absolute top-full left-0 w-full bg-sidebar dark:bg-sidebar flex flex-col items-start gap-4 p-4 border-b border-border"
+          className="absolute top-full left-0 w-full flex flex-col items-start gap-4 p-4 border-b border-border"
           style={{
             background: "var(--section)",
             boxShadow: "0 2px 8px var(--shadow)",
@@ -147,13 +150,13 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             zIndex: 99,
           }}
         >
-          <Link href="/" className="w-full hover:underline" style={{ color: "var(--text)", fontWeight: 500 }}>
+          <Link href="/" className="w-full hover:underline" style={{ color: "var(--text)", fontWeight: 600 }}>
             Home
           </Link>
-          <Link href="/onsale" className="w-full hover:underline" style={{ color: "var(--text)", fontWeight: 500 }}>
+          <Link href="/onsale" className="w-full hover:underline" style={{ color: "var(--text)", fontWeight: 600 }}>
             On Sale
           </Link>
-          <Link href="/genres" className="w-full hover:underline" style={{ color: "var(--text)", fontWeight: 500 }}>
+          <Link href="/genres" className="w-full hover:underline" style={{ color: "var(--text)", fontWeight: 600 }}>
             Genres
           </Link>
           <button
@@ -161,9 +164,9 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             className="flex items-center hover:underline"
             aria-label="Cart"
             type="button"
-            style={{ background: "none", border: "none", color: "var(--accent)", fontSize: "1.2rem" }}
+            style={{ background: "none", border: "none", color: "var(--accent)", fontSize: "1.25rem" }}
           >
-            <ShoppingCart size={22} />
+            <ShoppingCart size={24} />
           </button>
           <Link
             href="/login"
@@ -173,7 +176,7 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
               color: "var(--bg)",
               borderRadius: "8px",
               fontWeight: "bold",
-              fontSize: "1rem",
+              fontSize: "1.08rem",
               boxShadow: "var(--shadow)",
               marginTop: "8px",
               textDecoration: "none",
@@ -192,7 +195,7 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
               marginTop: "8px",
             }}
           >
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            {theme === "dark" ? <Sun size={22} /> : <Moon size={22} />}
           </button>
         </nav>
       )}
