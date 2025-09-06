@@ -19,7 +19,7 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
 
   return (
     <header
-      className={`w-full ${className}`}
+      className={`w-full ${className} header-main`}
       style={{
         position: "sticky",
         top: 0,
@@ -31,6 +31,7 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
       }}
     >
       <div
+        className="header-container"
         style={{
           display: "flex",
           alignItems: "center",
@@ -43,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
       >
         {/* Logo */}
         <h1
-          className="font-bold cursor-pointer"
+          className="font-bold cursor-pointer header-logo"
           style={{
             fontSize: "2rem",
             color: "var(--accent)",
@@ -51,9 +52,15 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             fontWeight: "bold",
             textShadow: "0 2px 8px var(--bg)",
             margin: 0,
+            transition: "font-size 0.2s",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
           }}
           onClick={() => router.push("/")}
         >
+          {/* If you want to use an image logo, add it here */}
+          {/* <img src="/logo.png" alt="ART Music" className="header-logo-img" /> */}
           ART Music
         </h1>
 
@@ -108,7 +115,7 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
           </button>
         </nav>
 
-        {/* Mobile menu toggle (only visible on small screens) */}
+        {/* Mobile menu toggle (hamburger) */}
         <button
           className="nav-mobile-toggle"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -196,32 +203,37 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
 
       <style>
         {`
-          /* Responsive nav: show/hide desktop/mobile */
-          @media (max-width: 900px) {
-            .nav-desktop {
-              display: none !important;
-            }
-            .nav-mobile-toggle {
-              display: block !important;
-            }
+          .header-main {
+            width: 100%;
           }
-          @media (min-width: 901px) {
-            .nav-mobile-toggle {
-              display: none !important;
-            }
-            .nav-mobile {
-              display: none !important;
-            }
+          .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 32px;
+            min-height: 64px;
           }
-          /* Fix login button color for all themes */
-          .bg-button {
-            background: var(--accent) !important;
-            color: var(--bg) !important;
+          .header-logo {
+            font-size: 2rem;
+            color: var(--accent);
+            letter-spacing: 1px;
+            font-weight: bold;
+            text-shadow: 0 2px 8px var(--bg);
+            margin: 0;
+            transition: font-size 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
           }
-          .bg-button:hover, .hover\\:bg-button-hover:hover {
-            background: var(--accent) !important;
-            color: var(--bg) !important;
-            filter: brightness(0.95);
+          .nav-desktop {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            font-weight: 500;
+            font-size: 1.15rem;
+            marginLeft: "auto",
           }
           .login-btn {
             background: #0e639c !important;
@@ -242,6 +254,81 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
             color: #fff !important;
             filter: brightness(0.95);
           }
+          @media (max-width: 1200px) {
+            .header-container {
+              padding: 0 16px !important;
+              min-height: 54px !important;
+            }
+            .header-logo {
+              font-size: 1.5rem !important;
+              letter-spacing: 0.5px !important;
+            }
+            .nav-desktop {
+              gap: 18px !important;
+              font-size: 1rem !important;
+            }
+            .login-btn {
+              font-size: 1rem !important;
+              padding: 7px 18px !important;
+            }
+          }
+          @media (max-width: 900px) {
+            .header-container {
+              padding: 0 8px !important;
+              min-height: 44px !important;
+            }
+            .header-logo {
+              font-size: 1.15rem !important;
+              letter-spacing: 0.2px !important;
+            }
+            .nav-desktop {
+              gap: 10px !important;
+              font-size: 0.98rem !important;
+              display: none !important;
+            }
+            .login-btn {
+              font-size: 0.98rem !important;
+              padding: 6px 12px !important;
+              margin-left: 4px !important;
+            }
+            .nav-mobile-toggle {
+              display: block !important;
+            }
+          }
+          @media (max-width: 600px) {
+            .header-container {
+              padding: 0 4px !important;
+              min-height: 38px !important;
+            }
+            .header-logo {
+              font-size: 0.95rem !important;
+              letter-spacing: 0.1px !important;
+            }
+            .nav-desktop {
+              gap: 6px !important;
+              font-size: 0.92rem !important;
+            }
+            .login-btn {
+              font-size: 0.92rem !important;
+              padding: 5px 8px !important;
+              margin-left: 2px !important;
+            }
+          }
+          /* Responsive image/logo if you use an <img> for logo */
+          .header-logo-img {
+            max-width: 120px;
+            height: auto;
+          }
+          @media (max-width: 900px) {
+            .header-logo-img {
+              max-width: 80px !important;
+            }
+          }
+          @media (max-width: 600px) {
+            .header-logo-img {
+              max-width: 54px !important;
+            }
+          }
         `}
       </style>
     </header>
@@ -249,4 +336,3 @@ const Header: React.FC<HeaderProps> = ({ className = "" }) => {
 };
 
 export default Header;
-          

@@ -122,6 +122,7 @@ const HeroSection = () => {
         }}
       />
       <div
+        className="hero-content"
         style={{
           maxWidth: "800px",
           margin: "0 auto",
@@ -130,6 +131,7 @@ const HeroSection = () => {
         }}
       >
         <h1
+          className="hero-title"
           style={{
             fontSize: "3rem",
             fontWeight: "bold",
@@ -159,6 +161,7 @@ const HeroSection = () => {
         </h1>
         {showParagraph && (
           <p
+            className="hero-desc"
             style={{
               fontSize: "1.2rem",
               marginBottom: "30px",
@@ -177,6 +180,7 @@ const HeroSection = () => {
         )}
         {showButtons && (
           <div
+            className="hero-btn-row"
             style={{
               display: "flex",
               justifyContent: "center",
@@ -184,6 +188,7 @@ const HeroSection = () => {
               opacity: showButtons ? 1 : 0,
               animation: "fadeInRight 1.2s cubic-bezier(.77,0,.175,1) forwards",
               transition: "opacity 0.5s",
+              flexWrap: "wrap",
             }}
           >
             {BUTTONS.map((btn, idx) =>
@@ -191,6 +196,7 @@ const HeroSection = () => {
                 <Link
                   key={btn.label}
                   href={btn.link}
+                  className="hero-btn"
                   style={{
                     ...commonButtonStyle,
                     ...btn.style,
@@ -208,6 +214,7 @@ const HeroSection = () => {
                 <a
                   key={btn.label}
                   href={btn.link}
+                  className="hero-btn"
                   style={{
                     ...commonButtonStyle,
                     ...btn.style,
@@ -239,6 +246,74 @@ const HeroSection = () => {
           @keyframes blink {
             0%, 100% { opacity: 1; }
             50% { opacity: 0; }
+          }
+          .hero-content {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px;
+          }
+          .hero-title {
+            font-size: 3rem;
+          }
+          .hero-desc {
+            font-size: 1.2rem;
+          }
+          .hero-btn-row {
+            gap: 20px;
+            flex-wrap: wrap;
+          }
+          .hero-btn {
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            box-shadow: 2px 4px 6px rgba(0,0,0,0.4);
+            transition: transform 0.3s, background-color 0.3s, color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            min-width: 180px;
+            text-align: center;
+          }
+          @media (max-width: 900px) {
+            .hero-content {
+              padding: 0 8vw !important;
+            }
+            .hero-title {
+              font-size: 2rem !important;
+            }
+            .hero-desc {
+              font-size: 1.05rem !important;
+              margin-bottom: 18px !important;
+            }
+            .hero-btn {
+              font-size: 0.98rem !important;
+              min-width: 140px !important;
+              padding: 10px 18px !important;
+            }
+          }
+          @media (max-width: 600px) {
+            .hero-content {
+              padding: 0 2vw !important;
+            }
+            .hero-title {
+              font-size: 1.15rem !important;
+              margin-bottom: 10px !important;
+            }
+            .hero-desc {
+              font-size: 0.92rem !important;
+              margin-bottom: 10px !important;
+            }
+            .hero-btn-row {
+              gap: 10px !important;
+            }
+            .hero-btn {
+              font-size: 0.92rem !important;
+              min-width: 100px !important;
+              padding: 8px 10px !important;
+            }
           }
         `}
       </style>

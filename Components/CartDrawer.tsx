@@ -116,35 +116,39 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
 						<div
 							key={item.id}
 							style={{
-								display: "flex",
+								display: "grid",
+								gridTemplateColumns: "64px 1fr 48px",
 								alignItems: "center",
 								background: "var(--card)",
-								borderRadius: "12px",
+								borderRadius: "14px",
 								boxShadow: "var(--shadow)",
-								padding: "12px",
-								gap: "16px",
+								padding: "14px 10px",
+								gap: "12px",
 								border: "1px solid var(--border)",
 								position: "relative",
 								transition: "box-shadow 0.2s, border 0.2s",
+								minHeight: "80px",
 							}}
 							className="cart-item-card"
 						>
 							{/* Product Image */}
-							<img
-								src={item.image}
-								alt={item.name}
-								style={{
-									width: "64px",
-									height: "64px",
-									objectFit: "cover",
-									borderRadius: "8px",
-									border: "1px solid var(--border)",
-									background: "var(--card)",
-									boxShadow: "var(--shadow)",
-								}}
-							/>
+							<div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+								<img
+									src={item.image}
+									alt={item.name}
+									style={{
+										width: "64px",
+										height: "64px",
+										objectFit: "cover",
+										borderRadius: "10px",
+										border: "1px solid var(--border)",
+										background: "var(--card)",
+										boxShadow: "var(--shadow)",
+									}}
+								/>
+							</div>
 							{/* Details */}
-							<div style={{ flex: 1, minWidth: 0 }}>
+							<div style={{ minWidth: 0, display: "flex", flexDirection: "column", gap: 2 }}>
 								<div
 									style={{
 										fontWeight: "bold",
@@ -172,8 +176,8 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
 									style={{
 										display: "flex",
 										alignItems: "center",
-										gap: "10px",
-										marginTop: 8,
+										gap: "8px",
+										marginTop: 6,
 									}}
 								>
 									<button
@@ -183,13 +187,16 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
 											border: "none",
 											color: "var(--bg)",
 											borderRadius: "50%",
-											width: 28,
-											height: 28,
+											width: 24,
+											height: 24,
 											fontWeight: "bold",
 											cursor: "pointer",
-											fontSize: "1.1rem",
+											fontSize: "1rem",
 											boxShadow: "var(--shadow)",
 											transition: "background 0.2s",
+											display: "inline-flex",
+											alignItems: "center",
+											justifyContent: "center",
 										}}
 										onMouseOver={(e) => (e.currentTarget.style.background = "var(--muted)")}
 										onMouseOut={(e) => (e.currentTarget.style.background = "var(--accent)")}
@@ -213,41 +220,57 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
 											border: "none",
 											color: "var(--bg)",
 											borderRadius: "50%",
-											width: 28,
-											height: 28,
+											width: 24,
+											height: 24,
 											fontWeight: "bold",
 											cursor: "pointer",
-											fontSize: "1.1rem",
+											fontSize: "1rem",
 											boxShadow: "var(--shadow)",
 											transition: "background 0.2s",
+											display: "inline-flex",
+											alignItems: "center",
+											justifyContent: "center",
 										}}
 										onMouseOver={(e) => (e.currentTarget.style.background = "var(--muted)")}
 										onMouseOut={(e) => (e.currentTarget.style.background = "var(--accent)")}
 									>
 										+
 									</button>
-									<button
-										aria-label="Eliminar"
-										onClick={() => removeFromCart(item.id)}
-										style={{
-											background: "none",
-											border: "none",
-											color: "#b80000",
-											fontWeight: "bold",
-											fontSize: "1.2rem",
-											cursor: "pointer",
-											marginLeft: 8,
-											borderRadius: "50%",
-											width: 28,
-											height: 28,
-											transition: "background 0.2s",
-										}}
-										onMouseOver={(e) => (e.currentTarget.style.background = "var(--card)")}
-										onMouseOut={(e) => (e.currentTarget.style.background = "none")}
-									>
-										🗑️
-									</button>
 								</div>
+							</div>
+							{/* Price and Remove */}
+							<div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+								<div style={{
+									fontWeight: "bold",
+									color: "var(--accent)",
+									fontSize: "1.08rem",
+									marginBottom: 2,
+								}}>
+									${item.price * item.quantity}
+								</div>
+								<button
+									aria-label="Eliminar"
+									onClick={() => removeFromCart(item.id)}
+									style={{
+										background: "none",
+										border: "none",
+										color: "#b80000",
+										fontWeight: "bold",
+										fontSize: "1.2rem",
+										cursor: "pointer",
+										borderRadius: "50%",
+										width: 28,
+										height: 28,
+										transition: "background 0.2s",
+										display: "inline-flex",
+										alignItems: "center",
+										justifyContent: "center",
+									}}
+									onMouseOver={(e) => (e.currentTarget.style.background = "var(--card)")}
+									onMouseOut={(e) => (e.currentTarget.style.background = "none")}
+								>
+									🗑️
+								</button>
 							</div>
 						</div>
 					))
@@ -305,8 +328,9 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
 			<style>
 				{`
           .cart-item-card:hover {
-            box-shadow: 0 8px 32px var(--shadow), 0 2px 12px var(--shadow);
-            border: 1.5px solid var(--accent);
+            box-shadow: 0 8px 32px #fff, 0 2px 12px #fff;
+            border: 2px solid var(--accent);
+            background: var(--card);
           }
           @media (max-width: 600px) {
             div[style*="position:fixed"] {
