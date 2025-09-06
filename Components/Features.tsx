@@ -37,42 +37,40 @@ const Features = () => {
   const shadow = "var(--shadow)";
   const bg = "var(--bg)";
 
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 4, // Show 4 cards per view
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000, // 3 seconds animation
-    arrows: true,
-    responsive: [
-      { breakpoint: 1200, settings: { slidesToShow: 3 } },
-      { breakpoint: 900, settings: { slidesToShow: 2 } },
-      { breakpoint: 600, settings: { slidesToShow: 1 } },
-    ],
-  };
-
   const categorySections = [
     {
       title: "Vinilos Exclusivos",
       image: vinilosExclusivos[0]?.images?.[0] || "/images/beatles-vinyl.jpg",
       href: "/vinilos-exclusivos",
-      count: vinilosExclusivos.length,
     },
     {
       title: "Éxitos de Rock",
       image: exitosRock[0]?.images?.[0] || "/images/pink-floyd.jpg",
       href: "/exitos-rock",
-      count: exitosRock.length,
     },
     {
       title: "Ediciones de Colección",
       image: edicionesColeccion[0]?.images?.[0] || "/images/metallica.jpg",
       href: "/ediciones-coleccion",
-      count: edicionesColeccion.length,
     },
   ];
+
+  // Fix carouselSettings: always set arrows: false and slidesToShow for mobile/tablet
+  const carouselSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 4000, // <-- ensure 4 seconds
+    arrows: false, // <-- always hide arrows
+    responsive: [
+      { breakpoint: 1200, settings: { slidesToShow: 3, arrows: false } },
+      { breakpoint: 900, settings: { slidesToShow: 1, arrows: false } },
+      { breakpoint: 600, settings: { slidesToShow: 1, arrows: false } },
+    ],
+  };
 
   return (
     <div
@@ -93,75 +91,105 @@ const Features = () => {
     >
       {/* Category Links Row */}
       <div
+        className="features-category-row"
         style={{
           display: "flex",
           justifyContent: "center",
           gap: "2.5rem",
           marginBottom: "2.5rem",
           flexWrap: "wrap",
+          width: "100%",
+          padding: "0 12px", // Add horizontal padding for all screens
         }}
       >
         {categorySections.map((cat) => (
-          <Link
+          <div
             key={cat.title}
-            href={cat.href}
+            className="features-category-card"
             style={{
-              textDecoration: "none",
-              color: "var(--text)",
               width: 220,
-              display: "block",
+              minWidth: 220,
+              maxWidth: 220,
               borderRadius: "14px",
               boxShadow: "var(--shadow)",
               background: "var(--card)",
-              padding: "24px 10px",
+              padding: "0 0 18px 0",
               textAlign: "center",
-              transition: "transform 0.2s, box-shadow 0.2s",
+              transition: "transform 0.25s, box-shadow 0.25s, border 0.25s",
               cursor: "pointer",
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              overflow: "hidden",
+              margin: "0 auto",
             }}
+            onClick={() => window.location.href = cat.href}
           >
-            <img
-              src={cat.image}
-              alt={cat.title}
-              style={{
-                width: "100px",
-                height: "100px",
-                objectFit: "cover",
-                borderRadius: "8px",
-                marginBottom: "10px",
-                boxShadow: "var(--shadow)",
-              }}
-            />
+            {/* Large main image - covers top of cart */}
             <div
               style={{
-                color: "var(--accent)",
-                fontWeight: "bold",
-                fontSize: "1.15rem",
-                marginBottom: "0.3rem",
+                width: "100%",
+                height: "120px",
+                overflow: "hidden",
+                borderTopLeftRadius: "14px",
+                borderTopRightRadius: "14px",
+                position: "relative",
+                margin: 0,
+                padding: 0,
+                zIndex: 2,
               }}
             >
-              {cat.title}
+              <img
+                src={cat.image}
+                alt={cat.title}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  borderTopLeftRadius: "14px",
+                  borderTopRightRadius: "14px",
+                  borderBottomLeftRadius: 0,
+                  borderBottomRightRadius: 0,
+                  boxShadow: "var(--shadow)",
+                  background: "var(--card)",
+                  display: "block",
+                  margin: 0,
+                  transition: "transform 0.2s, box-shadow 0.2s",
+                }}
+                className="features-main-img"
+              />
             </div>
-            <span
+            {/* Info below image */}
+            <div
               style={{
-                display: "inline-block",
-                marginTop: 8,
-                color: "var(--muted)",
-                fontWeight: 600,
-                fontSize: "0.98rem",
+                padding: "18px 14px 0 14px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "10px",
               }}
             >
-              {cat.count} productos &nbsp;|&nbsp; Ver más &rarr;
-            </span>
-          </Link>
+              <div style={{
+                fontWeight: 700,
+                fontSize: "1.13rem",
+                color: "var(--accent)",
+                lineHeight: "1.2",
+                textAlign: "center",
+              }}>
+                {cat.title}
+              </div>
+            </div>
+          </div>
         ))}
       </div>
-
       {/* Carousel Row with Highlighted Header */}
-      <div className="features-carousel-row">
+      <div className="features-carousel-row" style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
         <h2
           style={{
             textAlign: "center",
-            marginBottom: "24px",
+            marginBottom: 24, // Use only marginBottom, not both margin and marginBottom
             color: "var(--accent)",
             fontWeight: "bold",
             fontSize: "2rem",
@@ -171,103 +199,120 @@ const Features = () => {
           🔥Nuevas Llegadas
         </h2>
         {mounted && (
-          <Slider {...settings}>
-            {nuevasLlegadas.map((release) => (
-              <div
-                key={release.id}
-                className="carousel-item card-hover"
-                style={{
-                  position: "relative",
-                  padding: "18px 12px",
-                  margin: "0 8px",
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "flex-start",
-                }}
-              >
-                <Link href={`/albumdetails/${release.id}`}>
+          <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+            <div style={{ width: "100%", margin: "0 auto", position: "relative" }}>
+              <Slider {...carouselSettings}>
+                {nuevasLlegadas.map((release) => (
                   <div
+                    key={release.id}
                     style={{
-                      borderRadius: "12px",
-                      overflow: "hidden",
-                      boxShadow: "var(--shadow)",
-                      background: "var(--card)",
-                      cursor: "pointer",
-                      transition: "transform 0.2s, box-shadow 0.2s",
                       display: "flex",
-                      flexDirection: "column",
+                      justifyContent: "center",
                       alignItems: "center",
-                      padding: "18px 10px",
-                      minHeight: "320px",
-                      height: "100%",
                       width: "100%",
+                      minHeight: "220px",
                     }}
                   >
-                    <img
-                      src={release.image}
-                      alt={release.title}
-                      className="carousel-image"
-                      style={{
-                        width: "100px",
-                        height: "100px",
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                        marginBottom: "10px",
-                        boxShadow: "var(--shadow)",
-                        transition: "transform 0.2s",
-                      }}
-                    />
                     <div
+                      className="carousel-card"
                       style={{
-                        textAlign: "center",
-                        padding: "10px 0 0 0",
-                        width: "100%",
+                        borderRadius: "12px",
+                        overflow: "hidden",
+                        boxShadow: "var(--shadow)",
+                        background: "var(--card)",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        padding: "0 0 18px 0",
+                        minHeight: "220px",
+                        height: "100%",
+                        width: "220px",
+                        maxWidth: "220px",
+                        cursor: "pointer",
+                        transition: "transform 0.2s, box-shadow 0.2s, border 0.2s",
+                        margin: "0 auto",
+                        border: "2px solid var(--border)",
                       }}
+                      onClick={() => window.location.href = `/albumdetails/${release.id}`}
                     >
-                      <h4
+                      <div
                         style={{
+                          width: "100%",
+                          height: "120px",
+                          overflow: "hidden",
+                          borderTopLeftRadius: "12px",
+                          borderTopRightRadius: "12px",
+                          position: "relative",
                           margin: 0,
-                          color: "var(--accent)",
-                          fontWeight: "bold",
-                          fontSize: "1.05rem",
-                          marginBottom: "8px",
+                          padding: 0,
+                          zIndex: 2,
                         }}
                       >
-                        {release.title}
-                      </h4>
-                      <p
+                        <img
+                          src={release.image}
+                          alt={release.title}
+                          className="features-main-img"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            borderTopLeftRadius: "12px",
+                            borderTopRightRadius: "12px",
+                            borderBottomLeftRadius: 0,
+                            borderBottomRightRadius: 0,
+                            boxShadow: "var(--shadow)",
+                            background: "var(--card)",
+                            display: "block",
+                            margin: 0,
+                            transition: "transform 0.2s, box-shadow 0.2s",
+                          }}
+                        />
+                      </div>
+                      <div
                         style={{
-                          margin: 0,
-                          color: text,
-                          fontWeight: "bold",
-                          fontSize: "0.98rem",
-                          marginBottom: "8px",
+                          textAlign: "center",
+                          padding: "14px 0 0 0",
+                          width: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: "4px",
                         }}
                       >
-                        {release.price}
-                      </p>
-                      <span
-                        style={{
-                          display: "inline-block",
-                          marginTop: 8,
-                          color: "var(--accent)",
-                          fontWeight: 600,
-                          fontSize: "0.98rem",
-                          textDecoration: "underline",
-                          cursor: "pointer",
-                          transition: "color 0.2s",
-                        }}
-                      >
-                        Ver más &rarr;
-                      </span>
+                        <h4
+                          style={{
+                            margin: 0,
+                            color: "var(--accent)",
+                            fontWeight: "bold",
+                            fontSize: "1.05rem",
+                          }}
+                        >
+                          {release.title}
+                        </h4>
+                        <div
+                          style={{
+                            color: "var(--muted)",
+                            fontSize: "0.98rem",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {release.artist}
+                        </div>
+                        <div
+                          style={{
+                            color: "var(--muted)",
+                            fontSize: "0.98rem",
+                          }}
+                        >
+                          {release.tipo}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </Link>
-              </div>
-            ))}
-          </Slider>
+                ))}
+              </Slider>
+            </div>
+          </div>
         )}
         {/* Button only below the carousel */}
         <div style={{ textAlign: "center", marginTop: 32 }}>
@@ -299,50 +344,117 @@ const Features = () => {
             from { opacity: 0; transform: scale(0.98);}
             to { opacity: 1; transform: scale(1);}
           }
-          @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px);}
-            to { opacity: 1; transform: translateY(0);}
+          .features-category-row {
+            justify-content: center;
+            width: 100%;
+          }
+          .features-category-card {
+            margin: 0 auto;
+            background: var(--card);
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: transform 0.25s, box-shadow 0.25s, border 0.25s;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+          }
+          .features-category-card:hover {
+            transform: translateY(-8px) scale(1.04);
+            box-shadow: 0 12px 36px #fff, 0 2px 12px #fff !important;
+            border: 2px solid var(--accent) !important;
+            background: var(--card);
+          }
+          .features-main-img {
+            width: 100% !important;
+            height: 120px !important;
+            object-fit: cover !important;
+            border-top-left-radius: 14px !important;
+            border-top-right-radius: 14px !important;
+            border-bottom-left-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+            box-shadow: var(--shadow);
+            margin: 0;
+            display: block;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            z-index: 2;
+          }
+          .features-main-img:hover {
+            transform: scale(1.04);
+            box-shadow: 0 4px 24px #fff;
           }
           .carousel-item.card-hover {
-            margin: 0 8px;
+            margin: 0 auto;
             min-width: 220px;
-            max-width: 260px;
+            max-width: 220px;
             box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.25s, box-shadow 0.25s, border 0.25s;
           }
           .carousel-item.card-hover:hover {
             transform: scale(1.045);
-            box-shadow: 0 8px 32px var(--accent), 0 2px 12px var(--accent);
-            border: 2px solid var(--accent);
+            box-shadow: 0 12px 36px #fff, 0 2px 12px #fff !important;
+            border: 2px solid var(--accent) !important;
           }
-          .carousel-image:hover {
-            transform: scale(1.08);
-            box-shadow: 0 4px 16px var(--accent);
-          }
-          .features-carousel-row .slick-slide {
-            display: flex !important;
-            align-items: stretch;
-            height: auto !important;
-          }
-          .features-carousel-row .slick-list {
-            padding: 12px 0 !important;
+          .carousel-card {
+            margin: 0 auto;
+            min-width: 220px;
+            max-width: 220px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.25s, box-shadow 0.25s, border 0.25s;
           }
           @media (max-width: 1200px) {
             .features-container {
               padding: 18px 2vw;
             }
-            .carousel-item {
-              min-width: 70vw;
-              max-width: 80vw;
+            .features-category-card, .carousel-item.card-hover {
+              min-width: 220px !important;
+              max-width: 220px !important;
             }
           }
           @media (max-width: 900px) {
             .features-container {
               padding: 10px 1vw;
             }
-            .carousel-item {
-              min-width: 90vw;
-              max-width: 95vw;
-              padding: 8px 2px;
+            .features-category-card, .carousel-item.card-hover {
+              min-width: 220px !important;
+              max-width: 220px !important;
+              width: 220px !important;
+            }
+            .features-main-img, .carousel-image.features-main-img {
+              height: 90px !important;
+            }
+            .features-carousel-row .slick-prev {
+              left: -24px !important;
+            }
+            .features-carousel-row .slick-next {
+              right: -24px !important;
+            }
+          }
+          @media (max-width: 600px) {
+            .features-container {
+              padding: 4px 1vw;
+            }
+            .features-category-row {
+              padding: 0 8px !important;
+            }
+            .features-category-card, .carousel-item.card-hover, .carousel-card {
+              min-width: 94vw !important;
+              max-width: 94vw !important;
+              width: 94vw !important;
+              margin: 0 auto 18px auto !important;
+            }
+            .features-main-img, .carousel-image.features-main-img {
+              height: 70px !important;
+            }
+            .features-category-card > div {
+              text-align: center !important;
+              align-items: center !important;
             }
           }
         `}
@@ -352,4 +464,4 @@ const Features = () => {
 };
 
 export default Features;
-
+        
