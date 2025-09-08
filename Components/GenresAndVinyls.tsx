@@ -29,11 +29,12 @@ const GenresAndVinyls = () => {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 2,
+    slidesToShow: 3,
     slidesToScroll: 1,
     arrows: true,
     responsive: [
-      { breakpoint: 900, settings: { slidesToShow: 1 } },
+      { breakpoint: 900, settings: { slidesToShow: 2 } },
+      { breakpoint: 600, settings: { slidesToShow: 1 } },
     ],
   };
 
@@ -81,31 +82,43 @@ const GenresAndVinyls = () => {
                 style={{
                   background: "var(--card)",
                   borderRadius: '10px',
-                  padding: '14px',
-                  textAlign: 'center',
                   boxShadow: "var(--shadow)",
                   cursor: 'pointer',
                   transition: 'transform 0.2s',
-                  height: "100%",
+                  height: "180px",
+                  width: "100%",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
+                  justifyContent: "flex-start",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
                 className="genre-card"
               >
-                <img
-                  src={genre.image}
-                  alt={genre.name}
-                  style={{
-                    width: '100%',
-                    height: '120px',
-                    objectFit: 'cover',
-                    borderRadius: '8px',
-                    marginBottom: '10px',
-                  }}
-                />
-                <h3 style={{ margin: '0', color: "var(--accent)", fontWeight: 600 }}>{genre.name}</h3>
-                <span style={{ fontSize: '0.95rem', color: "var(--muted)" }}>Ver discos</span>
+                <div style={{ width: "100%", height: "120px", overflow: "hidden", borderTopLeftRadius: "10px", borderTopRightRadius: "10px", position: "relative", margin: 0, padding: 0, zIndex: 1 }}>
+                  <img
+                    src={genre.image}
+                    alt={genre.name}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      borderTopLeftRadius: '10px',
+                      borderTopRightRadius: '10px',
+                      borderBottomLeftRadius: 0,
+                      borderBottomRightRadius: 0,
+                      boxShadow: "var(--shadow)",
+                      background: "var(--card)",
+                      display: "block",
+                      margin: 0,
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                    }}
+                  />
+                </div>
+                <div style={{ textAlign: "center", padding: "14px 0 0 0", width: "100%", zIndex: 2 }}>
+                  <h3 style={{ margin: 0, color: "var(--accent)", fontWeight: 700, fontSize: "1.08rem" }}>{genre.name}</h3>
+                </div>
               </div>
             </Link>
           ))}
@@ -137,9 +150,6 @@ const GenresAndVinyls = () => {
               style={{
                 background: "var(--card)",
                 borderRadius: '10px',
-                padding: '14px',
-                textAlign: 'center',
-                position: 'relative',
                 boxShadow: "var(--shadow)",
                 minWidth: 180,
                 maxWidth: 220,
@@ -147,10 +157,15 @@ const GenresAndVinyls = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                height: "100%",
+                position: "relative",
                 transition: "transform 0.2s, box-shadow 0.2s",
+                cursor: "pointer",
+                overflow: "hidden",
+                height: "220px",
+                justifyContent: "flex-start",
               }}
               className="hot-vinyl-card"
+              onClick={() => window.location.href = `/albumdetails/${vinyl.id}`}
             >
               {vinyl.badge && (
                 <span style={{
@@ -158,41 +173,32 @@ const GenresAndVinyls = () => {
                   background: "var(--accent)",
                   color: "var(--bg)",
                   fontWeight: 'bold',
-                  borderRadius: '6px', padding: '2px 10px', fontSize: '0.85rem'
+                  borderRadius: '6px', padding: '2px 10px', fontSize: '0.85rem', zIndex: 2
                 }}>{vinyl.badge}</span>
               )}
-              <img
-                src={vinyl.image}
-                alt={vinyl.title}
-                style={{
-                  width: '100%',
-                  height: '120px',
-                  objectFit: 'cover',
-                  borderRadius: '8px',
-                  marginBottom: '10px',
-                }}
-              />
-              <h3 style={{ margin: '10px 0 4px', color: "var(--accent)", fontWeight: 600 }}>{vinyl.title}</h3>
-              <p style={{ margin: 0, fontWeight: 'bold', color: "var(--text)" }}>{vinyl.price}</p>
-              <div style={{ marginTop: 10, display: 'flex', gap: 8, justifyContent: 'center' }}>
-                <Link
-                  href={`/albumdetails/${vinyl.id}`}
+              <div style={{ width: "100%", height: "120px", overflow: "hidden", borderTopLeftRadius: "10px", borderTopRightRadius: "10px", position: "relative", margin: 0, padding: 0, zIndex: 1 }}>
+                <img
+                  src={vinyl.image}
+                  alt={vinyl.title}
                   style={{
-                    background: 'transparent',
-                    color: "var(--accent)",
-                    border: '1px solid var(--accent)',
-                    borderRadius: '6px',
-                    padding: '7px 14px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    fontSize: '0.98rem',
-                    transition: 'background 0.2s, color 0.2s',
-                    textDecoration: "none",
-                    display: "inline-block",
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    borderTopLeftRadius: '10px',
+                    borderTopRightRadius: '10px',
+                    borderBottomLeftRadius: 0,
+                    borderBottomRightRadius: 0,
+                    boxShadow: "var(--shadow)",
+                    background: "var(--card)",
+                    display: "block",
+                    margin: 0,
+                    transition: "transform 0.2s, box-shadow 0.2s",
                   }}
-                >
-                  Ver detalles
-                </Link>
+                />
+              </div>
+              <div style={{ textAlign: "center", padding: "14px 0 0 0", width: "100%", zIndex: 2 }}>
+                <h3 style={{ margin: 0, color: "var(--accent)", fontWeight: 700, fontSize: "1.08rem" }}>{vinyl.title}</h3>
+                <div style={{ color: "var(--muted)", fontWeight: 500, fontSize: "0.98rem" }}>{vinyl.artist}</div>
               </div>
             </div>
           ))}
@@ -232,7 +238,7 @@ const GenresAndVinyls = () => {
         }}>
           Staff Picks
         </h2>
-        <div style={{ maxWidth: 600, margin: '0 auto 36px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto 36px', padding: '0 12px', minHeight: 260 }}>
           <Slider {...staffSettings}>
             {staffPicks.map((pick) => (
               <div key={pick.id}>
@@ -240,32 +246,47 @@ const GenresAndVinyls = () => {
                   style={{
                     background: "var(--card)",
                     borderRadius: '10px',
-                    padding: '14px',
-                    textAlign: 'center',
-                    minWidth: '180px',
-                    maxWidth: '220px',
                     boxShadow: "var(--shadow)",
-                    margin: '0 auto',
+                    minWidth: '180px',
+                    maxWidth: '240px',
+                    margin: '0 8px',
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
+                    position: "relative",
                     transition: "transform 0.2s, box-shadow 0.2s",
+                    cursor: "pointer",
+                    overflow: "hidden",
+                    height: "240px",
+                    justifyContent: "flex-start",
                   }}
                   className="staff-pick-card"
+                  onClick={() => window.location.href = `/albumdetails/${pick.id}`}
                 >
-                  <img
-                    src={pick.image}
-                    alt={pick.title}
-                    style={{
-                      width: '100%',
-                      height: '110px',
-                      objectFit: 'cover',
-                      borderRadius: '8px',
-                      marginBottom: '10px',
-                    }}
-                  />
-                  <h3 style={{ margin: '10px 0 4px', color: "var(--accent)", fontWeight: 600 }}>{pick.title}</h3>
-                  <p style={{ margin: 0, fontWeight: 'bold', color: "var(--text)" }}>{pick.price}</p>
+                  <div style={{ width: "100%", height: "140px", overflow: "hidden", borderTopLeftRadius: "10px", borderTopRightRadius: "10px", position: "relative", margin: 0, padding: 0, zIndex: 1 }}>
+                    <img
+                      src={pick.image}
+                      alt={pick.title}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        borderTopLeftRadius: '10px',
+                        borderTopRightRadius: '10px',
+                        borderBottomLeftRadius: 0,
+                        borderBottomRightRadius: 0,
+                        boxShadow: "var(--shadow)",
+                        background: "var(--card)",
+                        display: "block",
+                        margin: 0,
+                        transition: "transform 0.2s, box-shadow 0.2s",
+                      }}
+                    />
+                  </div>
+                  <div style={{ textAlign: "center", padding: "16px 0 0 0", width: "100%", zIndex: 2 }}>
+                    <h3 style={{ margin: 0, color: "var(--accent)", fontWeight: 700, fontSize: "1.08rem" }}>{pick.title}</h3>
+                    <div style={{ color: "var(--muted)", fontWeight: 500, fontSize: "0.98rem" }}>{pick.artist}</div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -298,14 +319,10 @@ const GenresAndVinyls = () => {
               transform: scale(1.04);
               box-shadow: 0 8px 32px var(--accent), 0 2px 12px var(--accent);
             }
-            .hot-vinyl-card:hover {
+            .hot-vinyl-card:hover, .staff-pick-card:hover {
               transform: scale(1.045);
               box-shadow: 0 8px 32px var(--accent), 0 2px 12px var(--accent);
               border: 2px solid var(--accent);
-            }
-            .staff-pick-card:hover {
-              transform: scale(1.045);
-              box-shadow: 0 8px 32px var(--accent), 0 2px 12px var(--accent);
             }
           `}
         </style>
