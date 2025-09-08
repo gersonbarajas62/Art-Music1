@@ -45,7 +45,6 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
           alignItems: "flex-start",
           gap: 18,
           position: "relative",
-          minHeight: 900,
         }}
       >
         {/* Left: Large Product Image with sticky effect */}
@@ -58,13 +57,12 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: 420,
-          height: "auto",
           position: "sticky",
-          top: 48,
+          top: 40,
           boxShadow: "0 2px 24px rgba(0,0,0,0.07)",
           overflow: "hidden",
           zIndex: 1,
+          height: "auto",
         }}>
           {product.images && product.images.length > 0 ? (
             <>
@@ -74,7 +72,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                   left: 12,
                   top: "50%",
                   transform: "translateY(-50%)",
-                  background: "rgba(255,255,255,0.7)",
+                  background: "#fff",
                   border: "none",
                   fontSize: "2rem",
                   color: selectedImg > 0 ? "var(--accent)" : "var(--muted)",
@@ -98,16 +96,14 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                 alt={product.title}
                 style={{
                   width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
+                  maxHeight: "70vh",
+                  objectFit: "contain",
                   borderRadius: 18,
                   boxShadow: "0 8px 32px var(--shadow)",
                   background: "#fff",
                   border: "3px solid #fff",
                   cursor: "pointer",
                   transition: "transform 0.2s",
-                  maxHeight: "100%",
-                  minHeight: "100%",
                 }}
                 onClick={() => setFullView(true)}
               />
@@ -117,7 +113,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                   right: 12,
                   top: "50%",
                   transform: "translateY(-50%)",
-                  background: "rgba(255,255,255,0.7)",
+                  background: "#fff",
                   border: "none",
                   fontSize: "2rem",
                   color: selectedImg < product.images.length - 1 ? "var(--accent)" : "var(--muted)",
@@ -228,29 +224,46 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
             )}
           </div>
           {/* Thumbnails */}
-          <div style={{ display: "flex", gap: 10 }}>
+          <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
             {product.images && product.images.map((img: string, idx: number) => (
-              <img
+              <button
                 key={idx}
-                src={img}
-                alt={`mini-${idx + 1}`}
                 style={{
-                  width: 54,
-                  height: 54,
-                  objectFit: "cover",
+                  background: idx === selectedImg ? "#222" : "#333",
+                  border: idx === selectedImg ? "2px solid var(--accent)" : "1px solid #444",
                   borderRadius: 10,
-                  border: idx === selectedImg ? "2px solid var(--accent)" : "1px solid #333",
                   boxShadow: "var(--shadow)",
                   cursor: "pointer",
                   opacity: idx === selectedImg ? 1 : 0.7,
-                  transition: "border 0.2s, opacity 0.2s",
+                  transition: "border 0.2s, opacity 0.2s, background 0.2s",
+                  padding: 0,
+                  width: 54,
+                  height: 54,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: 0,
                 }}
                 onClick={() => setSelectedImg(idx)}
-              />
+                aria-label={`Imagen ${idx + 1}`}
+              >
+                <img
+                  src={img}
+                  alt={`mini-${idx + 1}`}
+                  style={{
+                    width: 48,
+                    height: 48,
+                    objectFit: "cover",
+                    borderRadius: 8,
+                    boxShadow: "var(--shadow)",
+                    background: idx === selectedImg ? "#222" : "#333",
+                  }}
+                />
+              </button>
             ))}
           </div>
           {/* Badges */}
-          <div>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
             {product.badge && (
               <span style={{
                 background: "var(--accent)",
@@ -259,47 +272,48 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                 padding: "4px 14px",
                 fontWeight: "bold",
                 fontSize: "1rem",
-                marginRight: 8,
                 boxShadow: "var(--shadow)",
+                display: 'inline-block',
               }}>{product.badge}</span>
             )}
             {product.featured && (
               <span style={{
-                background: "var(--accent)",
+                background: "#222",
                 color: "#fff",
                 borderRadius: 8,
                 padding: "4px 14px",
                 fontWeight: "bold",
                 fontSize: "1rem",
-                marginRight: 8,
                 boxShadow: "var(--shadow)",
+                display: 'inline-block',
               }}>Destacado</span>
             )}
             {product.newArrival && (
               <span style={{
-                background: "var(--accent)",
+                background: "#444",
                 color: "#fff",
                 borderRadius: 8,
                 padding: "4px 14px",
                 fontWeight: "bold",
                 fontSize: "1rem",
-                marginRight: 8,
                 boxShadow: "var(--shadow)",
+                display: 'inline-block',
               }}>Nuevo</span>
             )}
           </div>
-          <div style={{ color: "#fff" }}><b>Tipo:</b> {product.tipo}</div>
-          <div style={{ color: "#fff" }}><b>Estado:</b> {product.estado}</div>
-          <div style={{ color: "#fff" }}><b>Condición:</b> {product.condicion}</div>
-          <div style={{ color: "#fff" }}><b>Número de Catálogo:</b> {product.numerodeCatalogo || "-"}</div>
-          <div style={{ color: "#fff" }}><b>Stock:</b> {product.quantity}</div>
-          <div style={{ color: "#fff" }}><b>Descripción:</b> {product.description}</div>
-          <div style={{ color: "#fff" }}><b>Etiquetas:</b> {product.tags && product.tags.length > 0 ? product.tags.join(", ") : "-"}</div>
-          <div style={{ color: "#fff" }}><b>Status:</b> {product.status === "active" ? "Activo" : "Inactivo"}</div>
+          {/* Info fields with dark background and light text */}
+          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Tipo:</b> {product.tipo}</div>
+          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Estado:</b> {product.estado}</div>
+          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Condición:</b> {product.condicion}</div>
+          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Número de Catálogo:</b> {product.numerodeCatalogo || '-'}</div>
+          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Stock:</b> {product.quantity}</div>
+          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Descripción:</b> {product.description}</div>
+          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Etiquetas:</b> {product.tags && product.tags.length > 0 ? product.tags.join(", ") : '-'}</div>
+          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Status:</b> {product.status === 'active' ? 'Activo' : 'Inactivo'}</div>
           <div style={{ display: "flex", gap: 18, marginTop: 12 }}>
             <button
               style={{
-                background: "var(--accent)",
+                background: "#222",
                 color: "#fff",
                 border: "none",
                 borderRadius: "10px",
@@ -481,9 +495,15 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
               flex-direction: column !important;
               gap: 24px !important;
               padding: 18px 2vw !important;
+              min-height: 100vh !important;
             }
             .details-right {
               margin-top: 0 !important;
+            }
+            .sticky-img {
+              position: static !important;
+              height: auto !important;
+              top: auto !important;
             }
           }
           @media (max-width: 600px) {
@@ -491,9 +511,15 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
               flex-direction: column !important;
               gap: 12px !important;
               padding: 8px 1vw !important;
+              min-height: 100vh !important;
             }
             .details-right {
               margin-top: 0 !important;
+            }
+            .sticky-img {
+              position: static !important;
+              height: auto !important;
+              top: auto !important;
             }
           }
         `}
