@@ -37,10 +37,10 @@ const Contact = () => {
       style={{
         background: "var(--section)",
         color: "var(--text)",
-        padding: "48px 20px",
+        padding: "56px 32px",
         borderRadius: "16px",
         margin: "40px auto",
-        maxWidth: "600px",
+        maxWidth: "900px",
         boxShadow: "var(--shadow)",
         animation: "fadeIn 1.2s cubic-bezier(.77,0,.175,1)",
         animationFillMode: "forwards",
@@ -49,8 +49,26 @@ const Contact = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        minHeight: 520,
       }}
     >
+      {/* Decorative accent icon */}
+      <div style={{
+        width: 64,
+        height: 64,
+        borderRadius: "50%",
+        background: "linear-gradient(90deg, var(--accent) 60%, #fffbe6 100%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        margin: "-32px auto 18px auto",
+        boxShadow: "0 2px 12px var(--accent)",
+        fontSize: "2.2rem",
+        color: "#222",
+      }}>
+        <span role="img" aria-label="contact">📬</span>
+      </div>
+
       <h2
         style={{
           textAlign: "center",
@@ -81,16 +99,17 @@ const Contact = () => {
       {success && (
         <div
           style={{
-            background: "var(--accent)",
-            color: "var(--bg)",
-            borderRadius: "8px",
-            padding: "16px",
+            background: "linear-gradient(90deg, var(--accent) 60%, #fffbe6 100%)",
+            color: "#222",
+            borderRadius: "12px",
+            padding: "20px 18px",
             textAlign: "center",
             fontWeight: "bold",
-            fontSize: "1.08rem",
+            fontSize: "1.12rem",
             marginBottom: "24px",
-            boxShadow: "var(--shadow)",
+            boxShadow: "0 2px 12px var(--accent)",
             animation: "fadeIn 0.7s",
+            letterSpacing: "1px",
           }}
           aria-live="polite"
         >
@@ -102,7 +121,7 @@ const Contact = () => {
         onSubmit={handleSubmit}
         style={{
           width: "100%",
-          maxWidth: 400,
+          maxWidth: 540,
           display: "flex",
           flexDirection: "column",
           gap: "1.2rem",
@@ -113,7 +132,7 @@ const Contact = () => {
         aria-label="Formulario de contacto"
       >
         {/* Full Name */}
-        <label htmlFor="contact-name" style={{ fontWeight: 600, color: "var(--accent)" }}>
+        <label htmlFor="contact-name" style={{ fontWeight: 600, color: "#fff", display: "block", marginBottom: 6 }}>
           Nombre completo
           <input
             id="contact-name"
@@ -127,19 +146,24 @@ const Contact = () => {
             style={{
               padding: "12px",
               borderRadius: "8px",
-              border: "1px solid var(--border)",
-              background: "var(--card)",
-              color: "var(--text)",
+              border: "2px solid #B71C1C",
+              background: "#fff",
+              color: "#222",
               fontSize: "1rem",
               outline: "none",
-              marginTop: 6,
+              marginTop: 12,
+              minWidth: 320,
+              maxWidth: "100%",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+              transition: "box-shadow 0.2s, border-color 0.2s",
+              width: "100%",
             }}
             aria-required="true"
           />
         </label>
 
         {/* Email Address */}
-        <label htmlFor="contact-email" style={{ fontWeight: 600, color: "var(--accent)" }}>
+        <label htmlFor="contact-email" style={{ fontWeight: 600, color: "#fff", display: "block", marginBottom: 6 }}>
           Correo electrónico
           <input
             id="contact-email"
@@ -153,19 +177,24 @@ const Contact = () => {
             style={{
               padding: "12px",
               borderRadius: "8px",
-              border: "1px solid var(--border)",
-              background: "var(--card)",
-              color: "var(--text)",
+              border: "2px solid #B71C1C",
+              background: "#fff",
+              color: "#222",
               fontSize: "1rem",
               outline: "none",
-              marginTop: 6,
+              marginTop: 12,
+              minWidth: 320,
+              maxWidth: "100%",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+              transition: "box-shadow 0.2s, border-color 0.2s",
+              width: "100%",
             }}
             aria-required="true"
           />
         </label>
 
         {/* Message */}
-        <label htmlFor="contact-message" style={{ fontWeight: 600, color: "var(--accent)" }}>
+        <label htmlFor="contact-message" style={{ fontWeight: 600, color: "#fff", display: "block", marginBottom: 8 }}>
           Mensaje
           <textarea
             id="contact-message"
@@ -174,17 +203,23 @@ const Contact = () => {
             onChange={handleChange}
             placeholder="Escribe tu mensaje aquí..."
             required
-            rows={5}
+            rows={6}
             style={{
-              padding: "12px",
-              borderRadius: "8px",
-              border: "1px solid var(--border)",
-              background: "var(--card)",
-              color: "var(--text)",
-              fontSize: "1rem",
+              padding: "18px 14px",
+              borderRadius: "12px",
+              border: "2px solid #B71C1C",
+              background: "#fff",
+              color: "#222",
+              fontSize: "1.08rem",
               outline: "none",
-              marginTop: 6,
+              marginTop: 12,
               resize: "vertical",
+              minHeight: 120,
+              minWidth: 320,
+              maxWidth: "100%",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+              transition: "box-shadow 0.2s, border-color 0.2s",
+              width: "100%",
             }}
             aria-required="true"
           />
@@ -206,7 +241,7 @@ const Contact = () => {
           <label htmlFor="privacy">
             Acepto la{" "}
             <a
-              href="#"
+              href="/politica-privacidad"
               style={{
                 color: "var(--accent)",
                 textDecoration: "underline",
@@ -236,6 +271,8 @@ const Contact = () => {
             boxShadow: "var(--shadow)",
             transition: "background 0.2s, color 0.2s, transform 0.2s",
           }}
+          onMouseEnter={e => { if (!submitting) e.currentTarget.style.transform = "scale(1.04)"; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = ""; }}
         >
           {submitting ? "Enviando..." : "Enviar formulario"}
         </button>
@@ -266,6 +303,24 @@ const Contact = () => {
           @keyframes slideUp {
             from { opacity: 0; transform: translateY(40px);}
             to { opacity: 1; transform: translateY(0);}
+          }
+          @media (max-width: 900px) {
+            section {
+              max-width: 98vw !important;
+              padding: 32px 2vw !important;
+            }
+            form {
+              max-width: 98vw !important;
+            }
+          }
+          @media (max-width: 600px) {
+            section {
+              max-width: 100vw !important;
+              padding: 16px 1vw !important;
+            }
+            form {
+              max-width: 100vw !important;
+            }
           }
         `}
       </style>
