@@ -30,30 +30,51 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
   );
 
   return (
-    <section
-      style={{
-        background: "var(--section)",
-        color: "var(--text)",
-        borderRadius: "18px",
-        margin: "40px auto",
-        maxWidth: 980,
-        padding: "36px 18px",
-        boxShadow: "var(--shadow)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 32,
-        position: "relative",
-      }}
-    >
-      {/* Images Carousel */}
-      <div style={{ width: "100%", maxWidth: 380, margin: "0 auto", position: "relative" }}>
-        {product.images && product.images.length > 0 ? (
-          <>
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12 }}>
+    <>
+      <section
+        style={{
+          background: "var(--section)",
+          color: "var(--text)",
+          borderRadius: "18px",
+          margin: "40px auto",
+          maxWidth: 1200,
+          padding: "36px 18px",
+          boxShadow: "var(--shadow)",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "flex-start",
+          gap: 18,
+          position: "relative",
+          minHeight: 900,
+        }}
+      >
+        {/* Left: Large Product Image with sticky effect */}
+        <div style={{
+          flex: "0 0 520px",
+          maxWidth: 520,
+          minWidth: 320,
+          background: "#f6f6f6",
+          borderRadius: "24px 0 0 24px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: 420,
+          height: "auto",
+          position: "sticky",
+          top: 48,
+          boxShadow: "0 2px 24px rgba(0,0,0,0.07)",
+          overflow: "hidden",
+          zIndex: 1,
+        }}>
+          {product.images && product.images.length > 0 ? (
+            <>
               <button
                 style={{
-                  background: "var(--card)",
+                  position: "absolute",
+                  left: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "rgba(255,255,255,0.7)",
                   border: "none",
                   fontSize: "2rem",
                   color: selectedImg > 0 ? "var(--accent)" : "var(--muted)",
@@ -64,6 +85,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                   height: 38,
                   boxShadow: "var(--shadow)",
                   transition: "opacity 0.2s, background 0.2s",
+                  zIndex: 2,
                 }}
                 disabled={selectedImg === 0}
                 onClick={() => setSelectedImg((i) => Math.max(0, i - 1))}
@@ -75,20 +97,27 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                 src={product.images[selectedImg]}
                 alt={product.title}
                 style={{
-                  width: 300,
-                  height: 300,
+                  width: "100%",
+                  height: "100%",
                   objectFit: "cover",
                   borderRadius: 18,
                   boxShadow: "0 8px 32px var(--shadow)",
+                  background: "#fff",
+                  border: "3px solid #fff",
                   cursor: "pointer",
-                  border: "3px solid var(--accent)",
                   transition: "transform 0.2s",
+                  maxHeight: "100%",
+                  minHeight: "100%",
                 }}
                 onClick={() => setFullView(true)}
               />
               <button
                 style={{
-                  background: "var(--card)",
+                  position: "absolute",
+                  right: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "rgba(255,255,255,0.7)",
                   border: "none",
                   fontSize: "2rem",
                   color: selectedImg < product.images.length - 1 ? "var(--accent)" : "var(--muted)",
@@ -99,6 +128,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                   height: 38,
                   boxShadow: "var(--shadow)",
                   transition: "opacity 0.2s, background 0.2s",
+                  zIndex: 2,
                 }}
                 disabled={selectedImg === product.images.length - 1}
                 onClick={() => setSelectedImg((i) => Math.min(product.images.length - 1, i + 1))}
@@ -106,254 +136,257 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
               >
                 &#8594;
               </button>
+            </>
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: 18,
+                background: "#eaeaea",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#bbb",
+                fontWeight: "bold",
+                fontSize: "1.2rem",
+                boxShadow: "var(--shadow)",
+              }}
+            >
+              Sin imagen
             </div>
-            <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 14 }}>
-              {product.images.map((img: string, idx: number) => (
-                <img
-                  key={idx}
-                  src={img}
-                  alt={`mini-${idx + 1}`}
-                  style={{
-                    width: 54,
-                    height: 54,
-                    objectFit: "cover",
-                    borderRadius: 10,
-                    border: idx === selectedImg ? "2px solid var(--accent)" : "1px solid var(--border)",
-                    boxShadow: "var(--shadow)",
-                    cursor: "pointer",
-                    opacity: idx === selectedImg ? 1 : 0.7,
-                    transition: "border 0.2s, opacity 0.2s",
-                  }}
-                  onClick={() => setSelectedImg(idx)}
-                />
-              ))}
-            </div>
-            {/* Full view modal */}
-            {fullView && (
-              <div
+          )}
+          {/* Full view modal */}
+          {fullView && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100vw",
+                height: "100vh",
+                background: "rgba(0,0,0,0.93)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 9999,
+                cursor: "zoom-out",
+                animation: "fadeIn 0.3s",
+              }}
+              onClick={() => setFullView(false)}
+            >
+              <img
+                src={product.images[selectedImg]}
+                alt={product.title}
                 style={{
-                  position: "fixed",
-                  top: 0,
-                  left: 0,
-                  width: "100vw",
-                  height: "100vh",
-                  background: "rgba(0,0,0,0.93)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  zIndex: 9999,
-                  cursor: "zoom-out",
-                  animation: "fadeIn 0.3s",
+                  maxWidth: "90vw",
+                  maxHeight: "90vh",
+                  borderRadius: 22,
+                  boxShadow: "0 8px 32px #FFD700",
+                  border: "4px solid var(--accent)",
                 }}
-                onClick={() => setFullView(false)}
-              >
-                <img
-                  src={product.images[selectedImg]}
-                  alt={product.title}
-                  style={{
-                    maxWidth: "90vw",
-                    maxHeight: "90vh",
-                    borderRadius: 22,
-                    boxShadow: "0 8px 32px #FFD700",
-                    border: "4px solid var(--accent)",
-                  }}
-                />
-              </div>
-            )}
-          </>
-        ) : (
-          <div
-            style={{
-              width: 300,
-              height: 300,
-              borderRadius: 18,
-              background: "var(--section)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "var(--muted)",
-              fontWeight: "bold",
-              fontSize: "1.2rem",
-              marginBottom: "16px",
-              boxShadow: "var(--shadow)",
-            }}
-          >
-            Sin imagen
+              />
+            </div>
+          )}
+        </div>
+        {/* Right: Product Info - scrollable pane */}
+        <div style={{
+          flex: "1 1 520px",
+          maxWidth: 520,
+          minWidth: 280,
+          background: "var(--card)",
+          borderRadius: "0 24px 24px 0",
+          boxShadow: "var(--shadow)",
+          padding: "38px 32px 32px 32px",
+          minHeight: 420,
+          height: "auto",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
+          position: "relative",
+          gap: 12,
+          zIndex: 2,
+        }}>
+          <h2 style={{ color: "#fff", fontWeight: "bold", fontSize: "2.2rem", marginBottom: 0 }}>
+            {product.title}
+          </h2>
+          <div style={{ color: "#eee", fontSize: "1.15rem", fontWeight: "bold" }}>
+            <b>{product.artist}</b> &bull; {product.genero} &bull; {product.year}
           </div>
-        )}
-      </div>
-      {/* Details */}
+          <div style={{ fontWeight: "bold", fontSize: "1.35rem", color: "var(--accent)" }}>
+            ${product.price}
+            {product.oldPrice && (
+              <span style={{
+                textDecoration: "line-through",
+                color: "#888",
+                fontSize: "1.1rem",
+                marginLeft: 14,
+              }}>
+                ${product.oldPrice}
+              </span>
+            )}
+          </div>
+          {/* Thumbnails */}
+          <div style={{ display: "flex", gap: 10 }}>
+            {product.images && product.images.map((img: string, idx: number) => (
+              <img
+                key={idx}
+                src={img}
+                alt={`mini-${idx + 1}`}
+                style={{
+                  width: 54,
+                  height: 54,
+                  objectFit: "cover",
+                  borderRadius: 10,
+                  border: idx === selectedImg ? "2px solid var(--accent)" : "1px solid #333",
+                  boxShadow: "var(--shadow)",
+                  cursor: "pointer",
+                  opacity: idx === selectedImg ? 1 : 0.7,
+                  transition: "border 0.2s, opacity 0.2s",
+                }}
+                onClick={() => setSelectedImg(idx)}
+              />
+            ))}
+          </div>
+          {/* Badges */}
+          <div>
+            {product.badge && (
+              <span style={{
+                background: "var(--accent)",
+                color: "#fff",
+                borderRadius: 8,
+                padding: "4px 14px",
+                fontWeight: "bold",
+                fontSize: "1rem",
+                marginRight: 8,
+                boxShadow: "var(--shadow)",
+              }}>{product.badge}</span>
+            )}
+            {product.featured && (
+              <span style={{
+                background: "var(--accent)",
+                color: "#fff",
+                borderRadius: 8,
+                padding: "4px 14px",
+                fontWeight: "bold",
+                fontSize: "1rem",
+                marginRight: 8,
+                boxShadow: "var(--shadow)",
+              }}>Destacado</span>
+            )}
+            {product.newArrival && (
+              <span style={{
+                background: "var(--accent)",
+                color: "#fff",
+                borderRadius: 8,
+                padding: "4px 14px",
+                fontWeight: "bold",
+                fontSize: "1rem",
+                marginRight: 8,
+                boxShadow: "var(--shadow)",
+              }}>Nuevo</span>
+            )}
+          </div>
+          <div style={{ color: "#fff" }}><b>Tipo:</b> {product.tipo}</div>
+          <div style={{ color: "#fff" }}><b>Estado:</b> {product.estado}</div>
+          <div style={{ color: "#fff" }}><b>Condición:</b> {product.condicion}</div>
+          <div style={{ color: "#fff" }}><b>Número de Catálogo:</b> {product.numerodeCatalogo || "-"}</div>
+          <div style={{ color: "#fff" }}><b>Stock:</b> {product.quantity}</div>
+          <div style={{ color: "#fff" }}><b>Descripción:</b> {product.description}</div>
+          <div style={{ color: "#fff" }}><b>Etiquetas:</b> {product.tags && product.tags.length > 0 ? product.tags.join(", ") : "-"}</div>
+          <div style={{ color: "#fff" }}><b>Status:</b> {product.status === "active" ? "Activo" : "Inactivo"}</div>
+          <div style={{ display: "flex", gap: 18, marginTop: 12 }}>
+            <button
+              style={{
+                background: "var(--accent)",
+                color: "#fff",
+                border: "none",
+                borderRadius: "10px",
+                padding: "14px 32px",
+                fontWeight: "bold",
+                fontSize: "1.12rem",
+                cursor: "pointer",
+                boxShadow: "var(--shadow)",
+                transition: "background 0.2s, color 0.2s",
+                letterSpacing: "1px",
+              }}
+              onClick={() => {
+                addToCart({
+                  id: product.id,
+                  name: product.title,
+                  price: product.price,
+                  image: product.images?.[0] || product.image,
+                  quantity: 1,
+                });
+                if (typeof window !== "undefined") {
+                  const toast = document.createElement("div");
+                  toast.textContent = "¡Producto agregado al carrito!";
+                  toast.style.position = "fixed";
+                  toast.style.bottom = "32px";
+                  toast.style.right = "32px";
+                  toast.style.background = "var(--accent)";
+                  toast.style.color = "#fff";
+                  toast.style.padding = "16px 28px";
+                  toast.style.borderRadius = "10px";
+                  toast.style.fontWeight = "bold";
+                  toast.style.fontSize = "1.08rem";
+                  toast.style.boxShadow = "var(--shadow)";
+                  toast.style.zIndex = "99999";
+                  toast.style.transition = "opacity 0.3s";
+                  toast.style.opacity = "1";
+                  document.body.appendChild(toast);
+                  setTimeout(() => {
+                    toast.style.opacity = "0";
+                    setTimeout(() => document.body.removeChild(toast), 400);
+                  }, 1800);
+                }
+              }}
+            >
+              Agregar al carrito
+            </button>
+            <button
+              style={{
+                background: "#fff",
+                color: "#222",
+                border: "1.5px solid #222",
+                borderRadius: "10px",
+                padding: "14px 32px",
+                fontWeight: "bold",
+                fontSize: "1.12rem",
+                cursor: "pointer",
+                boxShadow: "var(--shadow)",
+                transition: "background 0.2s, color 0.2s",
+                letterSpacing: "1px",
+              }}
+              onClick={() => router.push("/checkout")}
+            >
+              Comprar ahora
+            </button>
+          </div>
+        </div>
+      </section>
+      {/* Recommendations carousel below main container, not overlapping */}
       <div style={{
         width: "100%",
-        maxWidth: 600,
-        background: "var(--card)",
-        borderRadius: 14,
-        boxShadow: "var(--shadow)",
-        padding: "28px 18px",
-        marginTop: 12,
-      }}>
-        <h2 style={{ color: "var(--accent)", fontWeight: "bold", fontSize: "2.2rem", marginBottom: 10, textAlign: "center" }}>
-          {product.title}
-        </h2>
-        <div style={{ color: "var(--muted)", fontSize: "1.15rem", marginBottom: 12, textAlign: "center" }}>
-          <b>{product.artist}</b> &bull; {product.genero} &bull; {product.year}
-        </div>
-        <div style={{ marginBottom: 14, textAlign: "center" }}>
-          {product.badge && (
-            <span style={{
-              background: "var(--accent)",
-              color: "var(--bg)",
-              borderRadius: 8,
-              padding: "4px 14px",
-              fontWeight: "bold",
-              fontSize: "1rem",
-              marginRight: 8,
-              boxShadow: "var(--shadow)",
-            }}>{product.badge}</span>
-          )}
-          {product.featured && (
-            <span style={{
-              background: "var(--accent)",
-              color: "var(--bg)",
-              borderRadius: 8,
-              padding: "4px 14px",
-              fontWeight: "bold",
-              fontSize: "1rem",
-              marginRight: 8,
-              boxShadow: "var(--shadow)",
-            }}>Destacado</span>
-          )}
-          {product.newArrival && (
-            <span style={{
-              background: "var(--accent)",
-              color: "var(--bg)",
-              borderRadius: 8,
-              padding: "4px 14px",
-              fontWeight: "bold",
-              fontSize: "1rem",
-              marginRight: 8,
-              boxShadow: "var(--shadow)",
-            }}>Nuevo</span>
-          )}
-        </div>
-        <div style={{ fontWeight: "bold", fontSize: "1.35rem", color: "var(--accent)", marginBottom: 14, textAlign: "center" }}>
-          ${product.price}
-          {product.oldPrice && (
-            <span style={{
-              textDecoration: "line-through",
-              color: "var(--muted)",
-              fontSize: "1.1rem",
-              marginLeft: 14,
-            }}>
-              ${product.oldPrice}
-            </span>
-          )}
-        </div>
-        <div style={{ marginBottom: 10 }}>
-          <b>Tipo:</b> {product.tipo} &nbsp; <b>Estado:</b> {product.estado} &nbsp; <b>Condición:</b> {product.condicion}
-        </div>
-        <div style={{ marginBottom: 10 }}>
-          <b>Número de Catálogo:</b> {product.numerodeCatalogo || "-"}
-        </div>
-        <div style={{ marginBottom: 10 }}>
-          <b>Stock:</b> {product.quantity}
-        </div>
-        <div style={{ marginBottom: 10 }}>
-          <b>Descripción:</b> {product.description}
-        </div>
-        <div style={{ marginBottom: 10 }}>
-          <b>Etiquetas:</b> {product.tags && product.tags.length > 0 ? product.tags.join(", ") : "-"}
-        </div>
-        <div style={{ marginBottom: 10 }}>
-          <b>Status:</b> {product.status === "active" ? "Activo" : "Inactivo"}
-        </div>
-        <div style={{ display: "flex", gap: 18, marginTop: 24, justifyContent: "center" }}>
-          <button
-            style={{
-              background: "var(--accent)",
-              color: "var(--bg)",
-              border: "none",
-              borderRadius: "10px",
-              padding: "14px 32px",
-              fontWeight: "bold",
-              fontSize: "1.12rem",
-              cursor: "pointer",
-              boxShadow: "var(--shadow)",
-              transition: "background 0.2s, color 0.2s",
-              letterSpacing: "1px",
-            }}
-            onClick={() => {
-              addToCart({
-                id: product.id,
-                name: product.title,
-                price: product.price,
-                image: product.images?.[0] || product.image,
-                quantity: 1,
-              });
-              // Replace alert with a non-blocking toast/snackbar
-              if (typeof window !== "undefined") {
-                const toast = document.createElement("div");
-                toast.textContent = "¡Producto agregado al carrito!";
-                toast.style.position = "fixed";
-                toast.style.bottom = "32px";
-                toast.style.right = "32px";
-                toast.style.background = "var(--accent)";
-                toast.style.color = "var(--bg)";
-                toast.style.padding = "16px 28px";
-                toast.style.borderRadius = "10px";
-                toast.style.fontWeight = "bold";
-                toast.style.fontSize = "1.08rem";
-                toast.style.boxShadow = "var(--shadow)";
-                toast.style.zIndex = "99999";
-                toast.style.transition = "opacity 0.3s";
-                toast.style.opacity = "1";
-                document.body.appendChild(toast);
-                setTimeout(() => {
-                  toast.style.opacity = "0";
-                  setTimeout(() => document.body.removeChild(toast), 400);
-                }, 1800);
-              }
-            }}
-          >
-            Agregar al carrito
-          </button>
-          <button
-            style={{
-              background: "var(--muted)",
-              color: "var(--text)",
-              border: "none",
-              borderRadius: "10px",
-              padding: "14px 32px",
-              fontWeight: "bold",
-              fontSize: "1.12rem",
-              cursor: "pointer",
-              boxShadow: "var(--shadow)",
-              transition: "background 0.2s, color 0.2s",
-              letterSpacing: "1px",
-            }}
-            onClick={() => router.push("/checkout")}
-          >
-            Comprar ahora
-          </button>
-        </div>
-      </div>
-      {/* Recommendations */}
-      <div style={{
-        width: "100%",
-        maxWidth: 900,
-        marginTop: 32,
+        maxWidth: 1100,
+        margin: "48px auto 0 auto",
         background: "var(--card)",
         borderRadius: 14,
         boxShadow: "var(--shadow)",
         padding: "24px 18px",
+        overflowX: "auto",
+        position: "relative",
+        zIndex: 0,
       }}>
         <h3 style={{ color: "var(--accent)", fontWeight: "bold", fontSize: "1.18rem", marginBottom: 18, textAlign: "center" }}>
           También te puede interesar
         </h3>
         <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+          display: "flex",
           gap: "22px",
+          overflowX: "auto",
+          paddingBottom: 8,
         }}>
           {recommendations.length === 0 ? (
             <div style={{ color: "var(--muted)", fontWeight: "bold", fontSize: "1.05rem", padding: 24, textAlign: "center" }}>
@@ -368,6 +401,8 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                   borderRadius: "10px",
                   boxShadow: "var(--shadow)",
                   padding: "14px 10px",
+                  minWidth: 180,
+                  maxWidth: 220,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
@@ -441,9 +476,29 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
             transform: scale(1.08);
             box-shadow: 0 4px 16px #FFD700;
           }
+          @media (max-width: 900px) {
+            section {
+              flex-direction: column !important;
+              gap: 24px !important;
+              padding: 18px 2vw !important;
+            }
+            .details-right {
+              margin-top: 0 !important;
+            }
+          }
+          @media (max-width: 600px) {
+            section {
+              flex-direction: column !important;
+              gap: 12px !important;
+              padding: 8px 1vw !important;
+            }
+            .details-right {
+              margin-top: 0 !important;
+            }
+          }
         `}
       </style>
-    </section>
+    </>
   );
 };
 
@@ -473,9 +528,29 @@ const AlbumDetailsPage = () => {
     if (id) fetchProduct();
   }, [id]);
 
-  if (loading) return <div style={{ color: "var(--muted)", textAlign: "center", marginTop: 60 }}>Cargando detalles...</div>;
-
-  return <ProductDetails product={product} recommendations={recommendations} />;
-};
-
-export default AlbumDetailsPage;
+    if (loading) {
+      return (
+        <div style={{
+          textAlign: "center",
+          marginTop: 80,
+          color: "var(--muted)",
+          fontWeight: "bold",
+          fontSize: "1.2rem",
+          padding: "40px",
+          background: "var(--card)",
+          borderRadius: 16,
+          boxShadow: "var(--shadow)",
+          maxWidth: 500,
+          margin: "80px auto"
+        }}>
+          Cargando...
+        </div>
+      );
+    }
+  
+    return (
+      <ProductDetails product={product} recommendations={recommendations} />
+    );
+  };
+  
+  export default AlbumDetailsPage;
