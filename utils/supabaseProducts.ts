@@ -20,6 +20,8 @@ function mapProductToSchema(product: any) {
     beatlesShowcase = false,
     status = true, // <-- default boolean
     price = 0,
+    oldPrice = 0,
+    quantity = 0,
     createdAt,
     tags = [],
     beatlesFeatured = false,
@@ -53,6 +55,8 @@ function mapProductToSchema(product: any) {
       ? tags.split(",").map((t: string) => t.trim()).filter(Boolean)
       : [],
     price: typeof price === "string" ? Number(price) : price,
+    oldPrice: typeof oldPrice === "string" ? Number(oldPrice) : oldPrice,
+    quantity: typeof quantity === "string" ? Number(quantity) : quantity,
     createdAt: createdAt ?? new Date().toISOString(),
     beatlesFeatured,
     viniloExclusivo: product.viniloExclusivo ?? false,

@@ -326,12 +326,12 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, onEdit, onDelete 
             </div>
             <div style={{ fontSize: "1.13rem", fontWeight: "bold", color: "var(--accent)", marginBottom: 8 }}>
               <b>Precio:</b> ${selectedProduct.price}
+              <span style={{ color: "var(--muted)", fontWeight: "normal", marginLeft: 10 }}>
+                <b>Precio anterior:</b> ${selectedProduct.oldPrice !== undefined && selectedProduct.oldPrice !== null && !isNaN(Number(selectedProduct.oldPrice)) ? Number(selectedProduct.oldPrice) : 0}
+              </span>
             </div>
             <div style={{ marginBottom: 8 }}>
-              <b>Badge:</b> <span style={{ background: "linear-gradient(90deg, #FFD700 60%, #fffbe6 100%)", color: "#222", borderRadius: "8px", padding: "2px 10px", fontWeight: "bold" }}>{selectedProduct.badge || "-"}</span>
-            </div>
-            <div style={{ marginBottom: 8 }}>
-              <b>Stock:</b> {selectedProduct.quantity}
+              <b>Stock:</b> {selectedProduct.quantity !== undefined && selectedProduct.quantity !== null && !isNaN(Number(selectedProduct.quantity)) ? Number(selectedProduct.quantity) : 0}
             </div>
             <div style={{ marginBottom: 8 }}>
               <b>Año:</b> {selectedProduct.year || "-"}
