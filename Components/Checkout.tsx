@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
+import { Elements, useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
+import { CartContext } from "./CartProvider";
 // import CheckoutForm from "./CheckoutForm"; // If you split it, or just use the function directly
 
 const stripePromise = loadStripe("pk_test_XXXXXXXXXXXXXXXXXXXXXXXX");
@@ -15,27 +16,18 @@ export default function Checkout() {
 }
 
 // CheckoutForm.tsx
-const mockCart = [
-  {
-    id: 1,
-    name: "Vinilo: Pink Floyd – The Wall",
-    price: 1200,
-    image: "/images/pinkfloyd.jpg",
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: "CD: Led Zeppelin – IV",
-    price: 450,
-    image: "/images/ledzep.jpg",
-    quantity: 2,
-  },
-];
-
 const steps = ["Envío", "Pago", "Revisar"];
 
+type CartItem = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image: string;
+};
+
 function CheckoutForm() {
-  const [cart] = useState(mockCart);
+  const { cart } = React.useContext(CartContext) as { cart: CartItem[] }; // Use real cart
   const [step, setStep] = useState(0);
   const [shipping, setShipping] = useState({
     name: "",
@@ -49,39 +41,130 @@ function CheckoutForm() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isDark, setIsDark] = useState(false);
+  const [shippingCost, setShippingCost] = useState<number>(0);
+  const [clientSecret, setClientSecret] = useState<string>("");
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains("dark"));
   }, []);
 
-  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const total = cart.reduce((acc: number, item) => acc + item.price * item.quantity, 0) + shippingCost;
+
+  // Calculate shipping cost (placeholder for FedEx/Correos API)
+  const calculateShipping = async () => {
+    // Example: call your backend API with shipping address and cart
+    // const response = await fetch("/api/shipping", { method: "POST", body: JSON.stringify({ address: shipping, cart }) });
+    // const data = await response.json();
+    // setShippingCost(data.cost);
+    setShippingCost(150); // Demo: flat rate
+  };
 
   // Handlers
   const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setShipping({ ...shipping, [e.target.name]: e.target.value });
   };
 
-  const handleNext = (e?: React.FormEvent) => {
+  const handleNext = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (step === 0) await calculateShipping();
+    if (step === 1) await createStripeIntent();
     setStep((s) => Math.min(s + 1, steps.length - 1));
   };
   const handleBack = () => setStep((s) => Math.max(s - 1, 0));
+
+  // Create Stripe PaymentIntent (placeholder for backend call)
+  const createStripeIntent = async () => {
+    // Example: call your backend API with cart and shipping
+    // const response = await fetch("/api/payment-intent", { method: "POST", body: JSON.stringify({ cart, shipping, shippingCost }) });
+    // const data = await response.json();
+    // setClientSecret(data.clientSecret);
+    setClientSecret("demo_client_secret"); // Demo
+  };
 
   // Place order with Stripe
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
-    // In production, fetch clientSecret from your backend
-    // For demo, we'll just simulate success
-    // const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, { ... });
-
+    // Use Stripe Elements to confirm payment with clientSecret
+    // Example:
+    // const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, { payment_method: { card, billing_details: { name: shipping.name } } });
     setTimeout(() => {
       setLoading(false);
       setOrderPlaced(true);
     }, 1800);
   };
+
+  // Payment Step component
+  type PaymentStepProps = {
+    clientSecret: string;
+    shipping: typeof shipping;
+    onSuccess: () => void;
+    onError: (msg: string) => void;
+  };
+
+  function PaymentStep({ clientSecret, shipping, onSuccess, onError }: PaymentStepProps) {
+    const stripe = useStripe();
+    const elements = useElements();
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setLoading(true);
+      if (!stripe || !elements) {
+        setLoading(false);
+        return;
+      }
+      const card = elements.getElement(CardElement);
+      if (!card) {
+        setLoading(false);
+        onError("No se encontró el campo de tarjeta");
+        return;
+      }
+      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: { card, billing_details: { name: shipping.name } }
+      });
+      setLoading(false);
+      if (error) {
+        onError(error.message ?? "Ha ocurrido un error desconocido");
+      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+        onSuccess();
+      }
+    };
+
+    return (
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div style={{
+          background: "#222",
+          borderRadius: 10,
+          padding: "18px 16px",
+          marginBottom: 18,
+          boxShadow: "var(--shadow)",
+        }}>
+          <CardElement
+            options={{
+              style: {
+                base: {
+                  fontSize: "18px",
+                  color: "#fff",
+                  letterSpacing: "1px",
+                  '::placeholder': { color: "#bbb" },
+                  iconColor: "#FFD700",
+                },
+                invalid: {
+                  color: "#ff4d4f",
+                  iconColor: "#ff4d4f",
+                },
+              },
+            }}
+          />
+        </div>
+        <button type="submit" style={buttonStyle("var(--accent)", "var(--bg)")} disabled={loading}>
+          {loading ? "Procesando..." : "Pagar"}
+        </button>
+      </form>
+    );
+  }
 
   // Stepper UI
   const Stepper = () => (
@@ -242,6 +325,21 @@ function CheckoutForm() {
                 color: "var(--accent)",
               }}
             >
+              <span>Envío</span>
+              <span>${shippingCost}</span>
+            </div>
+            <div
+              style={{
+                borderTop: "1px solid var(--border)",
+                marginTop: "8px",
+                paddingTop: "8px",
+                display: "flex",
+                justifyContent: "space-between",
+                fontWeight: "bold",
+                fontSize: "1.1rem",
+                color: "var(--accent)",
+              }}
+            >
               <span>Total</span>
               <span>${total}</span>
             </div>
@@ -339,63 +437,12 @@ function CheckoutForm() {
 
             {/* Payment Step */}
             {step === 1 && (
-              <form onSubmit={handleNext} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                <h3 style={{
-                  fontSize: "1.1rem",
-                  fontWeight: "bold",
-                  color: "var(--accent)",
-                  marginBottom: "10px",
-                  textShadow: "0 2px 8px var(--bg)",
-                }}>
-                  Información de pago
-                </h3>
-                {/* Stripe Elements will go here */}
-                <input
-                  type="text"
-                  name="card"
-                  placeholder="Número de tarjeta"
-                  required
-                  style={inputStyle()}
-                />
-                <div style={{ display: "flex", gap: 10 }}>
-                  <input
-                    type="text"
-                    name="exp"
-                    placeholder="MM/AA"
-                    required
-                    style={{ ...inputStyle(), flex: 1 }}
-                  />
-                  <input
-                    type="text"
-                    name="cvc"
-                    placeholder="CVC"
-                    required
-                    style={{ ...inputStyle(), flex: 1 }}
-                  />
-                </div>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Nombre en la tarjeta"
-                  required
-                  style={inputStyle()}
-                />
-                <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
-                  <button
-                    type="button"
-                    onClick={handleBack}
-                    style={buttonStyle("var(--card)", "var(--accent)")}
-                  >
-                    Atrás
-                  </button>
-                  <button
-                    type="submit"
-                    style={buttonStyle("var(--accent)", "var(--bg)")}
-                  >
-                    Siguiente
-                  </button>
-                </div>
-              </form>
+              <PaymentStep
+                clientSecret={clientSecret}
+                shipping={shipping}
+                onSuccess={() => setStep(2)}
+                onError={setError}
+              />
             )}
 
             {/* Review Step */}
@@ -449,8 +496,46 @@ function CheckoutForm() {
             from { opacity: 0; transform: scale(0.98);}
             to { opacity: 1; transform: scale(1);}
           }
+          @media (max-width: 900px) {
+            section {
+              padding: 24px 2vw !important;
+              max-width: 100vw !important;
+            }
+            .cart-summary, .step-form {
+              min-width: 100% !important;
+              flex: 1 1 100% !important;
+              margin-bottom: 24px !important;
+            }
+            .stepper {
+              flex-direction: column !important;
+              gap: 12px !important;
+            }
+          }
+          @media (max-width: 600px) {
+            section {
+              padding: 8px 1vw !important;
+              max-width: 100vw !important;
+            }
+            .cart-summary, .step-form {
+              min-width: 100% !important;
+              flex: 1 1 100% !important;
+              margin-bottom: 18px !important;
+            }
+            .stepper {
+              flex-direction: column !important;
+              gap: 8px !important;
+            }
+          }
         `}
       </style>
+
+      {/* SECURITY NOTES:
+        - Never expose your Stripe secret key on the frontend (only use publishable key here).
+        - Always validate cart and amounts server-side in your payment.js backend.
+        - Use HTTPS for all frontend/backend requests in production.
+        - Use Stripe webhooks to confirm payment and fulfill orders securely.
+        - Stripe's standard plan supports international payments and most cards/countries. Just enable international payments in your Stripe dashboard.
+      */}
     </section>
   );
 };

@@ -53,14 +53,15 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
           minHeight: 600,
           position: "relative",
           padding: 0,
+          overflow: "visible",
         }}
       >
         {/* Left: Sticky Image Container */}
         <div style={{
-          flex: "0 0 520px",
-          maxWidth: 520,
+          width: 520,
           minWidth: 320,
-          height: "100%",
+          maxWidth: 520,
+          height: "100vh",
           position: "sticky",
           top: 0,
           display: "flex",
@@ -71,27 +72,25 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
           boxShadow: "0 2px 24px rgba(0,0,0,0.07)",
           overflow: "hidden",
           zIndex: 2,
-          transform: `translateY(${Math.min(scrollY/8, 40)}px)`
         }}>
           {product.images && product.images.length > 0 ? (
-            <div style={{position: 'relative', width: '100%', height: '100%'}}>
-              <img
-                src={product.images[selectedImg]}
-                alt={product.title}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  borderRadius: 18,
-                  boxShadow: "0 8px 32px var(--shadow)",
-                  background: "#fff",
-                  border: "3px solid #fff",
-                  cursor: "pointer",
-                  transition: "transform 0.2s",
-                }}
-                onClick={() => setFullView(true)}
-              />
-            </div>
+            <img
+              src={product.images[selectedImg]}
+              alt={product.title}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: 18,
+                boxShadow: "0 8px 32px var(--shadow)",
+                background: "#fff",
+                border: "3px solid #fff",
+                cursor: "pointer",
+                transition: "box-shadow 0.2s",
+                display: 'block',
+              }}
+              onClick={() => setFullView(true)}
+            />
           ) : (
             <div
               style={{
@@ -200,8 +199,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
         </div>
         {/* Right: Product Details - compact buttons and info */}
         <div style={{
-          flex: "1 1 0%",
-          width: "100%",
+          flex: 1,
           minWidth: 0,
           background: "var(--card)",
           borderRadius: "0 18px 18px 0",
