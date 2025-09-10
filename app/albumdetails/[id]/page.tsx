@@ -127,6 +127,9 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                 zIndex: 99999,
                 cursor: "zoom-out",
                 animation: "fadeIn 0.3s",
+                paddingTop: "48px",
+                paddingBottom: "48px",
+                boxSizing: "border-box",
               }}
               onClick={() => setFullView(false)}
               onKeyDown={e => {
@@ -162,7 +165,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                   alt={product.title}
                   style={{
                     maxWidth: "90vw",
-                    maxHeight: "90vh",
+                    maxHeight: "70vh",
                     width: "auto",
                     height: "auto",
                     objectFit: "contain",
