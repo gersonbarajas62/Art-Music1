@@ -46,7 +46,7 @@ function mapProductToSchema(product: any) {
     beatlesShowcase,
     status: typeof status === "boolean"
       ? status
-      : status === "true" || status === true
+      : status === "true" || status === true || status === "Activo"
       ? true
       : false,
     tags: Array.isArray(tags)

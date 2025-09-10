@@ -24,7 +24,7 @@ const defaultProduct = {
   featured: false,
   newArrival: false,
   beatlesShowcase: false,
-  status: "active",
+  status: "true", // <-- fix default to "true" for active
   price: "",      // <-- empty string for input
   oldPrice: "",   // <-- empty string for input
   quantity: "",   // <-- empty string for input
@@ -93,7 +93,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
     featured: initialData?.featured ?? false,
     newArrival: initialData?.newArrival ?? false,
     beatlesShowcase: initialData?.beatlesShowcase ?? false,
-    status: initialData?.status ?? "active",
+    status: initialData?.status === true || initialData?.status === "true" ? "true" : "false",
     price: initialData?.price ?? "",
     oldPrice: initialData?.oldPrice ?? "",
     quantity: initialData?.quantity ?? "",
