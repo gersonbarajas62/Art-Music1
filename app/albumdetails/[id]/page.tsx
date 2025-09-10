@@ -8,8 +8,17 @@ import { CartContext } from "../../../Components/CartProvider";
 const ProductDetails = ({ product, recommendations }: { product: any, recommendations: any[] }) => {
   const [selectedImg, setSelectedImg] = useState<number>(0);
   const [fullView, setFullView] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
   const router = useRouter();
   const { addToCart } = React.useContext(CartContext);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   if (!product) return (
     <div style={{
@@ -62,24 +71,27 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
           boxShadow: "0 2px 24px rgba(0,0,0,0.07)",
           overflow: "hidden",
           zIndex: 2,
+          transform: `translateY(${Math.min(scrollY/8, 40)}px)`
         }}>
           {product.images && product.images.length > 0 ? (
-            <img
-              src={product.images[selectedImg]}
-              alt={product.title}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                borderRadius: 18,
-                boxShadow: "0 8px 32px var(--shadow)",
-                background: "#fff",
-                border: "3px solid #fff",
-                cursor: "pointer",
-                transition: "transform 0.2s",
-              }}
-              onClick={() => setFullView(true)}
-            />
+            <div style={{position: 'relative', width: '100%', height: '100%'}}>
+              <img
+                src={product.images[selectedImg]}
+                alt={product.title}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  borderRadius: 18,
+                  boxShadow: "0 8px 32px var(--shadow)",
+                  background: "#fff",
+                  border: "3px solid #fff",
+                  cursor: "pointer",
+                  transition: "transform 0.2s",
+                }}
+                onClick={() => setFullView(true)}
+              />
+            </div>
           ) : (
             <div
               style={{
@@ -102,6 +114,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
           {/* Full view modal overlays everything */}
           {fullView && (
             <div
+              tabIndex={0}
               style={{
                 position: "fixed",
                 top: 0,
@@ -117,18 +130,71 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                 animation: "fadeIn 0.3s",
               }}
               onClick={() => setFullView(false)}
+              onKeyDown={e => {
+                if (e.key === 'ArrowRight') setSelectedImg(i => Math.min(i+1, product.images.length-1));
+                if (e.key === 'ArrowLeft') setSelectedImg(i => Math.max(i-1, 0));
+                if (e.key === 'Escape') setFullView(false);
+              }}
             >
-              <img
-                src={product.images[selectedImg]}
-                alt={product.title}
+              <button
                 style={{
-                  maxWidth: "90vw",
-                  maxHeight: "90vh",
-                  borderRadius: 22,
-                  boxShadow: "0 8px 32px #FFD700",
-                  border: "4px solid var(--accent)",
+                  position: "absolute",
+                  left: 32,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "rgba(0,0,0,0.5)",
+                  border: "none",
+                  color: "#fff",
+                  fontSize: "2.2rem",
+                  borderRadius: "50%",
+                  width: 48,
+                  height: 48,
+                  cursor: selectedImg > 0 ? "pointer" : "not-allowed",
+                  opacity: selectedImg > 0 ? 1 : 0.5,
+                  zIndex: 100,
                 }}
-              />
+                disabled={selectedImg === 0}
+                onClick={e => {e.stopPropagation(); setSelectedImg(i => Math.max(i-1, 0));}}
+                aria-label="Anterior"
+              >&#8592;</button>
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%'}}>
+                <img
+                  src={product.images[selectedImg]}
+                  alt={product.title}
+                  style={{
+                    maxWidth: "90vw",
+                    maxHeight: "90vh",
+                    width: "auto",
+                    height: "auto",
+                    objectFit: "contain",
+                    borderRadius: 22,
+                    boxShadow: "0 8px 32px #FFD700",
+                    border: "4px solid var(--accent)",
+                    display: 'block',
+                  }}
+                />
+              </div>
+              <button
+                style={{
+                  position: "absolute",
+                  right: 32,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "rgba(0,0,0,0.5)",
+                  border: "none",
+                  color: "#fff",
+                  fontSize: "2.2rem",
+                  borderRadius: "50%",
+                  width: 48,
+                  height: 48,
+                  cursor: selectedImg < product.images.length-1 ? "pointer" : "not-allowed",
+                  opacity: selectedImg < product.images.length-1 ? 1 : 0.5,
+                  zIndex: 100,
+                }}
+                disabled={selectedImg === product.images.length-1}
+                onClick={e => {e.stopPropagation(); setSelectedImg(i => Math.min(i+1, product.images.length-1));}}
+                aria-label="Siguiente"
+              >&#8594;</button>
             </div>
           )}
         </div>
@@ -285,7 +351,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                   toast.style.position = "fixed";
                   toast.style.bottom = "32px";
                   toast.style.right = "32px";
-                  toast.style.background = "var(--accent)";
+                  toast.style.background = "#222";
                   toast.style.color = "#fff";
                   toast.style.padding = "16px 28px";
                   toast.style.borderRadius = "10px";

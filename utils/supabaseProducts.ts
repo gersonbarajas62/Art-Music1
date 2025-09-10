@@ -114,6 +114,7 @@ export async function getProductsWithImages() {
     const productImages = images.filter((img: any) => img.product_id === product.id).map((img: any) => img.url);
     return {
       ...product,
+      status: product.status === true ? 'active' : 'inactive',
       images: productImages,
       image: productImages[0] ?? "",
     };
