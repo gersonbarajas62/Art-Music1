@@ -332,54 +332,63 @@ const ProductForm: React.FC<ProductFormProps> = ({
       <textarea name="description" placeholder="Descripción" value={product.description} onChange={handleChange} required rows={3} style={{ ...inputStyle, resize: "vertical", minHeight: 60 }} />
       <label style={badgeLabel}>Etiquetas (separadas por coma)</label>
       <input type="text" name="tags" placeholder="ej: rock, vinilo, clásico" value={Array.isArray(product.tags) ? product.tags.join(", ") : ""} onChange={handleChange} style={inputStyle} />
-      {/* Switches */}
-      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 8 }}>
-        <label style={switchLabel}>
-          <input type="checkbox" name="featured" checked={product.featured} onChange={handleChange} style={switchInput} />
-          Destacado
-        </label>
-        <label style={switchLabel}>
-          <input type="checkbox" name="newArrival" checked={product.newArrival} onChange={handleChange} style={switchInput} />
-          Nuevo lanzamiento
-        </label>
-        <label style={switchLabel}>
-          <input type="checkbox" name="beatlesShowcase" checked={product.beatlesShowcase} onChange={handleChange} style={switchInput} />
-          Beatles Showcase
-        </label>
-        <label style={switchLabel}>
-          <input
-            type="checkbox"
-            name="beatlesFeatured"
-            checked={product.beatlesFeatured}
-            onChange={handleChange}
-            style={switchInput}
-          />
-          Beatles Featured
-        </label>
-        <label style={switchLabel}>
-          <input type="checkbox" name="viniloExclusivo" checked={product.viniloExclusivo} onChange={handleChange} style={switchInput} />
-          Vinilo Exclusivo
-        </label>
-        <label style={switchLabel}>
-          <input type="checkbox" name="exitosRock" checked={product.exitosRock} onChange={handleChange} style={switchInput} />
-          Éxitos del Rock
-        </label>
-        <label style={switchLabel}>
-          <input type="checkbox" name="edicionColeccion" checked={product.edicionColeccion} onChange={handleChange} style={switchInput} />
-          Edición de Colección
-        </label>
-        <label style={switchLabel}>
-          <input type="checkbox" name="vinilNuevo" checked={product.vinilNuevo} onChange={handleChange} style={switchInput} />
-          Hot New Vinyl
-        </label>
-        <label style={switchLabel}>
-          <input type="checkbox" name="vinilosenVista" checked={product.vinilosenVista} onChange={handleChange} style={switchInput} />
-          Mostrar en Hot New Vinyls
-        </label>
-        <label style={switchLabel}>
-          <input type="checkbox" name="eleccion" checked={product.eleccion} onChange={handleChange} style={switchInput} />
-          Staff Pick
-        </label>
+      {/* Switches - grouped and explained for admin UX */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 18, marginTop: 8 }}>
+        <div style={{ marginBottom: 8 }}>
+          <span style={{ fontWeight: "bold", color: "var(--accent)", fontSize: "1.08rem" }}>Opciones Beatles</span>
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 6 }}>
+            <label style={switchLabel} title="Mostrar este producto en la sección especial de Beatles en la página principal.">
+              <input type="checkbox" name="beatlesShowcase" checked={product.beatlesShowcase} onChange={handleChange} style={switchInput} />
+              Beatles Showcase <span style={{ color: "var(--muted)", fontSize: "0.95rem" }}>(Sección especial Beatles)</span>
+            </label>
+            <label style={switchLabel} title="Destacar este producto como recomendado en la sección Beatles.">
+              <input type="checkbox" name="beatlesFeatured" checked={product.beatlesFeatured} onChange={handleChange} style={switchInput} />
+              Beatles Destacado <span style={{ color: "var(--muted)", fontSize: "0.95rem" }}>(Recomendado Beatles)</span>
+            </label>
+          </div>
+        </div>
+        <div style={{ marginBottom: 8 }}>
+          <span style={{ fontWeight: "bold", color: "var(--accent)", fontSize: "1.08rem" }}>Opciones de Vinilos</span>
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 6 }}>
+            <label style={switchLabel} title="Mostrar este producto como vinilo exclusivo.">
+              <input type="checkbox" name="viniloExclusivo" checked={product.viniloExclusivo} onChange={handleChange} style={switchInput} />
+              Vinilo Exclusivo <span style={{ color: "var(--muted)", fontSize: "0.95rem" }}>(Sección exclusivos)</span>
+            </label>
+            <label style={switchLabel} title="Mostrar este producto en la sección Hot New Vinyls.">
+              <input type="checkbox" name="vinilNuevo" checked={product.vinilNuevo} onChange={handleChange} style={switchInput} />
+              Hot New Vinyl <span style={{ color: "var(--muted)", fontSize: "0.95rem" }}>(Nuevos lanzamientos)</span>
+            </label>
+            <label style={switchLabel} title="Mostrar este producto en la vista de Hot New Vinyls.">
+              <input type="checkbox" name="vinilosenVista" checked={product.vinilosenVista} onChange={handleChange} style={switchInput} />
+              Mostrar en Hot New Vinyls <span style={{ color: "var(--muted)", fontSize: "0.95rem" }}>(Vista principal)</span>
+            </label>
+          </div>
+        </div>
+        <div style={{ marginBottom: 8 }}>
+          <span style={{ fontWeight: "bold", color: "var(--accent)", fontSize: "1.08rem" }}>Otras opciones</span>
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 6 }}>
+            <label style={switchLabel} title="Destacar este producto en la tienda.">
+              <input type="checkbox" name="featured" checked={product.featured} onChange={handleChange} style={switchInput} />
+              Destacado <span style={{ color: "var(--muted)", fontSize: "0.95rem" }}>(Producto destacado)</span>
+            </label>
+            <label style={switchLabel} title="Mostrar este producto como nuevo lanzamiento.">
+              <input type="checkbox" name="newArrival" checked={product.newArrival} onChange={handleChange} style={switchInput} />
+              Nuevo lanzamiento <span style={{ color: "var(--muted)", fontSize: "0.95rem" }}>(Novedades)</span>
+            </label>
+            <label style={switchLabel} title="Mostrar este producto en la sección Éxitos del Rock.">
+              <input type="checkbox" name="exitosRock" checked={product.exitosRock} onChange={handleChange} style={switchInput} />
+              Éxitos del Rock <span style={{ color: "var(--muted)", fontSize: "0.95rem" }}>(Sección rock)</span>
+            </label>
+            <label style={switchLabel} title="Mostrar este producto como edición de colección.">
+              <input type="checkbox" name="edicionColeccion" checked={product.edicionColeccion} onChange={handleChange} style={switchInput} />
+              Edición de Colección <span style={{ color: "var(--muted)", fontSize: "0.95rem" }}>(Coleccionistas)</span>
+            </label>
+            <label style={switchLabel} title="Marcar este producto como selección del staff.">
+              <input type="checkbox" name="eleccion" checked={product.eleccion} onChange={handleChange} style={switchInput} />
+              Selección del Staff <span style={{ color: "var(--muted)", fontSize: "0.95rem" }}>(Recomendado por staff)</span>
+            </label>
+          </div>
+        </div>
       </div>
       {/* Imágenes del producto */}
       <label style={badgeLabel}>Imágenes del producto</label>
@@ -480,6 +489,24 @@ const ProductForm: React.FC<ProductFormProps> = ({
           @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.98);}
             to { opacity: 1; transform: scale(1);}
+          }
+          @media (max-width: 900px) {
+            form {
+              padding: 16px 2vw !important;
+              max-width: 98vw !important;
+            }
+            .switch-label {
+              font-size: 0.98rem !important;
+            }
+          }
+          @media (max-width: 600px) {
+            form {
+              padding: 8px 1vw !important;
+              max-width: 100vw !important;
+            }
+            .switch-label {
+              font-size: 0.95rem !important;
+            }
           }
         `}
       </style>
