@@ -33,106 +33,53 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
     <>
       <section
         style={{
-          background: "var(--section)",
-          color: "var(--text)",
-          borderRadius: "18px",
-          margin: "40px auto",
-          maxWidth: 1200,
-          padding: "36px 18px",
-          boxShadow: "var(--shadow)",
           display: "flex",
           flexDirection: "row",
-          alignItems: "flex-start",
-          gap: 18,
+          alignItems: "stretch",
+          maxWidth: 1200,
+          margin: "40px auto 0 auto",
+          background: "var(--section)",
+          borderRadius: "18px",
+          boxShadow: "var(--shadow)",
+          minHeight: 600,
           position: "relative",
+          padding: 0,
         }}
       >
-        {/* Left: Large Product Image with sticky effect */}
+        {/* Left: Sticky Image Container */}
         <div style={{
           flex: "0 0 520px",
           maxWidth: 520,
           minWidth: 320,
-          background: "#f6f6f6",
-          borderRadius: "24px 0 0 24px",
+          height: "100%",
+          position: "sticky",
+          top: 0,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          position: "sticky",
-          top: 40,
+          background: "#f6f6f6",
+          borderRadius: "18px 0 0 18px",
           boxShadow: "0 2px 24px rgba(0,0,0,0.07)",
           overflow: "hidden",
-          zIndex: 1,
-          height: "auto",
+          zIndex: 2,
         }}>
           {product.images && product.images.length > 0 ? (
-            <>
-              <button
-                style={{
-                  position: "absolute",
-                  left: 12,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "#fff",
-                  border: "none",
-                  fontSize: "2rem",
-                  color: selectedImg > 0 ? "var(--accent)" : "var(--muted)",
-                  cursor: selectedImg > 0 ? "pointer" : "not-allowed",
-                  opacity: selectedImg > 0 ? 1 : 0.5,
-                  borderRadius: "50%",
-                  width: 38,
-                  height: 38,
-                  boxShadow: "var(--shadow)",
-                  transition: "opacity 0.2s, background 0.2s",
-                  zIndex: 2,
-                }}
-                disabled={selectedImg === 0}
-                onClick={() => setSelectedImg((i) => Math.max(0, i - 1))}
-                aria-label="Anterior"
-              >
-                &#8592;
-              </button>
-              <img
-                src={product.images[selectedImg]}
-                alt={product.title}
-                style={{
-                  width: "100%",
-                  maxHeight: "70vh",
-                  objectFit: "contain",
-                  borderRadius: 18,
-                  boxShadow: "0 8px 32px var(--shadow)",
-                  background: "#fff",
-                  border: "3px solid #fff",
-                  cursor: "pointer",
-                  transition: "transform 0.2s",
-                }}
-                onClick={() => setFullView(true)}
-              />
-              <button
-                style={{
-                  position: "absolute",
-                  right: 12,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "#fff",
-                  border: "none",
-                  fontSize: "2rem",
-                  color: selectedImg < product.images.length - 1 ? "var(--accent)" : "var(--muted)",
-                  cursor: selectedImg < product.images.length - 1 ? "pointer" : "not-allowed",
-                  opacity: selectedImg < product.images.length - 1 ? 1 : 0.5,
-                  borderRadius: "50%",
-                  width: 38,
-                  height: 38,
-                  boxShadow: "var(--shadow)",
-                  transition: "opacity 0.2s, background 0.2s",
-                  zIndex: 2,
-                }}
-                disabled={selectedImg === product.images.length - 1}
-                onClick={() => setSelectedImg((i) => Math.min(product.images.length - 1, i + 1))}
-                aria-label="Siguiente"
-              >
-                &#8594;
-              </button>
-            </>
+            <img
+              src={product.images[selectedImg]}
+              alt={product.title}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: 18,
+                boxShadow: "0 8px 32px var(--shadow)",
+                background: "#fff",
+                border: "3px solid #fff",
+                cursor: "pointer",
+                transition: "transform 0.2s",
+              }}
+              onClick={() => setFullView(true)}
+            />
           ) : (
             <div
               style={{
@@ -152,7 +99,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
               Sin imagen
             </div>
           )}
-          {/* Full view modal */}
+          {/* Full view modal overlays everything */}
           {fullView && (
             <div
               style={{
@@ -165,7 +112,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                zIndex: 9999,
+                zIndex: 99999,
                 cursor: "zoom-out",
                 animation: "fadeIn 0.3s",
               }}
@@ -185,32 +132,71 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
             </div>
           )}
         </div>
-        {/* Right: Product Info - scrollable pane */}
+        {/* Right: Product Details - compact buttons and info */}
         <div style={{
-          flex: "1 1 520px",
-          maxWidth: 520,
-          minWidth: 280,
+          flex: "1 1 0%",
+          width: "100%",
+          minWidth: 0,
           background: "var(--card)",
-          borderRadius: "0 24px 24px 0",
+          borderRadius: "0 18px 18px 0",
           boxShadow: "var(--shadow)",
           padding: "38px 32px 32px 32px",
-          minHeight: 420,
-          height: "auto",
+          minHeight: 600,
+          height: "100%",
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "flex-start",
           position: "relative",
-          gap: 12,
-          zIndex: 2,
+          gap: 14,
+          zIndex: 1,
         }}>
-          <h2 style={{ color: "#fff", fontWeight: "bold", fontSize: "2.2rem", marginBottom: 0 }}>
+          {/* Badges and Title */}
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 18 }}>
+            {product.badge && (
+              <span style={{
+                background: "#fff",
+                color: "#222",
+                borderRadius: 24,
+                padding: "8px 22px",
+                fontWeight: "bold",
+                fontSize: "1.08rem",
+                boxShadow: "var(--shadow)",
+                display: 'inline-block',
+              }}>{product.badge}</span>
+            )}
+            {product.featured && (
+              <span style={{
+                background: "#fff",
+                color: "#222",
+                borderRadius: 24,
+                padding: "8px 22px",
+                fontWeight: "bold",
+                fontSize: "1.08rem",
+                boxShadow: "var(--shadow)",
+                display: 'inline-block',
+              }}>Destacado</span>
+            )}
+            {product.newArrival && (
+              <span style={{
+                background: "#fff",
+                color: "#222",
+                borderRadius: 24,
+                padding: "8px 22px",
+                fontWeight: "bold",
+                fontSize: "1.08rem",
+                boxShadow: "var(--shadow)",
+                display: 'inline-block',
+              }}>Nuevo</span>
+            )}
+          </div>
+          <h2 style={{ color: "#fff", fontWeight: "bold", fontSize: "2.3rem", marginBottom: 0, lineHeight: 1.1 }}>
             {product.title}
           </h2>
-          <div style={{ color: "#eee", fontSize: "1.15rem", fontWeight: "bold" }}>
-            <b>{product.artist}</b> &bull; {product.genero} &bull; {product.year}
+          <div style={{ color: "#eee", fontSize: "1.18rem", fontWeight: "bold", marginBottom: 8 }}>
+            {product.artist} &bull; {product.genero} &bull; {product.year}
           </div>
-          <div style={{ fontWeight: "bold", fontSize: "1.35rem", color: "var(--accent)" }}>
+          <div style={{ fontWeight: "bold", fontSize: "1.45rem", color: "var(--accent)", marginBottom: 18 }}>
             ${product.price}
             {product.oldPrice && (
               <span style={{
@@ -223,22 +209,22 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
               </span>
             )}
           </div>
-          {/* Thumbnails */}
-          <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
+          {/* Thumbnails - horizontal scroll */}
+          <div style={{ display: "flex", gap: 10, marginBottom: 18, overflowX: 'auto', paddingBottom: 4 }}>
             {product.images && product.images.map((img: string, idx: number) => (
               <button
                 key={idx}
                 style={{
-                  background: idx === selectedImg ? "#222" : "#333",
-                  border: idx === selectedImg ? "2px solid var(--accent)" : "1px solid #444",
-                  borderRadius: 10,
+                  background: idx === selectedImg ? "#fff" : "#eee",
+                  border: idx === selectedImg ? "2px solid var(--accent)" : "1px solid #ccc",
+                  borderRadius: 12,
                   boxShadow: "var(--shadow)",
                   cursor: "pointer",
                   opacity: idx === selectedImg ? 1 : 0.7,
                   transition: "border 0.2s, opacity 0.2s, background 0.2s",
                   padding: 0,
-                  width: 54,
-                  height: 54,
+                  width: 64,
+                  height: 64,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -251,75 +237,35 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                   src={img}
                   alt={`mini-${idx + 1}`}
                   style={{
-                    width: 48,
-                    height: 48,
+                    width: 56,
+                    height: 56,
                     objectFit: "cover",
-                    borderRadius: 8,
+                    borderRadius: 10,
                     boxShadow: "var(--shadow)",
-                    background: idx === selectedImg ? "#222" : "#333",
                   }}
                 />
               </button>
             ))}
           </div>
-          {/* Badges */}
-          <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-            {product.badge && (
-              <span style={{
-                background: "var(--accent)",
-                color: "#fff",
-                borderRadius: 8,
-                padding: "4px 14px",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                boxShadow: "var(--shadow)",
-                display: 'inline-block',
-              }}>{product.badge}</span>
-            )}
-            {product.featured && (
-              <span style={{
-                background: "#222",
-                color: "#fff",
-                borderRadius: 8,
-                padding: "4px 14px",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                boxShadow: "var(--shadow)",
-                display: 'inline-block',
-              }}>Destacado</span>
-            )}
-            {product.newArrival && (
-              <span style={{
-                background: "#444",
-                color: "#fff",
-                borderRadius: 8,
-                padding: "4px 14px",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                boxShadow: "var(--shadow)",
-                display: 'inline-block',
-              }}>Nuevo</span>
-            )}
-          </div>
-          {/* Info fields with dark background and light text */}
-          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Tipo:</b> {product.tipo}</div>
-          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Estado:</b> {product.estado}</div>
-          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Condición:</b> {product.condicion}</div>
-          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Número de Catálogo:</b> {product.numerodeCatalogo || '-'}</div>
-          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Stock:</b> {product.quantity}</div>
-          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Descripción:</b> {product.description}</div>
-          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Etiquetas:</b> {product.tags && product.tags.length > 0 ? product.tags.join(", ") : '-'}</div>
-          <div style={{ background: '#222', color: '#fff', borderRadius: 8, padding: '8px 14px', marginBottom: 8, width: '100%', fontWeight: 'bold', fontSize: '1.08rem' }}><b>Status:</b> {product.status === 'active' ? 'Activo' : 'Inactivo'}</div>
-          <div style={{ display: "flex", gap: 18, marginTop: 12 }}>
+          {/* Product Info - Nike style */}
+          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Tipo:</b> {product.tipo}</div>
+          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Estado:</b> {product.estado}</div>
+          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Condición:</b> {product.condicion}</div>
+          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Número de Catálogo:</b> {product.numerodeCatalogo || '-'}</div>
+          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Stock:</b> {product.quantity}</div>
+          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Descripción:</b> {product.description}</div>
+          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Etiquetas:</b> {product.tags && product.tags.length > 0 ? product.tags.join(", ") : '-'}</div>
+          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Status:</b> {product.status === 'active' ? 'Activo' : 'Inactivo'}</div>
+          <div style={{ display: "flex", gap: 14, marginTop: 18 }}>
             <button
               style={{
                 background: "#222",
                 color: "#fff",
                 border: "none",
                 borderRadius: "10px",
-                padding: "14px 32px",
+                padding: "12px 24px",
                 fontWeight: "bold",
-                fontSize: "1.12rem",
+                fontSize: "1.08rem",
                 cursor: "pointer",
                 boxShadow: "var(--shadow)",
                 transition: "background 0.2s, color 0.2s",
@@ -365,9 +311,9 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
                 color: "#222",
                 border: "1.5px solid #222",
                 borderRadius: "10px",
-                padding: "14px 32px",
+                padding: "12px 24px",
                 fontWeight: "bold",
-                fontSize: "1.12rem",
+                fontSize: "1.08rem",
                 cursor: "pointer",
                 boxShadow: "var(--shadow)",
                 transition: "background 0.2s, color 0.2s",
@@ -380,10 +326,10 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
           </div>
         </div>
       </section>
-      {/* Recommendations carousel below main container, not overlapping */}
+      {/* Recommendations full width below */}
       <div style={{
         width: "100%",
-        maxWidth: 1100,
+        maxWidth: 1200,
         margin: "48px auto 0 auto",
         background: "var(--card)",
         borderRadius: 14,
