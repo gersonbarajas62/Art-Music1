@@ -58,9 +58,9 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
       >
         {/* Left: Sticky Image Container */}
         <div style={{
-          width: 520,
-          minWidth: 320,
+          width: "100%",
           maxWidth: 520,
+          minWidth: 320,
           height: "100vh",
           position: "sticky",
           top: 0,
@@ -79,7 +79,8 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
               alt={product.title}
               style={{
                 width: "100%",
-                height: "100%",
+                height: "auto",
+                maxHeight: "70vh",
                 objectFit: "cover",
                 borderRadius: 18,
                 boxShadow: "0 8px 32px var(--shadow)",
@@ -217,13 +218,14 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
           position: "relative",
           gap: 14,
           zIndex: 1,
+          color: document.documentElement.classList.contains("dark") ? "#fff" : "#222",
         }}>
           {/* Badges and Title */}
           <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 18 }}>
             {product.badge && (
               <span style={{
                 background: "#fff",
-                color: "#222",
+                color: "#111",
                 borderRadius: 24,
                 padding: "8px 22px",
                 fontWeight: "bold",
@@ -235,7 +237,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
             {product.featured && (
               <span style={{
                 background: "#fff",
-                color: "#222",
+                color: "#111",
                 borderRadius: 24,
                 padding: "8px 22px",
                 fontWeight: "bold",
@@ -247,7 +249,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
             {product.newArrival && (
               <span style={{
                 background: "#fff",
-                color: "#222",
+                color: "#111",
                 borderRadius: 24,
                 padding: "8px 22px",
                 fontWeight: "bold",
@@ -257,10 +259,10 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
               }}>Nuevo</span>
             )}
           </div>
-          <h2 style={{ color: "#fff", fontWeight: "bold", fontSize: "2.3rem", marginBottom: 0, lineHeight: 1.1 }}>
+          <h2 style={{ color: document.documentElement.classList.contains("dark") ? "#fff" : "#111", fontWeight: "bold", fontSize: "2.3rem", marginBottom: 0, lineHeight: 1.1 }}>
             {product.title}
           </h2>
-          <div style={{ color: "#eee", fontSize: "1.18rem", fontWeight: "bold", marginBottom: 8 }}>
+          <div style={{ color: document.documentElement.classList.contains("dark") ? "#eee" : "#222", fontSize: "1.18rem", fontWeight: "bold", marginBottom: 8 }}>
             {product.artist} &bull; {product.genero} &bull; {product.year}
           </div>
           <div style={{ fontWeight: "bold", fontSize: "1.45rem", color: "var(--accent)", marginBottom: 18 }}>
@@ -375,7 +377,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
             <button
               style={{
                 background: "#fff",
-                color: "#222",
+                color: "#111",
                 border: "1.5px solid #222",
                 borderRadius: "10px",
                 padding: "12px 24px",
@@ -518,6 +520,12 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
               height: auto !important;
               top: auto !important;
             }
+            .sticky-img img {
+              width: 100% !important;
+              height: auto !important;
+              max-width: 100vw !important;
+              max-height: 50vh !important;
+            }
           }
           @media (max-width: 600px) {
             section {
@@ -533,6 +541,12 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
               position: static !important;
               height: auto !important;
               top: auto !important;
+            }
+            .sticky-img img {
+              width: 100% !important;
+              height: auto !important;
+              max-width: 100vw !important;
+              max-height: 40vh !important;
             }
           }
         `}
