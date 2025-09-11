@@ -317,14 +317,14 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
             ))}
           </div>
           {/* Product Info - Nike style */}
-          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Tipo:</b> {product.tipo}</div>
-          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Estado:</b> {product.estado}</div>
-          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Condición:</b> {product.condicion}</div>
-          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Número de Catálogo:</b> {product.numerodeCatalogo || '-'}</div>
-          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Stock:</b> {product.quantity}</div>
-          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Descripción:</b> {product.description}</div>
-          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Etiquetas:</b> {product.tags && product.tags.length > 0 ? product.tags.join(", ") : '-'}</div>
-          <div style={{ color: "#fff", fontSize: "1.15rem", marginBottom: 10 }}><b>Status:</b> {product.status === 'active' ? 'Activo' : 'Inactivo'}</div>
+          <div style={{ color: document.documentElement.classList.contains("dark") ? "#fff" : "#111", fontSize: "1.15rem", marginBottom: 10 }}><b>Tipo:</b> {product.tipo}</div>
+          <div style={{ color: document.documentElement.classList.contains("dark") ? "#fff" : "#111", fontSize: "1.15rem", marginBottom: 10 }}><b>Estado:</b> {product.estado}</div>
+          <div style={{ color: document.documentElement.classList.contains("dark") ? "#fff" : "#111", fontSize: "1.15rem", marginBottom: 10 }}><b>Condición:</b> {product.condicion}</div>
+          <div style={{ color: document.documentElement.classList.contains("dark") ? "#fff" : "#111", fontSize: "1.15rem", marginBottom: 10 }}><b>Número de Catálogo:</b> {product.numerodeCatalogo || '-'}</div>
+          <div style={{ color: document.documentElement.classList.contains("dark") ? "#fff" : "#111", fontSize: "1.15rem", marginBottom: 10 }}><b>Stock:</b> {product.quantity}</div>
+          <div style={{ color: document.documentElement.classList.contains("dark") ? "#fff" : "#111", fontSize: "1.15rem", marginBottom: 10 }}><b>Descripción:</b> {product.description}</div>
+          <div style={{ color: document.documentElement.classList.contains("dark") ? "#fff" : "#111", fontSize: "1.15rem", marginBottom: 10 }}><b>Etiquetas:</b> {product.tags && product.tags.length > 0 ? product.tags.join(", ") : '-'}</div>
+          <div style={{ color: document.documentElement.classList.contains("dark") ? "#fff" : "#111", fontSize: "1.15rem", marginBottom: 10 }}><b>Status:</b> {product.status === 'active' ? 'Activo' : 'Inactivo'}</div>
           <div style={{ display: "flex", gap: 14, marginTop: 18 }}>
             <button
               style={{
