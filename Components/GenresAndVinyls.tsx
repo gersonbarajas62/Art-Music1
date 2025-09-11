@@ -207,6 +207,7 @@ const GenresAndVinyls = () => {
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <Link href="/hot-vinyls">
             <button
+              className="gnv-btn"
               style={{
                 background: "var(--accent)",
                 color: "var(--bg)",
@@ -215,11 +216,12 @@ const GenresAndVinyls = () => {
                 fontWeight: "bold",
                 fontSize: "1.12rem",
                 border: "none",
-                boxShadow: "var(--shadow)",
+                boxShadow: "0 2px 12px var(--shadow)",
                 cursor: "pointer",
                 margin: "0 auto",
                 letterSpacing: "1px",
-                transition: "background 0.2s, color 0.2s",
+                transition: "background 0.2s, color 0.2s, box-shadow 0.25s, transform 0.25s",
+                display: "inline-block",
               }}
             >
               Ver todos los Hot Vinyls &rarr;
@@ -238,7 +240,7 @@ const GenresAndVinyls = () => {
         }}>
           Staff Picks
         </h2>
-        <div style={{ maxWidth: 900, margin: '0 auto 36px', padding: '0 12px', minHeight: 260 }}>
+        <div style={{ maxWidth: 900, margin: '0 auto 36px', padding: '0 12px', minHeight: 320 }}>
           <Slider {...staffSettings}>
             {staffPicks.map((pick) => (
               <div key={pick.id}>
@@ -310,19 +312,67 @@ const GenresAndVinyls = () => {
         >
           ¿Buscas más?{" "}
           <Link href="/catalogo" style={{ color: "var(--bg)", textDecoration: 'underline', fontWeight: 'bold' }}>
-            Explora todo nuestro catálogo y ofertas →
+            <button
+              className="gnv-btn"
+              style={{
+                background: "var(--accent)",
+                color: "var(--bg)",
+                borderRadius: "10px",
+                padding: "14px 38px",
+                fontWeight: "bold",
+                fontSize: "1.12rem",
+                border: "none",
+                boxShadow: "0 2px 12px var(--shadow)",
+                cursor: "pointer",
+                margin: "0 0 0 12px",
+                letterSpacing: "1px",
+                transition: "background 0.2s, color 0.2s, box-shadow 0.25s, transform 0.25s",
+                display: "inline-block",
+              }}
+            >
+              Explora todo nuestro catálogo y ofertas →
+            </button>
           </Link>
         </div>
         <style>
           {`
             .genre-card:hover {
               transform: scale(1.04);
-              box-shadow: 0 8px 32px var(--accent), 0 2px 12px var(--accent);
+              box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
             }
             .hot-vinyl-card:hover, .staff-pick-card:hover {
               transform: scale(1.045);
-              box-shadow: 0 8px 32px var(--accent), 0 2px 12px var(--accent);
+              box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
               border: 2px solid var(--accent);
+            }
+            @media (max-width: 600px) {
+              .staff-pick-card {
+                margin: 0 auto !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+              }
+            }
+            .gnv-btn {
+              background: var(--accent);
+              color: var(--bg);
+              border-radius: 10px;
+              padding: 14px 38px;
+              font-weight: bold;
+              font-size: 1.12rem;
+              border: none;
+              box-shadow: 0 2px 12px var(--shadow);
+              cursor: pointer;
+              margin: 0 auto;
+              letter-spacing: 1px;
+              transition: background 0.2s, color 0.2s, box-shadow 0.25s, transform 0.25s;
+              display: inline-block;
+            }
+            .gnv-btn:hover {
+              box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
+              transform: translateY(-4px) scale(1.04);
+              background: var(--accent);
+              color: var(--bg);
             }
           `}
         </style>

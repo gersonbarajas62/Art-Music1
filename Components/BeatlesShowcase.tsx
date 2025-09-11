@@ -332,7 +332,7 @@ const BeatlesShowcase = () => {
 						fontSize: "1.18rem",
 						border: "none",
 						boxShadow: "0 2px 12px var(--shadow)",
-						transition: "background 0.2s, color 0.2s",
+						transition: "background 0.2s, color 0.2s, box-shadow 0.25s, transform 0.25s",
 						display: "inline-block",
 						cursor: "pointer",
 						letterSpacing: "1px",
@@ -375,7 +375,7 @@ const BeatlesShowcase = () => {
           }
           .beatles-card:hover {
             transform: translateY(-8px) scale(1.04);
-            box-shadow: 0 12px 36px #fff, 0 2px 12px #fff !important;
+            box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
             border: 2px solid var(--accent) !important;
             background: var(--card);
           }
@@ -410,10 +410,16 @@ const BeatlesShowcase = () => {
             font-size: 1.18rem;
             border: none;
             box-shadow: 0 2px 12px var(--shadow);
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.2s, color 0.2s, box-shadow 0.25s, transform 0.25s;
             display: inline-block;
             cursor: pointer;
             letter-spacing: 1px;
+          }
+          .beatles-cta-btn:hover {
+            box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
+            transform: translateY(-4px) scale(1.04);
+            background: var(--accent);
+            color: var(--bg);
           }
           @media (max-width: 900px) {
             .beatles-cta-btn {

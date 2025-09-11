@@ -330,8 +330,9 @@ const Features = () => {
                 cursor: "pointer",
                 margin: "0 auto",
                 letterSpacing: "1px",
-                transition: "background 0.2s, color 0.2s",
+                transition: "background 0.2s, color 0.2s, box-shadow 0.25s, transform 0.25s",
               }}
+              className="features-cta-btn"
             >
               Ver todo lo nuevo &rarr;
             </button>
@@ -360,9 +361,36 @@ const Features = () => {
           }
           .features-category-card:hover {
             transform: translateY(-8px) scale(1.04);
-            box-shadow: 0 12px 36px #fff, 0 2px 12px #fff !important;
+            box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
             border: 2px solid var(--accent) !important;
             background: var(--card);
+          }
+          .carousel-card:hover {
+            box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
+            border: 2px solid var(--accent) !important;
+            transform: translateY(-4px) scale(1.04);
+            background: var(--card);
+          }
+          .features-cta-btn {
+            background: var(--accent);
+            color: var(--bg);
+            border-radius: 10px;
+            padding: 14px 38px;
+            font-weight: bold;
+            font-size: 1.12rem;
+            border: none;
+            box-shadow: 0 2px 12px var(--shadow);
+            cursor: pointer;
+            margin: 0 auto;
+            letter-spacing: 1px;
+            transition: background 0.2s, color 0.2s, box-shadow 0.25s, transform 0.25s;
+            display: inline-block;
+          }
+          .features-cta-btn:hover {
+            box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
+            transform: translateY(-4px) scale(1.04);
+            background: var(--accent);
+            color: var(--bg);
           }
           .features-main-img {
             width: 100% !important;
@@ -464,4 +492,4 @@ const Features = () => {
 };
 
 export default Features;
-        
+
