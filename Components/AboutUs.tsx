@@ -301,3 +301,4 @@ const AboutUs = () => {
 };
 
 export default AboutUs;
+// No usage of window or document in AboutUs, so no changes needed for SSR safety.

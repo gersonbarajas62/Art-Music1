@@ -60,6 +60,7 @@ const useTypingEffect = (text: string, speed = 60) => {
 const useScrollY = () => {
   const [scrollY, setScrollY] = useState(0);
   useEffect(() => {
+    if (typeof window === "undefined") return;
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -67,11 +68,18 @@ const useScrollY = () => {
   return scrollY;
 };
 
-const getOverlayColor = () => {
-  if (typeof window === "undefined") return "rgba(255,255,255,0.65)";
-  return document.documentElement.classList.contains("dark")
-    ? "rgba(0,0,0,0.65)"
-    : "rgba(255,255,255,0.65)";
+const useIsDark = () => {
+  const [isDark, setIsDark] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsDark(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+  }, []);
+  return isDark;
+};
+
+const getOverlayColor = (isDark: boolean) => {
+  return isDark ? "rgba(0,0,0,0.65)" : "rgba(255,255,255,0.65)";
 };
 
 const HeroSection = () => {
@@ -79,7 +87,8 @@ const HeroSection = () => {
   const [showParagraph, setShowParagraph] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
   const scrollY = useScrollY();
-  const overlayColor = getOverlayColor();
+  const isDark = useIsDark();
+  const overlayColor = getOverlayColor(isDark);
 
   useEffect(() => {
     if (done) {
@@ -137,8 +146,8 @@ const HeroSection = () => {
             fontWeight: "bold",
             marginBottom: "20px",
             lineHeight: "1.2",
-            color: document.documentElement.classList.contains("dark") ? "var(--text)" : "#111",
-            textShadow: document.documentElement.classList.contains("dark") ? "2px 2px 8px rgba(0,0,0,0.7)" : "2px 2px 12px rgba(0,0,0,0.28)",
+            color: isDark ? "var(--text)" : "#111",
+            textShadow: isDark ? "2px 2px 8px rgba(0,0,0,0.7)" : "2px 2px 12px rgba(0,0,0,0.28)",
             whiteSpace: "pre",
             opacity: displayed ? 1 : 0,
             transition: "opacity 0.3s",
@@ -166,8 +175,8 @@ const HeroSection = () => {
               fontSize: "1.2rem",
               marginBottom: "30px",
               lineHeight: "1.5",
-              color: document.documentElement.classList.contains("dark") ? "var(--muted)" : "#222",
-              textShadow: document.documentElement.classList.contains("dark") ? "1px 1px 6px rgba(0,0,0,0.6)" : "1px 1px 12px rgba(0,0,0,0.18)",
+              color: isDark ? "var(--muted)" : "#222",
+              textShadow: isDark ? "1px 1px 6px rgba(0,0,0,0.6)" : "1px 1px 12px rgba(0,0,0,0.18)",
               opacity: done ? 1 : 0,
               animation: done
                 ? "fadeInLeft 1.2s cubic-bezier(.77,0,.175,1) forwards"
