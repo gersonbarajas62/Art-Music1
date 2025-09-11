@@ -68,10 +68,10 @@ const useScrollY = () => {
 };
 
 const getOverlayColor = () => {
-  if (typeof window === "undefined") return "rgba(255,255,255,0.45)";
+  if (typeof window === "undefined") return "rgba(255,255,255,0.65)";
   return document.documentElement.classList.contains("dark")
     ? "rgba(0,0,0,0.65)"
-    : "rgba(255,255,255,0.45)";
+    : "rgba(255,255,255,0.65)";
 };
 
 const HeroSection = () => {
@@ -137,8 +137,8 @@ const HeroSection = () => {
             fontWeight: "bold",
             marginBottom: "20px",
             lineHeight: "1.2",
-            color: "var(--text)",
-            textShadow: "2px 2px 8px rgba(0,0,0,0.7)",
+            color: document.documentElement.classList.contains("dark") ? "var(--text)" : "#111",
+            textShadow: document.documentElement.classList.contains("dark") ? "2px 2px 8px rgba(0,0,0,0.7)" : "2px 2px 12px rgba(0,0,0,0.28)",
             whiteSpace: "pre",
             opacity: displayed ? 1 : 0,
             transition: "opacity 0.3s",
@@ -166,8 +166,8 @@ const HeroSection = () => {
               fontSize: "1.2rem",
               marginBottom: "30px",
               lineHeight: "1.5",
-              color: "var(--muted)",
-              textShadow: "1px 1px 6px rgba(0,0,0,0.6)",
+              color: document.documentElement.classList.contains("dark") ? "var(--muted)" : "#222",
+              textShadow: document.documentElement.classList.contains("dark") ? "1px 1px 6px rgba(0,0,0,0.6)" : "1px 1px 12px rgba(0,0,0,0.18)",
               opacity: done ? 1 : 0,
               animation: done
                 ? "fadeInLeft 1.2s cubic-bezier(.77,0,.175,1) forwards"
