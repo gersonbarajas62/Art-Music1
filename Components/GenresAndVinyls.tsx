@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { getProductsWithImages } from "../utils/supabaseProducts";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -9,6 +10,7 @@ const Slider = dynamic(() => import("react-slick"), { ssr: false });
 
 const GenresAndVinyls = () => {
   const [products, setProducts] = useState<any[]>([]);
+  const router = useRouter();
   useEffect(() => {
     getProductsWithImages().then(setProducts);
   }, []);
@@ -165,7 +167,7 @@ const GenresAndVinyls = () => {
                 justifyContent: "flex-start",
               }}
               className="hot-vinyl-card"
-              onClick={() => window.location.href = `/albumdetails/${vinyl.id}`}
+              onClick={() => router.push(`/albumdetails/${vinyl.id}`)}
             >
               {vinyl.badge && (
                 <span style={{
@@ -263,7 +265,7 @@ const GenresAndVinyls = () => {
                     justifyContent: "flex-start",
                   }}
                   className="staff-pick-card"
-                  onClick={() => window.location.href = `/albumdetails/${pick.id}`}
+                  onClick={() => router.push(`/albumdetails/${pick.id}`)}
                 >
                   <div style={{ width: "100%", height: "140px", overflow: "hidden", borderTopLeftRadius: "10px", borderTopRightRadius: "10px", position: "relative", margin: 0, padding: 0, zIndex: 1 }}>
                     <img
