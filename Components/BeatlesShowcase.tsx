@@ -12,7 +12,7 @@ const BeatlesShowcase = () => {
 	useEffect(() => {
 		setMounted(true);
 		if (typeof window !== "undefined") {
-			setIsDark(document.documentElement.classList.contains("dark"));
+			setIsDark(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
 		}
 		async function fetchBeatles() {
 			const allProducts = await getProductsWithImages();

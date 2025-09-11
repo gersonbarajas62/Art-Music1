@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { getProductsWithImages } from "../utils/supabaseProducts";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -13,6 +14,7 @@ const Slider = dynamic(() => import("react-slick"), { ssr: false });
 const Features = () => {
   const [mounted, setMounted] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
+  const router = useRouter();
   useEffect(() => {
     async function fetchProducts() {
       const all = await getProductsWithImages();
@@ -125,7 +127,7 @@ const Features = () => {
               overflow: "hidden",
               margin: "0 auto",
             }}
-            onClick={() => window.location.href = cat.href}
+            onClick={() => router.push(cat.href)}
           >
             {/* Large main image - covers top of cart */}
             <div
@@ -233,7 +235,7 @@ const Features = () => {
                         margin: "0 auto",
                         border: "2px solid var(--border)",
                       }}
-                      onClick={() => window.location.href = `/albumdetails/${release.id}`}
+                      onClick={() => router.push(`/albumdetails/${release.id}`)}
                     >
                       <div
                         style={{
