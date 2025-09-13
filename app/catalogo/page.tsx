@@ -329,18 +329,17 @@ export default function CatalogoPage() {
 						<div
 							key={item.id}
 							style={{
-								minWidth: 260,
+								minWidth: 280,
 								maxWidth: 340,
 								width: "100%",
-							 flex: "1 1 320px",
+								flex: "1 1 320px",
 								backgroundColor: "var(--card)",
 								borderRadius: "18px",
 								boxShadow: "var(--shadow)",
 								padding: "0 0 28px 0",
 								textAlign: "left",
 								position: "relative",
-								transition:
-									"transform 0.25s, box-shadow 0.25s, border 0.25s",
+								transition: "transform 0.25s, box-shadow 0.25s, border 0.25s",
 								border: "2px solid var(--border)",
 								margin: "12px 0",
 								display: "flex",
@@ -488,7 +487,15 @@ export default function CatalogoPage() {
             position: relative;
             overflow: hidden;
           }
+          /* Light mode: black shadow and accent border on hover */
           .beatles-card:hover {
+            transform: translateY(-8px) scale(1.04);
+            box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
+            border: 2px solid var(--accent) !important;
+            background: var(--card);
+          }
+          /* Dark mode: white shadow and accent border on hover */
+          .dark .beatles-card:hover {
             transform: translateY(-8px) scale(1.04);
             box-shadow: 0 12px 36px #fff, 0 2px 12px #fff !important;
             border: 2px solid var(--accent) !important;

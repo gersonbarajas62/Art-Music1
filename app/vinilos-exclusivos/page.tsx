@@ -352,7 +352,15 @@ export default function VinilosExclusivosPage() {
             position: relative;
             overflow: hidden;
           }
+          /* Light mode: black shadow and accent border on hover */
           .beatles-card:hover {
+            transform: translateY(-8px) scale(1.04);
+            box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
+            border: 2px solid var(--accent) !important;
+            background: var(--card);
+          }
+          /* Dark mode: white shadow and accent border on hover */
+          .dark .beatles-card:hover {
             transform: translateY(-8px) scale(1.04);
             box-shadow: 0 12px 36px #fff, 0 2px 12px #fff !important;
             border: 2px solid var(--accent) !important;

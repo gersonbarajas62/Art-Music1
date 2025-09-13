@@ -356,10 +356,27 @@ const BeatlesPage = () => {
             from { opacity: 0; transform: scale(0.98);}
             to { opacity: 1; transform: scale(1);}
           }
+          .beatles-card {
+            background: var(--card);
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: transform 0.25s, box-shadow 0.25s, border 0.25s;
+            position: relative;
+            overflow: hidden;
+          }
+          /* Light mode: black shadow and accent border on hover */
           .beatles-card:hover {
-            transform: scale(1.045);
-            box-shadow: 0 8px 32px #FFD700, 0 2px 12px #FFD700;
-            border: 2px solid #FFD700;
+            transform: translateY(-8px) scale(1.04);
+            box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
+            border: 2px solid var(--accent) !important;
+            background: var(--card);
+          }
+          /* Dark mode: white shadow and accent border on hover */
+          .dark .beatles-card:hover {
+            transform: translateY(-8px) scale(1.04);
+            box-shadow: 0 12px 36px #fff, 0 2px 12px #fff !important;
+            border: 2px solid var(--accent) !important;
+            background: var(--card);
           }
           .beatles-img:hover {
             transform: scale(1.08);
@@ -391,3 +408,4 @@ const BeatlesPage = () => {
 };
 
 export default BeatlesPage;
+             
