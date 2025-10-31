@@ -1,7 +1,32 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { getProductsWithImages } from "../utils/supabaseProducts";
 import { useRouter } from "next/navigation";
+
+function ImageWithLoader({ src, alt, className }: { src: string; alt: string; className?: string }) {
+	const [loaded, setLoaded] = useState(false);
+	return (
+		<div className={`img-wrap ${loaded ? "loaded" : "loading"}`} style={{ width: "100%", height: "100%", position: "relative" }}>
+			{!loaded && <div className="img-skeleton" aria-hidden="true" />}
+			<img
+				src={src}
+				alt={alt}
+				loading="lazy"
+				decoding="async"
+				onLoad={() => setLoaded(true)}
+				className={className}
+				style={{
+					width: "100%",
+					height: "100%",
+					objectFit: "cover",
+					display: "block",
+					opacity: loaded ? 1 : 0,
+					transition: "opacity 320ms ease",
+				}}
+			/>
+		</div>
+	);
+}
 
 const BeatlesShowcase = () => {
 	const [beatlesProducts, setBeatlesProducts] = useState<any[]>([]);
@@ -24,6 +49,12 @@ const BeatlesShowcase = () => {
 		}
 		fetchBeatles();
 	}, []);
+
+	// avoid re-creating the list on each render
+	const items = useMemo(() => beatlesProducts, [beatlesProducts]);
+
+	// stable navigation handler
+	const goTo = useCallback((id: string) => router.push(`/albumdetails/${id}`), [router]);
 
 	if (!mounted) return null; // Prevent SSR hydration mismatch
 
@@ -169,7 +200,7 @@ const BeatlesShowcase = () => {
 					position: "relative",
 				}}
 			>
-				{beatlesProducts.length === 0 ? (
+				{items.length === 0 ? (
 					<div
 						style={{
 							color: "var(--muted)",
@@ -181,7 +212,7 @@ const BeatlesShowcase = () => {
 						No hay productos Beatles registrados.
 					</div>
 				) : (
-					beatlesProducts.map((item: any) => (
+					items.map((item: any) => (
 						<div
 							key={item.id}
 							style={{
@@ -207,7 +238,7 @@ const BeatlesShowcase = () => {
 								cursor: "pointer",
 							}}
 							className="beatles-card"
-							onClick={() => router.push(`/albumdetails/${item.id}`)}
+							onClick={() => goTo(item.id)}
 						>
 							{/* Badge top left */}
 							{item.badge && (
@@ -247,23 +278,10 @@ const BeatlesShowcase = () => {
 									zIndex: 2,
 								}}
 							>
-								<img
+								{/* Replaced plain <img> with ImageWithLoader */}
+								<ImageWithLoader
 									src={item.images?.[0] || ""}
 									alt={item.title}
-									style={{
-										width: "100%",
-										height: "100%",
-										objectFit: "cover",
-										borderTopLeftRadius: "18px",
-										borderTopRightRadius: "18px",
-										borderBottomLeftRadius: 0,
-										borderBottomRightRadius: 0,
-										boxShadow: "var(--shadow)",
-										background: "var(--card)",
-										display: "block",
-										margin: 0,
-										transition: "transform 0.2s, box-shadow 0.2s",
-									}}
 									className="beatles-main-img"
 								/>
 							</div>
@@ -387,7 +405,7 @@ const BeatlesShowcase = () => {
             box-shadow: var(--shadow);
             margin: 0 auto;
             display: block;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.32s ease;
             position: relative;
             z-index: 2;
           }
@@ -452,6 +470,26 @@ const BeatlesShowcase = () => {
               font-size: 0.98rem !important;
               margin-bottom: 14px !important;
             }
+          }
+
+          /* image skeleton + shimmer */
+          .img-skeleton {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.14) 50%, rgba(255,255,255,0.06) 100%);
+            animation: skeleton-shimmer 1.2s linear infinite;
+          }
+          @keyframes skeleton-shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+          }
+          .img-wrap.loading img {
+            filter: blur(6px);
+            transform: scale(1.03);
+          }
+          .img-wrap.loaded img {
+            filter: none;
+            transform: none;
           }
         `}
 			</style>
