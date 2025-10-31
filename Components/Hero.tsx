@@ -105,8 +105,14 @@ const HeroSection = () => {
   const [showParagraph, setShowParagraph] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
   const scrollY = useScrollY();
+  const [mounted, setMounted] = useState(false);
   const paraTimerRef = useRef<number | null>(null);
   const btnTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    // mark mounted on client only — used to avoid SSR/CSR style differences
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (done) {
@@ -119,15 +125,15 @@ const HeroSection = () => {
     };
   }, [done]);
 
-  const sectionStyle = useMemo<React.CSSProperties>(
-    () => ({
+  // Build base section style (stable on server). Add backgroundPosition only after mount.
+  const sectionStyle = useMemo<React.CSSProperties>(() => {
+    const base: React.CSSProperties = {
       position: "relative",
       backgroundColor: "var(--vsc-bg)",
       color: "var(--vsc-foreground)",
       padding: "50px 20px",
       backgroundImage: "url('/images/hero-background.jpg')",
       backgroundSize: "cover",
-      backgroundPosition: `center ${scrollY * 0.2}px`,
       textAlign: "center",
       height: "100vh",
       display: "flex",
@@ -136,9 +142,13 @@ const HeroSection = () => {
       alignItems: "center",
       overflow: "hidden",
       transition: "background-position 0.2s",
-    }),
-    [scrollY]
-  );
+    };
+    if (mounted) {
+      // apply parallax only on client after mount to avoid SSR/CSR mismatch
+      return { ...base, backgroundPosition: `center ${scrollY * 0.2}px` };
+    }
+    return base;
+  }, [mounted, scrollY]);
 
   const heroContentStyle = useMemo<React.CSSProperties>(
       () => ({ maxWidth: "800px", margin: "0 auto", position: "relative", zIndex: 2 }),
