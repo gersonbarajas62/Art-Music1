@@ -35,8 +35,11 @@ const GenresAndVinyls = () => {
     slidesToShow: 3,
     slidesToScroll: 1,
     arrows: true, // desktop: show arrows
+    autoplay: true,           // auto-advance slides
+    autoplaySpeed: 5000,      // 5 seconds
+    pauseOnHover: true,       // allow users to pause on hover
     responsive: [
-      // hide arrows on tablets and smaller to avoid being cut off
+      // hide arrows on tablets and smaller to avoid being cut off; autoplay remains active
       { breakpoint: 900, settings: { slidesToShow: 2, arrows: false } },
       { breakpoint: 600, settings: { slidesToShow: 1, arrows: false } },
     ],
