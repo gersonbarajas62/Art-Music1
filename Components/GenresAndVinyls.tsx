@@ -34,10 +34,11 @@ const GenresAndVinyls = () => {
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
-    arrows: true,
+    arrows: true, // desktop: show arrows
     responsive: [
-      { breakpoint: 900, settings: { slidesToShow: 2 } },
-      { breakpoint: 600, settings: { slidesToShow: 1 } },
+      // hide arrows on tablets and smaller to avoid being cut off
+      { breakpoint: 900, settings: { slidesToShow: 2, arrows: false } },
+      { breakpoint: 600, settings: { slidesToShow: 1, arrows: false } },
     ],
   };
 
@@ -210,41 +211,44 @@ const GenresAndVinyls = () => {
           Staff Picks
         </h2>
         <div style={{ maxWidth: 900, margin: '0 auto 36px', padding: '0 12px', minHeight: 320 }}>
-          <Slider {...staffSettings}>
-            {staffPicks.map((pick) => (
-              <div key={pick.id}>
-                <div
-                  style={{
-                    background: "var(--card)",
-                    borderRadius: '10px',
-                    boxShadow: "var(--shadow)",
-                    minWidth: '180px',
-                    maxWidth: '240px',
-                    margin: '0 8px',
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    position: "relative",
-                    transition: "transform 0.2s, box-shadow 0.2s",
-                    cursor: "pointer",
-                    overflow: "hidden",
-                    height: "240px",
-                    justifyContent: "flex-start",
-                  }}
-                  className="staff-pick-card"
-                  onClick={() => router.push(`/albumdetails/${pick.id}`)}
-                >
-                  <div style={{ width: "100%", height: "140px", overflow: "hidden", borderTopLeftRadius: "10px", borderTopRightRadius: "10px", position: "relative", margin: 0, padding: 0, zIndex: 1 }}>
-                    <ImageWithLoader src={pick.image} alt={pick.title} style={{ objectFit: 'cover' }} />
-                  </div>
-                  <div style={{ textAlign: "center", padding: "16px 0 0 0", width: "100%", zIndex: 2 }}>
-                    <h3 style={{ margin: 0, color: "var(--accent)", fontWeight: 700, fontSize: "1.08rem" }}>{pick.title}</h3>
-                    <div style={{ color: "var(--muted)", fontWeight: 500, fontSize: "0.98rem" }}>{pick.artist}</div>
+          {/* padded wrapper keeps arrows inside viewport and gives slides breathing room */}
+          <div className="staff-slider-wrap" style={{ padding: "0 48px" }}>
+            <Slider {...staffSettings}>
+              {staffPicks.map((pick) => (
+                <div key={pick.id}>
+                  <div
+                    style={{
+                      background: "var(--card)",
+                      borderRadius: '10px',
+                      boxShadow: "var(--shadow)",
+                      minWidth: '180px',
+                      maxWidth: '240px',
+                      margin: '0 8px',
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      position: "relative",
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      cursor: "pointer",
+                      overflow: "hidden",
+                      height: "240px",
+                      justifyContent: "flex-start",
+                    }}
+                    className="staff-pick-card"
+                    onClick={() => router.push(`/albumdetails/${pick.id}`)}
+                  >
+                    <div style={{ width: "100%", height: "140px", overflow: "hidden", borderTopLeftRadius: "10px", borderTopRightRadius: "10px", position: "relative", margin: 0, padding: 0, zIndex: 1 }}>
+                      <ImageWithLoader src={pick.image} alt={pick.title} style={{ objectFit: 'cover' }} />
+                    </div>
+                    <div style={{ textAlign: "center", padding: "16px 0 0 0", width: "100%", zIndex: 2 }}>
+                      <h3 style={{ margin: 0, color: "var(--accent)", fontWeight: 700, fontSize: "1.08rem" }}>{pick.title}</h3>
+                      <div style={{ color: "var(--muted)", fontWeight: 500, fontSize: "0.98rem" }}>{pick.artist}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </Slider>
+              ))}
+            </Slider>
+          </div>
         </div>
 
         {/* Call to Action */}
@@ -292,18 +296,27 @@ const GenresAndVinyls = () => {
               transform: scale(1.04);
               box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
             }
+           /* staff picks slider wrapper: prevent mobile clipping and position arrows inside */
+           .staff-slider-wrap { padding: 0 48px; }
+           .staff-slider-wrap .slick-prev, .staff-slider-wrap .slick-next {
+             z-index: 20;
+             top: 50% !important;
+             transform: translateY(-50%) !important;
+           }
+           .staff-slider-wrap .slick-prev { left: 12px !important; }
+           .staff-slider-wrap .slick-next { right: 12px !important; }
             .hot-vinyl-card:hover, .staff-pick-card:hover {
               transform: scale(1.045);
               box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
               border: 2px solid var(--accent);
             }
+            @media (max-width: 900px) {
+              .staff-slider-wrap { padding: 0 20px; } /* reduce padding on tablets */
+              .staff-pick-card { margin: 0 auto !important; display: flex !important; justify-content: center !important; align-items: center !important; }
+            }
             @media (max-width: 600px) {
-              .staff-pick-card {
-                margin: 0 auto !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-              }
+              .staff-slider-wrap { padding: 0 12px; } /* minimal padding on phones, arrows hidden via settings */
+              .staff-pick-card { margin: 0 auto !important; display: flex !important; justify-content: center !important; align-items: center !important; }
             }
             .gnv-btn {
               background: var(--accent);
