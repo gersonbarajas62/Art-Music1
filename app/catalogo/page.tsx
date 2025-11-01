@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { getProductsWithImages } from "../../utils/supabaseProducts";
 import { useRouter } from "next/navigation";
+import ImageWithLoader from "../../Components/ImageWithLoader";
 
 const sortOptions = [
 	{ value: "price-asc", label: "Precio: Menor a Mayor" },
@@ -392,23 +393,9 @@ export default function CatalogoPage() {
 									zIndex: 2,
 								}}
 							>
-								<img
+								<ImageWithLoader
 									src={item.images?.[0] || ""}
 									alt={item.title}
-									style={{
-										width: "100%",
-										height: "100%",
-										objectFit: "cover",
-										borderTopLeftRadius: "18px",
-										borderTopRightRadius: "18px",
-										borderBottomLeftRadius: 0,
-										borderBottomRightRadius: 0,
-										boxShadow: "var(--shadow)",
-										background: "var(--card)",
-										display: "block",
-										margin: 0,
-										transition: "transform 0.2s, box-shadow 0.2s",
-									}}
 									className="beatles-main-img"
 								/>
 							</div>

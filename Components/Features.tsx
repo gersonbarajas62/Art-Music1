@@ -8,6 +8,7 @@ import { getProductsWithImages } from "../utils/supabaseProducts";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "@/styles/Features.css";
+import ImageWithLoader from "../Components/ImageWithLoader";
 
 const Slider = dynamic(() => import("react-slick"), { ssr: false });
 
@@ -143,25 +144,7 @@ const Features = () => {
                 zIndex: 2,
               }}
             >
-              <img
-                src={cat.image}
-                alt={cat.title}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  borderTopLeftRadius: "14px",
-                  borderTopRightRadius: "14px",
-                  borderBottomLeftRadius: 0,
-                  borderBottomRightRadius: 0,
-                  boxShadow: "var(--shadow)",
-                  background: "var(--card)",
-                  display: "block",
-                  margin: 0,
-                  transition: "transform 0.2s, box-shadow 0.2s",
-                }}
-                className="features-main-img"
-              />
+              <ImageWithLoader src={cat.image} alt={cat.title} className="features-main-img" />
             </div>
             {/* Info below image */}
             <div

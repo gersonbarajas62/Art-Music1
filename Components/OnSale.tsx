@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { getProductsWithImages } from "../utils/supabaseProducts";
 import { useRouter } from "next/navigation";
+import ImageWithLoader from "./ImageWithLoader";
 
 export default function OnSale() {
   const [products, setProducts] = useState<any[]>([]);
@@ -310,17 +311,10 @@ export default function OnSale() {
                 zIndex: 2,
               }}
             >
-              <img
+              <ImageWithLoader
                 src={item.images?.[0] || ""}
                 alt={item.title}
                 className="onsale-main-img"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  display: "block",
-                  transition: "transform 0.2s, box-shadow 0.2s",
-                }}
               />
             </div>
             <div

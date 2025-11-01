@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getProductsWithImages } from "../../utils/supabaseProducts";
+import ImageWithLoader from "../../Components/ImageWithLoader";
 
 const selectStyle: React.CSSProperties = {
   padding: "12px",
@@ -288,39 +289,9 @@ export default function NuevasLlegadasPage() {
               }}
             >
               {item.images && item.images.length > 0 ? (
-                <img
-                  src={item.images[0]}
-                  alt={item.title}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    borderTopLeftRadius: "18px",
-                    borderTopRightRadius: "18px",
-                    borderBottomLeftRadius: 0,
-                    borderBottomRightRadius: 0,
-                    boxShadow: "var(--shadow)",
-                    background: "var(--card)",
-                    display: "block",
-                    margin: 0,
-                    transition: "transform 0.2s, box-shadow 0.2s",
-                  }}
-                  className="nuevas-main-img"
-                />
+                <ImageWithLoader src={item.images[0]} alt={item.title} className="nuevas-main-img" />
               ) : (
-                <div style={{
-                  width: "100%",
-                  height: "100%",
-                  borderTopLeftRadius: "18px",
-                  borderTopRightRadius: "18px",
-                  background: "var(--section)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "var(--muted)",
-                  fontWeight: "bold",
-                  fontSize: "1.1rem",
-                }}>
+                <div style={{ width: "100%", height: "100%", borderTopLeftRadius: "18px", borderTopRightRadius: "18px", background: "var(--section)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--muted)", fontWeight: "bold", fontSize: "1.1rem" }}>
                   Sin imagen
                 </div>
               )}

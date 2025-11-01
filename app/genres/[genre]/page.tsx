@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getProductsWithImages } from "../../../utils/supabaseProducts";
 import { useRouter } from "next/navigation";
+import ImageWithLoader from "../../../Components/ImageWithLoader";
 
 const sortOptions = [
 	{ value: "price-asc", label: "Precio: Menor a Mayor" },
@@ -268,25 +269,7 @@ export default function GenrePage() {
 								zIndex: 2,
 							}}
 						>
-							<img
-								src={item.images?.[0] || ""}
-								alt={item.title}
-								style={{
-									width: "100%",
-									height: "100%",
-									objectFit: "cover",
-									borderTopLeftRadius: "18px",
-									borderTopRightRadius: "18px",
-									borderBottomLeftRadius: 0,
-									borderBottomRightRadius: 0,
-									boxShadow: "var(--shadow)",
-									background: "var(--card)",
-									display: "block",
-									margin: 0,
-									transition: "transform 0.2s, box-shadow 0.2s",
-								}}
-								className="beatles-main-img"
-							/>
+							<ImageWithLoader src={item.images?.[0] || ""} alt={item.title} className="beatles-main-img" />
 						</div>
 						{/* Info below image */}
 						<div

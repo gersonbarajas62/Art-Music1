@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { getProductsWithImages } from "../utils/supabaseProducts";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import ImageWithLoader from "./ImageWithLoader";
 
 const Slider = dynamic(() => import("react-slick"), { ssr: false });
 
@@ -99,24 +100,7 @@ const GenresAndVinyls = () => {
                 className="genre-card"
               >
                 <div style={{ width: "100%", height: "120px", overflow: "hidden", borderTopLeftRadius: "10px", borderTopRightRadius: "10px", position: "relative", margin: 0, padding: 0, zIndex: 1 }}>
-                  <img
-                    src={genre.image}
-                    alt={genre.name}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      borderTopLeftRadius: '10px',
-                      borderTopRightRadius: '10px',
-                      borderBottomLeftRadius: 0,
-                      borderBottomRightRadius: 0,
-                      boxShadow: "var(--shadow)",
-                      background: "var(--card)",
-                      display: "block",
-                      margin: 0,
-                      transition: "transform 0.2s, box-shadow 0.2s",
-                    }}
-                  />
+                  <ImageWithLoader src={genre.image} alt={genre.name} style={{ objectFit: 'cover' }} />
                 </div>
                 <div style={{ textAlign: "center", padding: "14px 0 0 0", width: "100%", zIndex: 2 }}>
                   <h3 style={{ margin: 0, color: "var(--accent)", fontWeight: 700, fontSize: "1.08rem" }}>{genre.name}</h3>
@@ -179,24 +163,7 @@ const GenresAndVinyls = () => {
                 }}>{vinyl.badge}</span>
               )}
               <div style={{ width: "100%", height: "120px", overflow: "hidden", borderTopLeftRadius: "10px", borderTopRightRadius: "10px", position: "relative", margin: 0, padding: 0, zIndex: 1 }}>
-                <img
-                  src={vinyl.image}
-                  alt={vinyl.title}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    borderTopLeftRadius: '10px',
-                    borderTopRightRadius: '10px',
-                    borderBottomLeftRadius: 0,
-                    borderBottomRightRadius: 0,
-                    boxShadow: "var(--shadow)",
-                    background: "var(--card)",
-                    display: "block",
-                    margin: 0,
-                    transition: "transform 0.2s, box-shadow 0.2s",
-                  }}
-                />
+                <ImageWithLoader src={vinyl.image} alt={vinyl.title} style={{ objectFit: 'cover' }} />
               </div>
               <div style={{ textAlign: "center", padding: "14px 0 0 0", width: "100%", zIndex: 2 }}>
                 <h3 style={{ margin: 0, color: "var(--accent)", fontWeight: 700, fontSize: "1.08rem" }}>{vinyl.title}</h3>
@@ -268,24 +235,7 @@ const GenresAndVinyls = () => {
                   onClick={() => router.push(`/albumdetails/${pick.id}`)}
                 >
                   <div style={{ width: "100%", height: "140px", overflow: "hidden", borderTopLeftRadius: "10px", borderTopRightRadius: "10px", position: "relative", margin: 0, padding: 0, zIndex: 1 }}>
-                    <img
-                      src={pick.image}
-                      alt={pick.title}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        borderTopLeftRadius: '10px',
-                        borderTopRightRadius: '10px',
-                        borderBottomLeftRadius: 0,
-                        borderBottomRightRadius: 0,
-                        boxShadow: "var(--shadow)",
-                        background: "var(--card)",
-                        display: "block",
-                        margin: 0,
-                        transition: "transform 0.2s, box-shadow 0.2s",
-                      }}
-                    />
+                    <ImageWithLoader src={pick.image} alt={pick.title} style={{ objectFit: 'cover' }} />
                   </div>
                   <div style={{ textAlign: "center", padding: "16px 0 0 0", width: "100%", zIndex: 2 }}>
                     <h3 style={{ margin: 0, color: "var(--accent)", fontWeight: 700, fontSize: "1.08rem" }}>{pick.title}</h3>
