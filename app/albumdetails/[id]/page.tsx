@@ -1,23 +1,72 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getProductsWithImages } from "../../../utils/supabaseProducts";
 import { CartContext } from "../../../Components/CartProvider";
+import dynamic from "next/dynamic";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+const Slider = dynamic(() => import("react-slick"), { ssr: false });
 
 // Reusable ProductDetails component
 const ProductDetails = ({ product, recommendations }: { product: any, recommendations: any[] }) => {
   const [selectedImg, setSelectedImg] = useState<number>(0);
   const [fullView, setFullView] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
+  // sticky image translate Y
+  const [translateY, setTranslateY] = useState(0);
+
   const router = useRouter();
   const { addToCart } = React.useContext(CartContext);
 
+  // refs for sticky image behavior
+  const rootRef = useRef<HTMLElement | null>(null);
+  const leftRef = useRef<HTMLDivElement | null>(null);    // left column wrapper (sticky container)
+  const imgWrapRef = useRef<HTMLDivElement | null>(null); // image inner wrapper that will translate
+  const rightRef = useRef<HTMLDivElement | null>(null);   // right details pane
+
+  // Nike-like sticky image: compute translateY on scroll using rAF
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+    let rafId: number | null = null;
+    let mounted = true;
+
+    const onScroll = () => {
+      if (rafId != null) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = null;
+        if (!mounted) return;
+        const root = rootRef.current;
+        const left = leftRef.current;
+        const imgWrap = imgWrapRef.current;
+        const right = rightRef.current;
+        if (!root || !left || !imgWrap || !right) return;
+
+        const rootRect = root.getBoundingClientRect();
+        const leftRect = left.getBoundingClientRect();
+        const imgRect = imgWrap.getBoundingClientRect();
+        const rightRect = right.getBoundingClientRect();
+
+        // distance scrolled since root top entered viewport
+        const scrolledSinceRoot = Math.max(0, window.scrollY + window.innerHeight / 8 - (rootRect.top + window.scrollY));
+
+        // compute maximum translation (so image bottom doesn't pass details bottom)
+        const maxTranslate = Math.max(0, rightRect.height - imgRect.height - 24); // 24px breathing room
+
+        const desired = Math.min(Math.max(window.scrollY - (rootRect.top + window.scrollY - 12), 0), maxTranslate);
+        // clamp and set
+        setTranslateY(Math.round(desired));
+      });
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    // initial run
+    onScroll();
+    return () => {
+      mounted = false;
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   if (!product) return (
@@ -41,6 +90,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
   return (
     <>
       <section
+        ref={rootRef}
         style={{
           display: "flex",
           flexDirection: "row",
@@ -57,41 +107,56 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
         }}
       >
         {/* Left: Sticky Image Container */}
-        <div style={{
-          width: "100%",
-          maxWidth: 520,
-          minWidth: 320,
-          height: "100vh",
-          position: "sticky",
-          top: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#f6f6f6",
-          borderRadius: "18px 0 0 18px",
-          boxShadow: "0 2px 24px rgba(0,0,0,0.07)",
-          overflow: "hidden",
-          zIndex: 2,
-        }}>
+        <div
+          ref={leftRef}
+          style={{
+            width: "100%",
+            maxWidth: 520,
+            minWidth: 320,
+            // keep the column visually sticky to viewport top; inner image will translate down as user scrolls
+            position: "sticky",
+            top: 20,
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "center",
+            background: "#f6f6f6",
+            borderRadius: "18px 0 0 18px",
+            boxShadow: "0 2px 24px rgba(0,0,0,0.07)",
+            overflow: "visible",
+            zIndex: 2,
+            paddingTop: 20,
+          }}
+        >
           {product.images && product.images.length > 0 ? (
-            <img
-              src={product.images[selectedImg]}
-              alt={product.title}
+            <div
+              ref={imgWrapRef}
               style={{
                 width: "100%",
-                height: "auto",
-                maxHeight: "70vh",
-                objectFit: "cover",
+                maxWidth: 480,
                 borderRadius: 18,
                 boxShadow: "0 8px 32px var(--shadow)",
                 background: "#fff",
                 border: "3px solid #fff",
                 cursor: "pointer",
-                transition: "box-shadow 0.2s",
-                display: 'block',
+                transition: "box-shadow 0.2s, transform 0.12s",
+                display: "block",
+                transform: `translateY(${translateY}px)`,
               }}
               onClick={() => setFullView(true)}
-            />
+            >
+              <img
+                src={product.images[selectedImg]}
+                alt={product.title}
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  maxHeight: "70vh",
+                  objectFit: "cover",
+                  borderRadius: 14,
+                  display: "block",
+                }}
+              />
+            </div>
           ) : (
             <div
               style={{
@@ -202,7 +267,7 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
           )}
         </div>
         {/* Right: Product Details - compact buttons and info */}
-        <div style={{
+        <div ref={rightRef} style={{
           flex: 1,
           minWidth: 0,
           background: "var(--card)",
@@ -403,154 +468,181 @@ const ProductDetails = ({ product, recommendations }: { product: any, recommenda
         background: "var(--card)",
         borderRadius: 14,
         boxShadow: "var(--shadow)",
-        padding: "24px 18px",
-        overflowX: "auto",
+        padding: "18px 28px",       /* horizontal padding for arrow area */
+        overflow: "hidden",         /* keep slide cards contained inside wrapper */
         position: "relative",
         zIndex: 0,
       }}>
-        <h3 style={{ color: "var(--accent)", fontWeight: "bold", fontSize: "1.18rem", marginBottom: 18, textAlign: "center" }}>
+        <h3 style={{ color: "var(--accent)", fontWeight: "bold", fontSize: "1.18rem", marginBottom: 12, textAlign: "center" }}>
           También te puede interesar
         </h3>
-        <div style={{
-          display: "flex",
-          gap: "22px",
-          overflowX: "auto",
-          paddingBottom: 8,
-        }}>
-          {recommendations.length === 0 ? (
-            <div style={{ color: "var(--muted)", fontWeight: "bold", fontSize: "1.05rem", padding: 24, textAlign: "center" }}>
-              No hay recomendaciones similares.
-            </div>
-          ) : (
-            recommendations.map((item: any) => (
-              <div
-                key={item.id}
-                style={{
-                  background: "var(--section)",
-                  borderRadius: "10px",
-                  boxShadow: "var(--shadow)",
-                  padding: "14px 10px",
-                  minWidth: 180,
-                  maxWidth: 220,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  border: "1px solid var(--border)",
-                  transition: "transform 0.18s, box-shadow 0.18s",
+        {recommendations.length === 0 ? (
+          <div style={{ color: "var(--muted)", fontWeight: "bold", fontSize: "1.05rem", padding: 24, textAlign: "center" }}>
+            No hay recomendaciones similares.
+          </div>
+        ) : (
+          <>
+            {/* react-slick slider — no visible scrollbar */}
+            <div className="recommend-slider-wrap" style={{ padding: "8px 12px", boxSizing: "border-box", position: "relative" }}>
+              <Slider
+                {...{
+                  dots: false,
+                  infinite: Math.max(1, recommendations.length) > 4,
+                  speed: 420,
+                  slidesToShow: Math.min(4, recommendations.length),
+                  slidesToScroll: 1,
+                  arrows: true,
+                  autoplay: false,
+                  responsive: [
+                    { breakpoint: 1200, settings: { slidesToShow: 3 } },
+                    { breakpoint: 900, settings: { slidesToShow: 2 } },
+                    { breakpoint: 600, settings: { slidesToShow: 1 } },
+                  ],
                 }}
-                onClick={() => router.push(`/albumdetails/${item.id}`)}
-                className="recommend-card"
               >
-                {item.images && item.images.length > 0 ? (
-                  <img
-                    src={item.images[0]}
-                    alt={item.title}
-                    style={{
-                      width: 80,
-                      height: 80,
-                      objectFit: "cover",
-                      borderRadius: 8,
-                      boxShadow: "var(--shadow)",
-                      marginBottom: 8,
-                      transition: "transform 0.18s, box-shadow 0.18s",
-                    }}
-                    className="recommend-img"
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: 80,
-                      height: 80,
-                      borderRadius: 8,
-                      background: "var(--card)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "var(--muted)",
-                      fontWeight: "bold",
-                      fontSize: "1.05rem",
-                      marginBottom: 8,
-                    }}
-                  >
-                    Sin imagen
+                {recommendations.map((item: any) => (
+                  <div key={item.id} style={{ display: "flex", justifyContent: "center", padding: "8px 6px", boxSizing: "border-box" }}>
+                    <div
+                      onClick={() => router.push(`/albumdetails/${item.id}`)}
+                      style={{
+                        maxWidth: 220,
+                        width: "100%",
+                        background: "var(--section)",
+                        borderRadius: 10,
+                        padding: 12,
+                        boxShadow: "var(--shadow)",
+                        border: "1px solid var(--border)",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 8,
+                        cursor: "pointer",
+                        boxSizing: "border-box",
+                      }}
+                    >
+                      {item.images && item.images.length > 0 ? (
+                        <img src={item.images[0]} alt={item.title} style={{ width: 96, height: 96, objectFit: "cover", borderRadius: 8 }} />
+                      ) : (
+                        <div style={{ width: 96, height: 96, borderRadius: 8, background: "var(--card)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--muted)" }}>
+                          Sin imagen
+                        </div>
+                      )}
+                      <div style={{ fontWeight: 700, color: "var(--accent)", textAlign: "center" }}>{item.title}</div>
+                      <div style={{ color: "var(--muted)", fontSize: "0.95rem", textAlign: "center" }}>{item.artist}</div>
+                      <div style={{ fontWeight: "bold", color: "var(--accent)" }}>${item.price}</div>
+                    </div>
                   </div>
-                )}
-                <div style={{ fontWeight: "bold", color: "var(--accent)", fontSize: "1rem", marginBottom: 2, textAlign: "center" }}>
-                  {item.title}
-                </div>
-                <div style={{ color: "var(--muted)", fontSize: "0.97rem", marginBottom: 2, textAlign: "center" }}>
-                  {item.artist}
-                </div>
-                <div style={{ fontSize: "1.02rem", fontWeight: "bold", color: "var(--accent)", marginBottom: 4, textAlign: "center" }}>
-                  ${item.price}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+                ))}
+              </Slider>
+            </div>
+          </>
+        )}
       </div>
+
       <style>
         {`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.98);}
-            to { opacity: 1; transform: scale(1);}
-          }
-          .recommend-card:hover {
-            transform: scale(1.045);
-            box-shadow: 0 8px 32px #FFD700, 0 2px 12px #FFD700;
-            border: 2px solid #FFD700;
-          }
-          .recommend-img:hover {
-            transform: scale(1.08);
-            box-shadow: 0 4px 16px #FFD700;
-          }
-          @media (max-width: 900px) {
-            section {
-              flex-direction: column !important;
-              gap: 24px !important;
-              padding: 18px 2vw !important;
-              min-height: 100vh !important;
+            @keyframes fadeIn {
+              from { opacity: 0; transform: scale(0.98);}
+              to { opacity: 1; transform: scale(1);}
             }
-            .details-right {
-              margin-top: 0 !important;
-            }
-            .sticky-img {
-              position: static !important;
-              height: auto !important;
-              top: auto !important;
-            }
-            .sticky-img img {
-              width: 100% !important;
-              height: auto !important;
-              max-width: 100vw !important;
-              max-height: 50vh !important;
-            }
-          }
-          @media (max-width: 600px) {
-            section {
-              flex-direction: column !important;
-              gap: 12px !important;
-              padding: 8px 1vw !important;
-              min-height: 100vh !important;
-            }
-            .details-right {
-              margin-top: 0 !important;
-            }
-            .sticky-img {
-              position: static !important;
-              height: auto !important;
-              top: auto !important;
-            }
-            .sticky-img img {
-              width: 100% !important;
-              height: auto !important;
-              max-width: 100vw !important;
-              max-height: 40vh !important;
-            }
-          }
-        `}
-      </style>
+          /* slider sizing: constrain slide content and center it so cards don't extend outside */
+          .slick-slider { margin: 0; }
+          .slick-list { overflow: hidden; } /* keep slides contained */
+          .slick-slide { display: flex; justify-content: center; padding: 0 6px; box-sizing: border-box; }
+          .slick-slide > div { max-width: 220px; width: 100%; box-sizing: border-box; outline: none; }
++
++          /* scoped arrow styles for the recommendations slider */
++          .recommend-slider-wrap .slick-prev,
++          .recommend-slider-wrap .slick-next {
++            position: absolute;
++            top: 50%;
++            transform: translateY(-50%);
++            z-index: 80;
++            width: 40px;
++            height: 40px;
++            border-radius: 50%;
++            background: var(--card);
++            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
++            border: 1px solid var(--border);
++            display: flex !important;
++            align-items: center;
++            justify-content: center;
++            color: var(--accent);
++            cursor: pointer;
++            opacity: 1 !important;
++            visibility: visible !important;
++          }
++          .recommend-slider-wrap .slick-prev { left: 10px !important; }
++          .recommend-slider-wrap .slick-next { right: 10px !important; }
++          .recommend-slider-wrap .slick-prev:before,
++          .recommend-slider-wrap .slick-next:before {
++            font-family: Arial, Helvetica, sans-serif;
++            font-size: 20px;
++            color: var(--accent);
++            opacity: 1;
++          }
++          .recommend-slider-wrap .slick-prev:before { content: '‹'; }
++          .recommend-slider-wrap .slick-next:before { content: '›'; }
++          @media (min-width: 900px) {
++            .recommend-slider-wrap .slick-prev,
++            .recommend-slider-wrap .slick-next { width: 48px; height: 48px; left: 14px; right: 14px; }
++          }
++          .recommend-slider-wrap .slick-dots { display: none !important; } /* defensive */
+           .recommend-card:hover {
+             transform: scale(1.045);
+             box-shadow: 0 8px 32px #FFD700, 0 2px 12px #FFD700;
+             border: 2px solid #FFD700;
+           }
+           .recommend-img:hover {
+             transform: scale(1.08);
+             box-shadow: 0 4px 16px #FFD700;
+           }
+           @media (max-width: 900px) {
+             section {
+               flex-direction: column !important;
+               gap: 24px !important;
+               padding: 18px 2vw !important;
+               min-height: 100vh !important;
+             }
+             .details-right {
+               margin-top: 0 !important;
+             }
+             .sticky-img {
+               position: static !important;
+               height: auto !important;
+               top: auto !important;
+             }
+             .sticky-img img {
+               width: 100% !important;
+               height: auto !important;
+               max-width: 100vw !important;
+               max-height: 50vh !important;
+             }
+           }
+           @media (max-width: 600px) {
+             section {
+               flex-direction: column !important;
+               gap: 12px !important;
+               padding: 8px 1vw !important;
+               min-height: 100vh !important;
+             }
+             .details-right {
+               margin-top: 0 !important;
+             }
+             .sticky-img {
+               position: static !important;
+               height: auto !important;
+               top: auto !important;
+             }
+             .sticky-img img {
+               width: 100% !important;
+               height: auto !important;
+               max-width: 100vw !important;
+               max-height: 40vh !important;
+             }
+           }
+         `}
+       </style>
     </>
   );
 };
