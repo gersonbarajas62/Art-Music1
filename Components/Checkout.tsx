@@ -40,6 +40,8 @@ function CheckoutForm() {
   });
   const [loading, setLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [creatingIntent, setCreatingIntent] = useState(false);
+  const [intentError, setIntentError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isDark, setIsDark] = useState(false);
   const [shippingCost, setShippingCost] = useState<number>(0);
@@ -51,6 +53,21 @@ function CheckoutForm() {
 
   const total = cart.reduce((acc: number, item) => acc + item.price * item.quantity, 0) + shippingCost;
 
+  // Basic shipping validation
+  const validateShipping = () => {
+    if (!shipping.name || !shipping.email || !shipping.address || !shipping.city || !shipping.postal || !shipping.country) {
+      setError("Por favor completa todos los campos de envío.");
+      return false;
+    }
+    // simple email check
+    if (!/^\S+@\S+\.\S+$/.test(shipping.email)) {
+      setError("Introduce un correo electrónico válido.");
+      return false;
+    }
+    setError(null);
+    return true;
+  };
+
   // Calculate shipping cost (placeholder for FedEx/Correos API)
   const calculateShipping = async () => {
     // Replace with real shipping calc
@@ -59,6 +76,8 @@ function CheckoutForm() {
 
   // Create Stripe PaymentIntent (server call). returns { clientSecret, orderId }
   const createStripeIntent = async () => {
+    setCreatingIntent(true);
+    setIntentError(null);
     try {
       const res = await fetch("/api/create-payment-intent", {
         method: "POST",
@@ -75,8 +94,10 @@ function CheckoutForm() {
       return data;
     } catch (err: any) {
       console.error("createStripeIntent error", err);
-      setError(err?.message || "No se pudo iniciar el pago");
+      setIntentError(err?.message || "No se pudo iniciar el pago");
       return null;
+    } finally {
+      setCreatingIntent(false);
     }
   };
 
@@ -90,9 +111,10 @@ function CheckoutForm() {
     if (e) e.preventDefault();
     setError(null);
     if (step === 0) {
+      // validate shipping first
+      if (!validateShipping()) return;
       await calculateShipping();
-      const intent = await createStripeIntent();
-      if (!intent || !intent.clientSecret) return; // stop if failed
+      // create intent will be triggered by effect when step becomes 1 (see below)
       setStep(1);
       return;
     }
@@ -101,6 +123,27 @@ function CheckoutForm() {
   };
 
   const handleBack = () => setStep((s) => Math.max(s - 1, 0));
+
+  // Create PaymentIntent when user reaches payment step (step===1)
+  useEffect(() => {
+    let mounted = true;
+    if (step === 1 && !clientSecret) {
+      (async () => {
+        setIntentError(null);
+        setCreatingIntent(true);
+        const intent = await createStripeIntent();
+        if (!mounted) return;
+        if (!intent || !intent.clientSecret) {
+          // stay on step 1 and show error
+          setStep(1);
+        } else {
+          setClientSecret(intent.clientSecret);
+        }
+        setCreatingIntent(false);
+      })();
+    }
+    return () => { mounted = false; };
+  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Finalize order: ask server to confirm/finalize order record (server verifies payment status)
   const handlePlaceOrder = async (e: React.FormEvent) => {
@@ -123,7 +166,7 @@ function CheckoutForm() {
       if (data.status === "paid" || data.confirmed) {
         setOrderPlaced(true);
       } else {
-        // if not yet marked paid server-side, guide user to wait for webhook or show message
+        // if not yet marked paid server-side, mark pending but show confirmation
         setOrderPlaced(true); // still show thank-you but you may want to show pending state
       }
     } catch (err: any) {
@@ -152,6 +195,7 @@ function CheckoutForm() {
       setLoading(true);
       if (!stripe || !elements) {
         setLoading(false);
+        onError("Stripe aún no está listo. Intenta de nuevo en unos segundos.");
         return;
       }
       const card = elements.getElement(CardElement);
@@ -162,7 +206,7 @@ function CheckoutForm() {
       }
       try {
         const result = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: { card, billing_details: { name: shipping.name } },
+          payment_method: { card, billing_details: { name: shipping.name, email: shipping.email } },
         });
         setLoading(false);
         if (result.error) {
@@ -170,12 +214,19 @@ function CheckoutForm() {
           return;
         }
         if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
-          // Optionally notify your backend to record payment immediately:
+          // Notify backend and finalize order record
           await fetch("/api/payment-confirmation", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ paymentIntentId: result.paymentIntent.id }),
           });
+          if (orderId) {
+            await fetch("/api/confirm-order", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ orderId }),
+            });
+          }
           onSuccess();
         } else {
           onError("Pago no completado");
@@ -185,6 +236,15 @@ function CheckoutForm() {
         onError(err?.message || "Error en la confirmación del pago");
       }
     };
+
+    // Guard: don't render until clientSecret exists
+    if (!clientSecret) {
+      return (
+        <div style={{ padding: 12, textAlign: "center", color: "var(--muted)" }}>
+          {creatingIntent ? "Preparando el pago..." : intentError || "No se pudo iniciar el pago."}
+        </div>
+      );
+    }
 
     return (
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>

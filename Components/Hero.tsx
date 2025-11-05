@@ -170,7 +170,7 @@ const HeroSection = () => {
     );
 
   return (
-    <section style={sectionStyle}>
+    <section id="hero" style={sectionStyle}>
       <div className="hero-overlay" style={{ position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none" }} />
       <div className="hero-content" style={heroContentStyle}>
         {/* H1 initially rendered as full static text on server / initial client render.

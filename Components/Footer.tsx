@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const Footer = () => {
   const [showScroll, setShowScroll] = useState(false);
@@ -9,10 +10,64 @@ const Footer = () => {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+  const router = useRouter();
 
-  const isDark =
-    typeof window !== "undefined" &&
-    document.documentElement.classList.contains("dark");
+  // Smoothly scroll to an element by id with retries (useful after navigation)
+  const scrollToIdWithRetry = async (id: string) => {
+    if (!id) return;
+    const tryScroll = () => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        return true;
+      }
+      return false;
+    };
+    // First attempt immediately
+    if (tryScroll()) return;
+    // Retry a few times (element may mount after route change)
+    for (let i = 0; i < 20; i++) {
+      await new Promise((r) => setTimeout(r, 100));
+      if (tryScroll()) return;
+    }
+  };
+
+  // Navigate to path (may contain hash) and ensure scroll to anchor
+  const handleAnchorNav = async (e: React.MouseEvent, href: string) => {
+    e.preventDefault();
+    try {
+      // href expected like "/#hero" or "/#contact"
+      const url = new URL(href, window.location.origin);
+      const path = url.pathname || "/";
+      const hash = url.hash ? url.hash.replace("#", "") : "";
+
+      // If we're already on the same path, just scroll
+      if (window.location.pathname === path) {
+        if (hash) await scrollToIdWithRetry(hash);
+        // also update address bar
+        window.history.replaceState({}, "", href);
+        return;
+      }
+
+      // navigate then wait and scroll
+      await router.push(path + (hash ? `#${hash}` : ""));
+      if (hash) await scrollToIdWithRetry(hash);
+    } catch (err) {
+      // fallback: set location so browser handles it
+      window.location.href = href;
+    }
+  };
+
+  // render-time must be deterministic — read document only after mount
+  const [isDark, setIsDark] = useState(false);
+  useEffect(() => {
+    const getDark = () => document.documentElement.classList.contains("dark");
+    setIsDark(getDark());
+    // observe class changes (optional, lightweight)
+    const obs = new MutationObserver(() => setIsDark(getDark()));
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <footer
@@ -135,19 +190,20 @@ const Footer = () => {
           }}
           aria-label="Enlaces de navegación"
         >
-          <Link href="/" style={navLinkStyle(isDark)}>
+          {/* use onClick for fragment navigation to ensure scrolling after route changes */}
+          <a href="/#hero" onClick={(e) => handleAnchorNav(e, "/#hero")} style={navLinkStyle(isDark)}>
             Inicio
-          </Link>
+          </a>
           <Link href="/genres" style={navLinkStyle(isDark)}>
             Géneros
           </Link>
-          <Link href="/vinyls" style={navLinkStyle(isDark)}>
+          <Link href="/hot-vinyls" style={navLinkStyle(isDark)}>
             Vinilos
           </Link>
-          <Link href="/contact" style={navLinkStyle(isDark)}>
+          <a href="/#contact" onClick={(e) => handleAnchorNav(e, "/#contact")} style={navLinkStyle(isDark)}>
             Contacto
-          </Link>
-        </nav>
+          </a>
+         </nav>
 
         {/* Social Media Icons & Contact */}
         <div
@@ -294,12 +350,12 @@ const Footer = () => {
             <span>
               <b>WhatsApp:</b>{" "}
               <a
-                href="https://wa.me/5215555555555"
+                href="https://wa.me/5633545471"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: "var(--accent)" }}
               >
-                +52 1 555 555 5555
+                +56 3354 5471
               </a>
             </span>
           </div>

@@ -332,11 +332,12 @@ const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
             border: 2px solid var(--accent);
             background: var(--card);
           }
+          /* Removed dynamic CSS that interpolated 'open' — positioning is handled inline */
           @media (max-width: 600px) {
-            div[style*="position:fixed"] {
+            .cart-drawer-fixed {
               width: 98vw !important;
-              right: ${open ? "0" : "-100vw"} !important;
-              borderRadius: "0";
+              right: 0 !important;
+              border-radius: 0 !important;
             }
           }
         `}

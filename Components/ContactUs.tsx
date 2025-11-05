@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -28,12 +28,20 @@ const Contact = () => {
     // Replace with real backend logic
   };
 
-  const isDark =
-    typeof window !== "undefined" &&
-    document.documentElement.classList.contains("dark");
+  // Do not read document during render — keep SSR output stable
+  const [isDark, setIsDark] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const getDark = () => document.documentElement.classList.contains("dark");
+    setIsDark(getDark());
+    const obs = new MutationObserver(() => setIsDark(getDark()));
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <section
+      id="contact" /* anchor target for footer "Contacto" */
       style={{
         background: "var(--section)",
         color: "var(--text)",
