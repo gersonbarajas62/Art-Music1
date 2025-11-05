@@ -60,14 +60,14 @@ const Features = () => {
 
   // Fix carouselSettings: always set arrows: false and slidesToShow for mobile/tablet
   const carouselSettings = {
-    dots: true,
+    dots: false,           // hide dots — too many bullets for large lists
     infinite: true,
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 4000, // <-- ensure 4 seconds
-    arrows: false, // <-- always hide arrows
+    autoplaySpeed: 4000, // 4 seconds
+    arrows: false,
     responsive: [
       { breakpoint: 1200, settings: { slidesToShow: 3, arrows: false } },
       { breakpoint: 900, settings: { slidesToShow: 1, arrows: false } },
@@ -356,6 +356,8 @@ const Features = () => {
             transform: translateY(-4px) scale(1.04);
             background: var(--card);
           }
+          /* defensive: hide slick dots for the nuevas-llegadas carousel */
+          .features-carousel-row .slick-dots { display: none !important; }
           .features-cta-btn {
             background: var(--accent);
             color: var(--bg);
