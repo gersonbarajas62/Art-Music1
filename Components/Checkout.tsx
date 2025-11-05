@@ -5,7 +5,7 @@ import { Elements, useStripe, useElements, CardElement } from "@stripe/react-str
 import { CartContext } from "./CartProvider";
 // import CheckoutForm from "./CheckoutForm"; // If you split it, or just use the function directly
 
-const stripePromise = loadStripe("pk_test_XXXXXXXXXXXXXXXXXXXXXXXX");
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "");
 
 export default function Checkout() {
   return (
@@ -27,8 +27,9 @@ type CartItem = {
 };
 
 function CheckoutForm() {
-  const { cart } = React.useContext(CartContext) as { cart: CartItem[] }; // Use real cart
+  const { cart } = React.useContext(CartContext) as { cart: CartItem[] };
   const [step, setStep] = useState(0);
+  const [orderId, setOrderId] = useState<string | null>(null);
   const [shipping, setShipping] = useState({
     name: "",
     email: "",
@@ -45,18 +46,38 @@ function CheckoutForm() {
   const [clientSecret, setClientSecret] = useState<string>("");
 
   useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
+    setIsDark(typeof document !== "undefined" && document.documentElement.classList.contains("dark"));
   }, []);
 
   const total = cart.reduce((acc: number, item) => acc + item.price * item.quantity, 0) + shippingCost;
 
   // Calculate shipping cost (placeholder for FedEx/Correos API)
   const calculateShipping = async () => {
-    // Example: call your backend API with shipping address and cart
-    // const response = await fetch("/api/shipping", { method: "POST", body: JSON.stringify({ address: shipping, cart }) });
-    // const data = await response.json();
-    // setShippingCost(data.cost);
-    setShippingCost(150); // Demo: flat rate
+    // Replace with real shipping calc
+    setShippingCost(150);
+  };
+
+  // Create Stripe PaymentIntent (server call). returns { clientSecret, orderId }
+  const createStripeIntent = async () => {
+    try {
+      const res = await fetch("/api/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart, shipping, shippingCost }),
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Failed to create payment intent");
+      }
+      const data = await res.json();
+      setClientSecret(data.clientSecret);
+      setOrderId(data.orderId ?? null);
+      return data;
+    } catch (err: any) {
+      console.error("createStripeIntent error", err);
+      setError(err?.message || "No se pudo iniciar el pago");
+      return null;
+    }
   };
 
   // Handlers
@@ -64,35 +85,53 @@ function CheckoutForm() {
     setShipping({ ...shipping, [e.target.name]: e.target.value });
   };
 
+  // Move to next step: if leaving shipping step, calculate shipping and create intent BEFORE showing PaymentStep
   const handleNext = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (step === 0) await calculateShipping();
-    if (step === 1) await createStripeIntent();
+    setError(null);
+    if (step === 0) {
+      await calculateShipping();
+      const intent = await createStripeIntent();
+      if (!intent || !intent.clientSecret) return; // stop if failed
+      setStep(1);
+      return;
+    }
+    // For other steps, just advance
     setStep((s) => Math.min(s + 1, steps.length - 1));
   };
+
   const handleBack = () => setStep((s) => Math.max(s - 1, 0));
 
-  // Create Stripe PaymentIntent (placeholder for backend call)
-  const createStripeIntent = async () => {
-    // Example: call your backend API with cart and shipping
-    // const response = await fetch("/api/payment-intent", { method: "POST", body: JSON.stringify({ cart, shipping, shippingCost }) });
-    // const data = await response.json();
-    // setClientSecret(data.clientSecret);
-    setClientSecret("demo_client_secret"); // Demo
-  };
-
-  // Place order with Stripe
+  // Finalize order: ask server to confirm/finalize order record (server verifies payment status)
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    // Use Stripe Elements to confirm payment with clientSecret
-    // Example:
-    // const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, { payment_method: { card, billing_details: { name: shipping.name } } });
-    setTimeout(() => {
+    try {
+      if (!orderId) throw new Error("No se encontró la orden");
+      const res = await fetch("/api/confirm-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(txt || "Error al confirmar orden en el servidor");
+      }
+      const data = await res.json();
+      // data may contain order status
+      if (data.status === "paid" || data.confirmed) {
+        setOrderPlaced(true);
+      } else {
+        // if not yet marked paid server-side, guide user to wait for webhook or show message
+        setOrderPlaced(true); // still show thank-you but you may want to show pending state
+      }
+    } catch (err: any) {
+      console.error("handlePlaceOrder error", err);
+      setError(err?.message || "Error al procesar la orden");
+    } finally {
       setLoading(false);
-      setOrderPlaced(true);
-    }, 1800);
+    }
   };
 
   // Payment Step component
@@ -121,14 +160,29 @@ function CheckoutForm() {
         onError("No se encontró el campo de tarjeta");
         return;
       }
-      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: { card, billing_details: { name: shipping.name } }
-      });
-      setLoading(false);
-      if (error) {
-        onError(error.message ?? "Ha ocurrido un error desconocido");
-      } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        onSuccess();
+      try {
+        const result = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: { card, billing_details: { name: shipping.name } },
+        });
+        setLoading(false);
+        if (result.error) {
+          onError(result.error.message ?? "Error en el pago");
+          return;
+        }
+        if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
+          // Optionally notify your backend to record payment immediately:
+          await fetch("/api/payment-confirmation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ paymentIntentId: result.paymentIntent.id }),
+          });
+          onSuccess();
+        } else {
+          onError("Pago no completado");
+        }
+      } catch (err: any) {
+        setLoading(false);
+        onError(err?.message || "Error en la confirmación del pago");
       }
     };
 

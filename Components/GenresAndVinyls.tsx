@@ -29,17 +29,18 @@ const GenresAndVinyls = () => {
   const staffPicks = products.filter(p => p.eleccion === true);
 
   const staffSettings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
-    arrows: true, // desktop: show arrows
-    autoplay: true,           // auto-advance slides
-    autoplaySpeed: 5000,      // 5 seconds
-    pauseOnHover: true,       // allow users to pause on hover
+    arrows: true,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    pauseOnHover: true,
+    // force slide sizing to match our card widths; fewer slides on smaller screens
     responsive: [
-      // hide arrows on tablets and smaller to avoid being cut off; autoplay remains active
+      { breakpoint: 1200, settings: { slidesToShow: 3, arrows: true } },
       { breakpoint: 900, settings: { slidesToShow: 2, arrows: false } },
       { breakpoint: 600, settings: { slidesToShow: 1, arrows: false } },
     ],
@@ -213,39 +214,41 @@ const GenresAndVinyls = () => {
         }}>
           Staff Picks
         </h2>
-        <div style={{ maxWidth: 900, margin: '0 auto 36px', padding: '0 12px', minHeight: 320 }}>
-          {/* padded wrapper keeps arrows inside viewport and gives slides breathing room */}
-          <div className="staff-slider-wrap" style={{ padding: "0 48px" }}>
+        {/* increased minHeight + vertical padding so cards do not clip top/bottom */}
+        <div style={{ maxWidth: 900, margin: '0 auto 36px', padding: '0 12px', minHeight: 420 }}>
+          {/* padded wrapper keeps arrows inside viewport and gives slides breathing room (vertical padding added) */}
+          <div className="staff-slider-wrap" style={{ padding: "20px 40px" }}>
             <Slider {...staffSettings}>
               {staffPicks.map((pick) => (
                 <div key={pick.id}>
                   <div
                     style={{
                       background: "var(--card)",
-                      borderRadius: '10px',
+                      borderRadius: "10px",
                       boxShadow: "var(--shadow)",
-                      minWidth: '180px',
-                      maxWidth: '240px',
-                      margin: '0 8px',
+                      flex: "0 0 200px",      // fixed smaller slide width
+                      width: 200,
+                      margin: "0 6px",
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
                       position: "relative",
-                      transition: "transform 0.2s, box-shadow 0.2s",
+                      transition: "transform 0.18s, box-shadow 0.18s",
                       cursor: "pointer",
                       overflow: "hidden",
-                      height: "240px",
+                      height: "240px",       // reduced height so cards fit wrapper
                       justifyContent: "flex-start",
+                      boxSizing: "border-box",
                     }}
                     className="staff-pick-card"
                     onClick={() => router.push(`/albumdetails/${pick.id}`)}
                   >
-                    <div style={{ width: "100%", height: "140px", overflow: "hidden", borderTopLeftRadius: "10px", borderTopRightRadius: "10px", position: "relative", margin: 0, padding: 0, zIndex: 1 }}>
-                      <ImageWithLoader src={pick.image} alt={pick.title} style={{ objectFit: 'cover' }} />
+                    <div style={{ width: "100%", height: "120px", overflow: "hidden", borderTopLeftRadius: "10px", borderTopRightRadius: "10px", position: "relative", margin: 0, padding: 0, zIndex: 1 }}>
+                      <ImageWithLoader src={pick.image} alt={pick.title} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
                     </div>
-                    <div style={{ textAlign: "center", padding: "16px 0 0 0", width: "100%", zIndex: 2 }}>
-                      <h3 style={{ margin: 0, color: "var(--accent)", fontWeight: 700, fontSize: "1.08rem" }}>{pick.title}</h3>
-                      <div style={{ color: "var(--muted)", fontWeight: 500, fontSize: "0.98rem" }}>{pick.artist}</div>
+                    <div style={{ textAlign: "center", padding: "12px 8px 0 8px", width: "100%", zIndex: 2 }}>
+                      <h3 style={{ margin: 0, color: "var(--accent)", fontWeight: 700, fontSize: "1rem", lineHeight: "1.2", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pick.title}</h3>
+                      <div style={{ color: "var(--muted)", fontWeight: 500, fontSize: "0.9rem", marginTop: 6 }}>{pick.artist}</div>
                     </div>
                   </div>
                 </div>
@@ -300,26 +303,30 @@ const GenresAndVinyls = () => {
               box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
             }
            /* staff picks slider wrapper: prevent mobile clipping and position arrows inside */
-           .staff-slider-wrap { padding: 0 48px; }
-           .staff-slider-wrap .slick-prev, .staff-slider-wrap .slick-next {
-             z-index: 20;
-             top: 50% !important;
-             transform: translateY(-50%) !important;
-           }
-           .staff-slider-wrap .slick-prev { left: 12px !important; }
-           .staff-slider-wrap .slick-next { right: 12px !important; }
-            .hot-vinyl-card:hover, .staff-pick-card:hover {
-              transform: scale(1.045);
-              box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
-              border: 2px solid var(--accent);
+           .staff-slider-wrap { padding: 20px 40px; }
+            /* defensive: ensure slick dots are hidden for this specific wrapper */
+            .staff-slider-wrap .slick-dots { display: none !important; }
+            .staff-slider-wrap .slick-prev, .staff-slider-wrap .slick-next {
+              z-index: 20;
+              top: 50% !important;
+              transform: translateY(-50%) !important;
             }
+            .staff-slider-wrap .slick-prev { left: 12px !important; }
+            .staff-slider-wrap .slick-next { right: 12px !important; }
+             .hot-vinyl-card:hover, .staff-pick-card:hover {
+                transform: scale(1.045);
+                box-shadow: 0 12px 36px #111, 0 2px 12px #fff !important;
+                border: 2px solid var(--accent);
+              }
             @media (max-width: 900px) {
-              .staff-slider-wrap { padding: 0 20px; } /* reduce padding on tablets */
-              .staff-pick-card { margin: 0 auto !important; display: flex !important; justify-content: center !important; align-items: center !important; }
+              .staff-slider-wrap { padding: 12px 16px; }
+              .staff-pick-card { margin: 0 auto !important; height: 220px !important; flex: 0 0 180px !important; width: 180px !important; }
+              .staff-pick-card > div:first-child { height: 110px !important; } /* image area */
             }
             @media (max-width: 600px) {
-              .staff-slider-wrap { padding: 0 12px; } /* minimal padding on phones, arrows hidden via settings */
-              .staff-pick-card { margin: 0 auto !important; display: flex !important; justify-content: center !important; align-items: center !important; }
+              .staff-slider-wrap { padding: 10px 12px; }
+              .staff-pick-card { margin: 0 auto !important; height: 200px !important; flex: 0 0 160px !important; width: 160px !important; }
+              .staff-pick-card > div:first-child { height: 96px !important; } /* image area */
             }
             .gnv-btn {
               background: var(--accent);

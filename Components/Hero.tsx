@@ -37,40 +37,52 @@ const BUTTONS = [
   },
 ];
 
-const useTypingEffect = (text: string, speed = 60) => {
-  const [displayed, setDisplayed] = useState("");
-  const [done, setDone] = useState(false);
-  const idxRef = useRef(0);
-  const timerRef = useRef<number | null>(null);
+// Modified hook: add 'enabled' param. When enabled is false (SSR / initial render),
+// return full text immediately so server HTML matches client initial HTML.
+const useTypingEffect = (text: string, speed = 60, enabled = true) => {
+	// If not enabled, show full text (server + initial client render) and mark done.
+	const initial = enabled ? "" : text;
+	const [displayed, setDisplayed] = useState(initial);
+	const [done, setDone] = useState(!enabled);
+	const idxRef = useRef(0);
+	const timerRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    idxRef.current = 0;
-    setDisplayed("");
-    setDone(false);
+	useEffect(() => {
+		// If typing is disabled, don't start any timers.
+		if (!enabled) {
+			// ensure displayed and done reflect disabled state
+			setDisplayed(text);
+			setDone(true);
+			return;
+		}
 
-    const step = () => {
-      const i = idxRef.current;
-      if (i < text.length) {
-        setDisplayed(text.slice(0, i + 1));
-        idxRef.current = i + 1;
-        timerRef.current = window.setTimeout(step, speed);
-      } else {
-        setDone(true);
-        timerRef.current = null;
-      }
-    };
+		idxRef.current = 0;
+		setDisplayed("");
+		setDone(false);
 
-    timerRef.current = window.setTimeout(step, speed);
+		const step = () => {
+			const i = idxRef.current;
+			if (i < text.length) {
+				setDisplayed(text.slice(0, i + 1));
+				idxRef.current = i + 1;
+				timerRef.current = window.setTimeout(step, speed);
+			} else {
+				setDone(true);
+				timerRef.current = null;
+			}
+		};
 
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [text, speed]);
+		timerRef.current = window.setTimeout(step, speed);
 
-  return { displayed, done };
+		return () => {
+			if (timerRef.current) {
+				clearTimeout(timerRef.current);
+				timerRef.current = null;
+			}
+		};
+	}, [text, speed, enabled]);
+
+	return { displayed, done };
 };
 
 // requestAnimationFrame-throttled scroll Y hook
@@ -101,11 +113,13 @@ const useScrollY = () => {
 };
 
 const HeroSection = () => {
-  const { displayed, done } = useTypingEffect(HEADLINE_TEXT, 50);
+  const [mounted, setMounted] = useState(false);
+  // Call hook unconditionally but typing only starts when mounted === true.
+  const { displayed, done } = useTypingEffect(HEADLINE_TEXT, 50, mounted);
+
   const [showParagraph, setShowParagraph] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
   const scrollY = useScrollY();
-  const [mounted, setMounted] = useState(false);
   const paraTimerRef = useRef<number | null>(null);
   const btnTimerRef = useRef<number | null>(null);
 
@@ -159,6 +173,8 @@ const HeroSection = () => {
     <section style={sectionStyle}>
       <div className="hero-overlay" style={{ position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none" }} />
       <div className="hero-content" style={heroContentStyle}>
+        {/* H1 initially rendered as full static text on server / initial client render.
+            Typing animation begins only after mounted becomes true (client-only). */}
         <h1
           className="hero-title"
           style={{
